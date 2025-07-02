@@ -1,0 +1,73 @@
+<div class="form-section">
+    <h2 id="registerTitle">Crie sua Conta</h2>
+    <form id="registerForm">
+        <div class="form-group">
+            <label for="firstName" id="labelFirstName">Nome</label>
+            <input type="text" id="firstName" class="form-input" placeholder="Seu nome" required>
+        </div>
+        <div class="form-group">
+            <label for="lastName" id="labelLastName">Sobrenome</label>
+            <input type="text" id="lastName" class="form-input" placeholder="Seu sobrenome" required>
+        </div>
+        <div class="form-group">
+            <label for="email" id="labelEmail">E-mail</label>
+            <input type="email" id="email" class="form-input" placeholder="seu@email.com" required>
+        </div>
+        <div class="form-group">
+            <label for="password" id="labelPassword">Senha</label>
+            <input type="password" id="password" class="form-input" placeholder="Crie uma senha forte" required>
+        </div>
+        <div class="form-group">
+            <label for="confirmPassword" id="labelConfirmPassword">Confirmar Senha</label>
+            <input type="password" id="confirmPassword" class="form-input" placeholder="Confirme sua senha" required>
+        </div>
+        <button type="submit" class="submit-btn" id="registerButton">Cadastrar</button>
+    </form>
+    <div style="text-align: center; margin-top: 20px;">
+        <p style="color: var(--text-secondary);" id="alreadyAccountText">Já tem uma conta? <a href="/" style="color: var(--primary-color); text-decoration: none; font-weight: bold;">Faça Login</a></p>
+    </div>
+</div>
+
+<script>
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (password !== confirmPassword) {
+            showMessage('As senhas não coincidem.', 'error');
+            return;
+        }
+
+        const formData = {
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            email: document.getElementById('email').value,
+            password: password
+        };
+        
+        const button = e.target.querySelector('button');
+        button.disabled = true;
+        button.textContent = 'Cadastrando...';
+
+        try {
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            const data = await response.json();
+            if (response.ok) {
+                showMessage(data.message, 'success');
+                setTimeout(() => window.location.href = '/', 2000);
+            } else {
+                throw new Error(data.error);
+            }
+        } catch (error) {
+            showMessage(error.message || 'Ocorreu um erro. Tente novamente.', 'error');
+        } finally {
+            button.disabled = false;
+            button.textContent = 'Cadastrar';
+        }
+    });
+</script>

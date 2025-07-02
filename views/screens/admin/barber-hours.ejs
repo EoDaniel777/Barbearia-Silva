@@ -1,0 +1,99 @@
+<div class="form-section">
+    <h2 id="barberHoursTitle"><i class="fas fa-clock" style="color: var(--primary-color); margin-right: 10px;"></i>Gerenciar Horários</h2>
+    <form id="barberHoursForm">
+        <div class="form-group">
+            <label for="barberSelect" id="labelSelectBarber">Selecionar Barbeiro</label>
+            <select id="barberSelect" class="form-input" required></select>
+        </div>
+
+        <div class="form-group">
+            <label id="labelWorkingHours">Horários de Trabalho</label>
+            <div id="workingHoursContainer"></div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="saveHoursButton">Salvar Horários</button>
+    </form>
+    <button class="logout-btn" onclick="logout()" style="margin-top: 20px;">
+        <i class="fas fa-sign-out-alt"></i> <span id="logoutButtonText">Sair</span>
+    </button>
+</div>
+
+<script>
+    let selectedBarberId = null;
+    let workingDays = [
+        { day: 'Segunda-feira', hours: '09:00 - 18:00', enabled: true },
+        { day: 'Terça-feira', hours: '09:00 - 18:00', enabled: true },
+        { day: 'Quarta-feira', hours: '09:00 - 18:00', enabled: true },
+        { day: 'Quinta-feira', hours: '09:00 - 18:00', enabled: true },
+        { day: 'Sexta-feira', hours: '09:00 - 18:00', enabled: true },
+        { day: 'Sábado', hours: 'Fechado', enabled: false },
+        { day: 'Domingo', hours: 'Fechado', enabled: false }
+    ];
+
+    async function fetchBarbers() {
+        try {
+            const response = await fetch('/api/barbers');
+            const barbers = await response.json();
+            const select = document.getElementById('barberSelect');
+            select.innerHTML = '<option value="">Selecione um barbeiro...</option>';
+            barbers.forEach(barber => {
+                const option = document.createElement('option');
+                option.value = barber.id;
+                option.textContent = barber.name;
+                select.appendChild(option);
+            });
+            select.addEventListener('change', (e) => {
+                selectedBarberId = e.target.value;
+                renderWorkingHours();
+            });
+        } catch (error) {
+            showMessage('Erro ao carregar os barbeiros.', 'error');
+        }
+    }
+
+    function renderWorkingHours() {
+        const container = document.getElementById('workingHoursContainer');
+        container.innerHTML = '';
+
+        if (!selectedBarberId) {
+            container.innerHTML = '<p style="color: var(--text-muted);">Selecione um barbeiro para gerenciar os horários.</p>';
+            return;
+        }
+
+        workingDays.forEach((dayInfo, index) => {
+            const row = document.createElement('div');
+            row.className = 'list-item';
+            row.innerHTML = `
+                <div>
+                    <h4>${dayInfo.day}</h4>
+                    <p style="color: var(--text-secondary);">${dayInfo.hours}</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" ${dayInfo.enabled ? 'checked' : ''} 
+                           onchange="toggleDay(${index}, this.checked)">
+                    <span class="slider round"></span>
+                </label>
+            `;
+            container.appendChild(row);
+        });
+    }
+
+    function toggleDay(index, enabled) {
+        workingDays[index].enabled = enabled;
+        workingDays[index].hours = enabled ? '09:00 - 18:00' : 'Fechado';
+        renderWorkingHours(); // Re-render to update display
+    }
+
+    document.getElementById('barberHoursForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!selectedBarberId) {
+            showMessage('Por favor, selecione um barbeiro.', 'error');
+            return;
+        }
+        // Simulação de salvamento, pois não há API de backend para isso
+        showMessage('Horários salvos com sucesso (simulado)!', 'success');
+        // Em uma aplicação real, você enviaria `workingDays` para o backend para o `selectedBarberId`
+    });
+
+    fetchBarbers();
+</script>

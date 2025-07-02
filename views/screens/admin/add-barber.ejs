@@ -1,0 +1,53 @@
+<div class="form-section">
+    <h2 id="addBarberTitle"><i class="fas fa-user-plus" style="color: var(--primary-color); margin-right: 10px;"></i>Novo Barbeiro</h2>
+    <form id="addBarberForm">
+        <div class="form-group">
+            <label for="name" id="labelBarberName">Nome Completo</label>
+            <input type="text" id="name" class="form-input" placeholder="Nome do profissional" required>
+        </div>
+        <div class="form-group">
+            <label for="contact" id="labelBarberContact">Contato (WhatsApp)</label>
+            <input type="tel" id="contact" class="form-input" placeholder="(99) 99999-9999">
+        </div>
+        <div class="form-group">
+            <label for="specialties" id="labelBarberSpecialties">Especialidades</label>
+            <input type="text" id="specialties" class="form-input" placeholder="Ex: Degradê, Barba, Cortes Modernos" required>
+        </div>
+        <button type="submit" class="submit-btn" id="addBarberButton">Adicionar Barbeiro</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('addBarberForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = {
+            name: document.getElementById('name').value,
+            contact: document.getElementById('contact').value,
+            specialties: document.getElementById('specialties').value
+        };
+
+        const button = e.target.querySelector('button');
+        button.disabled = true;
+        button.textContent = 'Adicionando...';
+
+        try {
+            const response = await fetch('/api/admin/barbers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            const data = await response.json();
+            if (response.ok) {
+                showMessage(data.message, 'success');
+                e.target.reset(); // Limpa o formulário
+            } else {
+                throw new Error(data.error);
+            }
+        } catch (error) {
+            showMessage(error.message || 'Erro ao adicionar barbeiro.', 'error');
+        } finally {
+            button.disabled = false;
+            button.textContent = 'Adicionar Barbeiro';
+        }
+    });
+</script>

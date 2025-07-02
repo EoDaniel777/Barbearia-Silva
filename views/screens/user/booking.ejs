@@ -1,0 +1,103 @@
+<div class="form-section">
+    <h2 id="bookingTitle">Novo Agendamento</h2>
+    <form id="bookingForm">
+        <div class="form-group">
+            <label for="service" id="labelService">Serviço</label>
+            <select id="service" class="form-input" required></select>
+        </div>
+        <div class="form-group">
+            <label for="barber" id="labelBarber">Barbeiro</label>
+            <select id="barber" class="form-input" required></select>
+        </div>
+        <div class="form-group">
+            <label for="date" id="labelDate">Data</label>
+            <input type="date" id="date" class="form-input" required>
+        </div>
+        <div class="form-group">
+            <label for="time" id="labelTime">Horário</label>
+            <input type="time" id="time" class="form-input" required>
+        </div>
+        <button type="submit" class="submit-btn" id="confirmBookingButton">Confirmar Agendamento</button>
+    </form>
+</div>
+
+<script>
+    async function fetchServices() {
+        try {
+            const response = await fetch('/api/services');
+            const services = await response.json();
+            const select = document.getElementById('service');
+            select.innerHTML = '<option value="">Selecione um serviço...</option>';
+            services.forEach(service => {
+                const option = document.createElement('option');
+                option.value = service.name;
+                option.textContent = `${service.name} (${service.duration} min) - R$${service.price}`;
+                select.appendChild(option);
+            });
+        } catch (error) {
+            showMessage('Erro ao carregar os serviços.', 'error');
+        }
+    }
+
+    async function fetchBarbers() {
+        try {
+            const response = await fetch('/api/barbers');
+            const barbers = await response.json();
+            const select = document.getElementById('barber');
+            select.innerHTML = '<option value="">Selecione um barbeiro...</option>';
+            barbers.forEach(barber => {
+                const option = document.createElement('option');
+                option.value = barber.id;
+                option.textContent = `${barber.name} (${barber.specialties})`;
+                select.appendChild(option);
+            });
+        } catch (error) {
+            showMessage('Erro ao carregar os barbeiros.', 'error');
+        }
+    }
+
+    document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const appointmentData = {
+            service: document.getElementById('service').value,
+            barberId: document.getElementById('barber').value,
+            date: document.getElementById('date').value,
+            time: document.getElementById('time').value
+        };
+
+        if (!appointmentData.service || !appointmentData.barberId || !appointmentData.date || !appointmentData.time) {
+            showMessage('Por favor, preencha todos os campos.', 'error');
+            return;
+        }
+
+        const button = e.target.querySelector('button');
+        button.disabled = true;
+        button.textContent = 'Agendando...';
+
+        try {
+            const response = await fetch('/api/appointments', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(appointmentData)
+            });
+            const data = await response.json();
+            if (response.ok) {
+                showMessage(data.message, 'success');
+                setTimeout(() => window.location.href = '/appointments', 2000);
+            } else {
+                throw new Error(data.error);
+            }
+        } catch (error) {
+            showMessage(error.message || 'Erro ao realizar agendamento.', 'error');
+        } finally {
+            button.disabled = false;
+            button.textContent = 'Confirmar Agendamento';
+        }
+    });
+
+    // Inicializa
+    fetchServices();
+    fetchBarbers();
+    // Define a data mínima para hoje
+    document.getElementById('date').min = new Date().toISOString().split('T')[0];
+</script>

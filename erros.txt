@@ -1,0 +1,42 @@
+erros no navegador:
+{
+  "message": "C:\\Users\\Daniel\\Documents\\javascript\\Barbearia Silva\\views\\template.ejs:569\n    567| \n    568|     \u003Cdiv class=\"main-content\"\u003E\n \u003E\u003E 569|             \u003C%- include(contentPage) %\u003E\n    570|         \u003C/div\u003E\n    571| \n    572|             \u003C%- include('partials/bottom_nav') %\u003E\n\nCould not find the include file \"../public/screens/auth/login.html\"",
+  "error": {
+
+  }
+}
+
+erros no terminal:
+PS C:\Users\Daniel\Documents\javascript\Barbearia Silva> npm start
+
+> Barbearia Silva@1.0.0 start
+> node server.js
+
+Servidor rodando em http://localhost:3000
+
+✅ Banco de dados SQLite configurado!
+
+📧 Credenciais de Admin:
+   Email: admin@barbearia.com
+   Senha: admin123
+
+💡 Dica: Coloque sua logo.png na pasta public/images/
+Error: C:\Users\Daniel\Documents\javascript\Barbearia Silva\views\template.ejs:569
+    567|
+    568|     <div class="main-content">
+ >> 569|             <%- include(contentPage) %>
+    570|         </div>
+    571|
+    572|             <%- include('partials/bottom_nav') %>
+
+Could not find the include file "../public/screens/auth/login.html"
+    at getIncludePath (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:185:13)
+    at includeFile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:311:19)
+    at include (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:701:16)
+    at eval (eval at compile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:673:12), <anonymous>:21:17)        
+    at template (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:703:17)
+    at tryHandleCache (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:274:36)
+    at exports.renderFile [as engine] (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:491:10)
+    at View.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\view.js:135:8)
+    at tryRender (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:657:10)
+    at Function.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:609:3)

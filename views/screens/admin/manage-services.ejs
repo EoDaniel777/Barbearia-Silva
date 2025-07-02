@@ -1,0 +1,109 @@
+<style>
+    .management-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    .item-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    .list-item {
+        background: var(--card-light);
+        border-radius: 12px;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px var(--shadow-color);
+        transition: all 0.3s ease;
+    }
+    .list-item:hover { transform: translateY(-3px); }
+    .item-details h4 { margin-bottom: 5px; color: var(--text-primary); }
+    .item-details p { font-size: 0.9rem; color: var(--text-secondary); }
+    .item-actions button {
+        background: none;
+        border: none;
+        font-size: 1.1rem;
+        cursor: pointer;
+        margin-left: 10px;
+        transition: color 0.3s ease;
+    }
+    .item-actions .edit-btn { color: var(--primary-color); }
+    .item-actions .delete-btn { color: var(--danger-color); }
+    .item-actions button:hover { opacity: 0.7; }
+</style>
+
+<div class="management-container">
+    <h2 style="text-align: center; margin-bottom: 30px; color: var(--primary-color);" id="manageServicesTitle">Gerenciar Serviços</h2>
+    <div class="item-list" id="servicesList"></div>
+    <div class="no-content" style="text-align: center; margin-top: 30px; display: none;">
+        <p style="color: var(--text-muted);" id="noServicesMessage">Nenhum serviço cadastrado ainda.</p>
+    </div>
+</div>
+
+<script>
+    async function loadServices() {
+        try {
+            const response = await fetch('/api/services');
+            if (!response.ok) throw new Error('Falha ao carregar serviços.');
+            const services = await response.json();
+            const list = document.getElementById('servicesList');
+            list.innerHTML = '';
+
+            if (services.length === 0) {
+                document.querySelector('.no-content').style.display = 'block';
+                return;
+            }
+
+            services.forEach(service => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <div class="item-details">
+                        <h4>${service.name} (R$ ${service.price.toFixed(2)})</h4>
+                        <p>${service.description}</p>
+                        <p>Duração: ${service.duration} min</p>
+                    </div>
+                    <div class="item-actions">
+                        <button class="edit-btn" onclick="editService(${service.id})"><i class="fas fa-edit"></i></button>
+                        <button class="delete-btn" onclick="deleteService(${service.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+
+        } catch (error) {
+            showMessage(error.message, 'error');
+        }
+    }
+
+    async function editService(id) {
+        // Implementar lógica de edição (abrir modal/formulário preenchido)
+        showMessage(`Editar serviço com ID: ${id}`, 'info');
+        // Exemplo: redirecionar para uma página de edição ou abrir um modal
+        // window.location.href = `/admin/edit-service/${id}`;
+    }
+
+    async function deleteService(id) {
+        if (confirm('Tem certeza que deseja deletar este serviço?')) {
+            try {
+                const response = await fetch(`/api/admin/services/${id}`, {
+                    method: 'DELETE',
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showMessage(data.message, 'success');
+                    loadServices(); // Recarregar a lista
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                showMessage(error.message || 'Erro ao deletar serviço.', 'error');
+            }
+        }
+    }
+
+    loadServices();
+</script>

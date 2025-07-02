@@ -1,0 +1,79 @@
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px;">
+    <img id="loginLogo" src="/images/logo-dark.jpg" alt="Logo Barbearia" class="login-logo">
+    <form id="loginForm" style="max-width: 400px; width: 100%; margin: 20px auto; padding: 30px; background: var(--card-dark); border-radius: 20px; box-shadow: 0 10px 40px var(--shadow-color); border: 1px solid var(--border-color); backdrop-filter: blur(10px);">
+        <div class="form-group">
+            <label for="email" id="labelEmail">E-mail</label>
+            <input type="email" id="email" class="form-input" placeholder="seu@email.com" required>
+        </div>
+        <div class="form-group">
+            <label for="password" id="labelPassword">Senha</label>
+            <input type="password" id="password" class="form-input" placeholder="Sua senha" required>
+        </div>
+        <button type="submit" class="submit-btn" id="loginButton">Entrar</button>
+    </form>
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="/forgot-password" style="color: var(--primary-color); text-decoration: none;" id="forgotPasswordLink">Esqueceu a senha?</a>
+        <p style="margin-top: 10px; color: var(--text-secondary);" id="noAccountText">Não tem uma conta? <a href="/register" style="color: var(--primary-color); text-decoration: none; font-weight: bold;">Cadastre-se</a></p>
+    </div>
+</div>
+
+<!-- Gatilho escondido para admin -->
+<div id="adminTrigger" style="position: absolute; top: 0; left: 0; width: 100px; height: 100px; z-index: 9999;"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Easter egg para admin
+        let clickCount = 0;
+        document.getElementById('adminTrigger').addEventListener('click', () => {
+            clickCount++;
+            console.log('Admin trigger clicked', clickCount);
+            if (clickCount >= 7) {
+                clickCount = 0;
+                const form = document.getElementById('loginForm');
+                if (form.dataset.adminLogin === 'true') {
+                    form.dataset.adminLogin = 'false';
+                    showMessage('Modo de administrador desativado.', 'warning');
+                } else {
+                    form.dataset.adminLogin = 'true';
+                    showMessage('Modo de administrador ativado. Use as credenciais de admin.', 'info');
+                }
+            }
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const isAdmin = e.target.dataset.adminLogin === 'true';
+            const button = e.target.querySelector('button');
+            button.disabled = true;
+            button.textContent = 'Entrando...';
+
+            console.log('Attempting login with:', { email, password, isAdmin });
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password, isAdmin })
+                });
+                const data = await response.json();
+                console.log('Login API response:', data);
+
+                if (response.ok) {
+                    showMessage(data.message, 'success');
+                    console.log('Redirecting to:', data.redirect);
+                    setTimeout(() => window.location.href = data.redirect, 1000);
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage(error.message || 'Ocorreu um erro. Tente novamente.', 'error');
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Entrar';
+            }
+        });
+    });
+</script>

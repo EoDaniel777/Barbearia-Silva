@@ -1,0 +1,134 @@
+<nav class="bottom-nav">
+    <div class="nav-container">
+        <%- BOTTOM_NAV %>
+    </div>
+</nav>
+
+<script>
+    // Carregar tema salvo imediatamente
+    (function() {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        const html = document.documentElement;
+        html.setAttribute('data-theme', savedTheme);
+
+        // Set initial logo based on theme
+        const drawerLogo = document.getElementById('drawerLogo');
+        const loginLogo = document.getElementById('loginLogo');
+        if (drawerLogo) drawerLogo.src = savedTheme === 'dark' ? '/images/logo-dark.jpg' : '/images/logo-light.jpg';
+        if (loginLogo) loginLogo.src = savedTheme === 'dark' ? '/images/logo-dark.jpg' : '/images/logo-light.jpg';
+
+        // Add auth-page class if on login/register/forgot-password
+        const path = window.location.pathname;
+        if (path === '/' || path === '/register' || path === '/forgot-password') {
+            document.body.classList.add('auth-page');
+        }
+    })();
+
+    // Gerenciamento de tema
+    function toggleTheme() {
+        const html = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        const drawerLogo = document.getElementById('drawerLogo');
+        const loginLogo = document.getElementById('loginLogo');
+        const currentTheme = html.getAttribute('data-theme');
+        
+        if (currentTheme === 'dark') {
+            html.setAttribute('data-theme', 'light');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            if (drawerLogo) drawerLogo.src = '/images/logo-light.jpg';
+            if (loginLogo) loginLogo.src = '/images/logo-light.jpg';
+            localStorage.setItem('theme', 'light');
+        } else {
+            html.setAttribute('data-theme', 'dark');
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            if (drawerLogo) drawerLogo.src = '/images/logo-dark.jpg';
+            if (loginLogo) loginLogo.src = '/images/logo-dark.jpg';
+            localStorage.setItem('theme', 'dark');
+        }
+    }
+
+    // Gaveta de Navegação
+    const menuToggle = document.getElementById('menuToggle');
+    const navDrawer = document.getElementById('navDrawer');
+    const drawerOverlay = document.getElementById('drawerOverlay');
+    const body = document.body;
+
+    function toggleDrawer() {
+        if (navDrawer) navDrawer.classList.toggle('open');
+        if (drawerOverlay) drawerOverlay.classList.toggle('active');
+        
+        if (window.innerWidth > 768) {
+            body.classList.toggle('drawer-open');
+        }
+    }
+
+    function closeDrawer() {
+        if (navDrawer) navDrawer.classList.remove('open');
+        if (drawerOverlay) drawerOverlay.classList.remove('active');
+        body.classList.remove('drawer-open');
+    }
+
+    if (menuToggle) menuToggle.addEventListener('click', toggleDrawer);
+    if (drawerOverlay) drawerOverlay.addEventListener('click', closeDrawer);
+
+    // Fechar gaveta no celular ao clicar nos itens do menu
+    const drawerItems = document.querySelectorAll('.drawer-item');
+    drawerItems.forEach(item => {
+        item.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+                closeDrawer();
+            }
+        });
+    });
+
+    // Mensagens
+    function showMessage(message, type = 'success') {
+        const messageEl = document.getElementById(type + 'Message');
+        if (messageEl) {
+            messageEl.textContent = message;
+            messageEl.style.display = 'block';
+            messageEl.classList.add('show');
+            
+            setTimeout(() => {
+                messageEl.style.display = 'none';
+                messageEl.classList.remove('show');
+            }, 3000);
+        }
+    }
+
+    // Sair
+    async function logout() {
+        try {
+            await fetch('/api/logout', { method: 'POST' });
+            window.location.href = '/';
+        } catch (error) {
+            console.error('Erro ao fazer logout:', error);
+            window.location.href = '/';
+        }
+    }
+
+    // Navegação ativa
+    function setActiveNav() {
+        const currentPath = window.location.pathname;
+        const navItems = document.querySelectorAll('.nav-item, .drawer-item');
+        
+        navItems.forEach(item => {
+            item.classList.remove('active');
+            const href = item.getAttribute('href');
+            if (href && currentPath.includes(href.split('/').pop())) {
+                item.classList.add('active');
+            }
+        });
+    }
+
+    // Inicializar
+    setActiveNav();
+
+    // Notificações (placeholder para WebSocket)
+    function initNotifications() {
+        // TODO: Implementar notificações WebSocket
+        console.log('Sistema de notificações pronto');
+    }
+
+    initNotifications();
+</script>

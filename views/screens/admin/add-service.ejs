@@ -1,0 +1,58 @@
+<div class="form-section">
+    <h2 id="addServiceTitle"><i class="fas fa-plus-circle" style="color: var(--primary-color); margin-right: 10px;"></i>Novo Serviço</h2>
+    <form id="addServiceForm">
+        <div class="form-group">
+            <label for="name" id="labelServiceName">Nome do Serviço</label>
+            <input type="text" id="name" class="form-input" placeholder="Ex: Corte Social" required>
+        </div>
+        <div class="form-group">
+            <label for="description" id="labelServiceDescription">Descrição</label>
+            <textarea id="description" class="form-input" rows="3" placeholder="Uma breve descrição do que o serviço inclui."></textarea>
+        </div>
+        <div class="form-group">
+            <label for="duration" id="labelServiceDuration">Duração (em minutos)</label>
+            <input type="number" id="duration" class="form-input" placeholder="Ex: 30" required>
+        </div>
+        <div class="form-group">
+            <label for="price" id="labelServicePrice">Preço (R$)</label>
+            <input type="number" step="0.01" id="price" class="form-input" placeholder="Ex: 25.50" required>
+        </div>
+        <button type="submit" class="submit-btn" id="addServiceButton">Adicionar Serviço</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('addServiceForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = {
+            name: document.getElementById('name').value,
+            description: document.getElementById('description').value,
+            duration: parseInt(document.getElementById('duration').value),
+            price: parseFloat(document.getElementById('price').value)
+        };
+
+        const button = e.target.querySelector('button');
+        button.disabled = true;
+        button.textContent = 'Adicionando...';
+
+        try {
+            const response = await fetch('/api/admin/services', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            const data = await response.json();
+            if (response.ok) {
+                showMessage(data.message, 'success');
+                e.target.reset();
+            } else {
+                throw new Error(data.error);
+            }
+        } catch (error) {
+            showMessage(error.message || 'Erro ao adicionar serviço.', 'error');
+        } finally {
+            button.disabled = false;
+            button.textContent = 'Adicionar Serviço';
+        }
+    });
+</script>

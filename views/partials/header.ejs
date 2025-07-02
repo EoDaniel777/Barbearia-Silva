@@ -1,0 +1,23 @@
+<header class="header">
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <h1>Barbearia Silva</h1>
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+</header>
+
+<div class="nav-drawer" id="navDrawer">
+    <div class="drawer-header">
+        <img id="drawerLogo" src="/images/logo-dark.jpg" alt="Logo Barbearia Silva" class="login-logo">
+        <h3>Barbearia Silva</h3>
+        <span><%= USER_TYPE %></span>
+    </div>
+    <div class="drawer-menu">
+        <%- DRAWER_ITEMS %>
+        <div class="drawer-divider"></div>
+        <a href="#" class="drawer-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Sair</span></a>
+    </div>
+</div>
+<div class="drawer-overlay" id="drawerOverlay"></div>

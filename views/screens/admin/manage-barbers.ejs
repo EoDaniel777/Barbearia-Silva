@@ -1,0 +1,109 @@
+<style>
+    .management-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    .item-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    .list-item {
+        background: var(--card-light);
+        border-radius: 12px;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px var(--shadow-color);
+        transition: all 0.3s ease;
+    }
+    .list-item:hover { transform: translateY(-3px); }
+    .item-details h4 { margin-bottom: 5px; color: var(--text-primary); }
+    .item-details p { font-size: 0.9rem; color: var(--text-secondary); }
+    .item-actions button {
+        background: none;
+        border: none;
+        font-size: 1.1rem;
+        cursor: pointer;
+        margin-left: 10px;
+        transition: color 0.3s ease;
+    }
+    .item-actions .edit-btn { color: var(--primary-color); }
+    .item-actions .delete-btn { color: var(--danger-color); }
+    .item-actions button:hover { opacity: 0.7; }
+</style>
+
+<div class="management-container">
+    <h2 style="text-align: center; margin-bottom: 30px; color: var(--primary-color);" id="manageBarbersTitle">Gerenciar Barbeiros</h2>
+    <div class="item-list" id="barbersList"></div>
+    <div class="no-content" style="text-align: center; margin-top: 30px; display: none;">
+        <p style="color: var(--text-muted);" id="noBarbersMessage">Nenhum barbeiro cadastrado ainda.</p>
+    </div>
+</div>
+
+<script>
+    async function loadBarbers() {
+        try {
+            const response = await fetch('/api/barbers');
+            if (!response.ok) throw new Error('Falha ao carregar barbeiros.');
+            const barbers = await response.json();
+            const list = document.getElementById('barbersList');
+            list.innerHTML = '';
+
+            if (barbers.length === 0) {
+                document.querySelector('.no-content').style.display = 'block';
+                return;
+            }
+
+            barbers.forEach(barber => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <div class="item-details">
+                        <h4>${barber.name}</h4>
+                        <p>${barber.specialties}</p>
+                        <p>${barber.contact}</p>
+                    </div>
+                    <div class="item-actions">
+                        <button class="edit-btn" onclick="editBarber(${barber.id})"><i class="fas fa-edit"></i></button>
+                        <button class="delete-btn" onclick="deleteBarber(${barber.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+
+        } catch (error) {
+            showMessage(error.message, 'error');
+        }
+    }
+
+    async function editBarber(id) {
+        // Implementar lógica de edição (abrir modal/formulário preenchido)
+        showMessage(`Editar barbeiro com ID: ${id}`, 'info');
+        // Exemplo: redirecionar para uma página de edição ou abrir um modal
+        // window.location.href = `/admin/edit-barber/${id}`;
+    }
+
+    async function deleteBarber(id) {
+        if (confirm('Tem certeza que deseja deletar este barbeiro?')) {
+            try {
+                const response = await fetch(`/api/admin/barbers/${id}`, {
+                    method: 'DELETE',
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showMessage(data.message, 'success');
+                    loadBarbers(); // Recarregar a lista
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                showMessage(error.message || 'Erro ao deletar barbeiro.', 'error');
+            }
+        }
+    }
+
+    loadBarbers();
+</script>

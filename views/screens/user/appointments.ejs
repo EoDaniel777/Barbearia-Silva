@@ -1,0 +1,126 @@
+<style>
+    .appointments-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .appointment-card {
+        background: var(--card-light);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-left: 5px solid var(--primary-color);
+        transition: all 0.3s ease;
+    }
+    .appointment-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px var(--shadow-color);
+    }
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    .card-header h3 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #fff;
+    }
+    .status-Pendente { background: linear-gradient(135deg, var(--warning-color), #FFC107); }
+    .status-Confirmado { background: linear-gradient(135deg, var(--success-color), #4CAF50); }
+    .status-Cancelado { background: linear-gradient(135deg, var(--danger-color), #F44336); }
+    .card-body {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        color: var(--text-secondary);
+    }
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .info-item i {
+        color: var(--primary-color);
+        width: 20px;
+        text-align: center;
+    }
+    #appointmentsList:empty + .no-appointments {
+        display: block;
+    }
+</style>
+
+<div class="appointments-container">
+    <h2 style="text-align: center; margin-bottom: 30px; color: var(--primary-color);" id="appointmentsTitle">Meus Agendamentos</h2>
+    <div id="appointmentsList"></div>
+    <div class="no-appointments form-section" style="text-align: center; display: none;">
+        <h3 id="noAppointmentsFoundTitle">Nenhum Agendamento Encontrado</h3>
+        <p style="color: var(--text-secondary); margin-top: 10px; margin-bottom: 20px;" id="noAppointmentsFoundDesc">Você ainda não fez nenhum agendamento. Que tal começar agora?</p>
+        <a href="/booking" class="submit-btn" style="text-decoration: none; display: inline-block; width: auto;" id="makeAppointmentButton">Fazer um Agendamento</a>
+    </div>
+</div>
+
+<script>
+    async function loadAppointments() {
+        try {
+            const response = await fetch('/api/appointments');
+            if (!response.ok) throw new Error('Erro ao carregar agendamentos.');
+            const appointments = await response.json();
+            const container = document.getElementById('appointmentsList');
+            container.innerHTML = '';
+
+            if (appointments.length === 0) {
+                document.querySelector('.no-appointments').style.display = 'block';
+                return;
+            }
+
+            appointments.forEach(app => {
+                const card = createAppointmentCard(app);
+                container.appendChild(card);
+            });
+
+        } catch (error) {
+            showMessage(error.message, 'error');
+        }
+    }
+
+    function createAppointmentCard(app) {
+        const card = document.createElement('div');
+        card.className = 'appointment-card';
+
+        const date = new Date(app.date + 'T00:00:00');
+        const formattedDate = date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+        const status = app.status || 'Pendente';
+
+        card.innerHTML = `
+            <div class="card-header">
+                <h3>${app.service}</h3>
+                <span class="status-badge status-${status}">${status}</span>
+            </div>
+            <div class="card-body">
+                <div class="info-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>${formattedDate}</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <span>${app.time}</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-user"></i>
+                    <span>Barbeiro: ${app.barberName || 'Não especificado'}</span>
+                </div>
+            </div>
+        `;
+        return card;
+    }
+
+    loadAppointments();
+</script>

@@ -1,0 +1,100 @@
+<style>
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    .stat-card {
+        background: var(--card-light);
+        padding: 25px;
+        border-radius: 15px;
+        border-top: 4px solid var(--primary-color);
+        transition: all 0.3s ease;
+    }
+    .stat-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px var(--shadow-color); }
+    .stat-card h3 { color: var(--text-secondary); font-size: 1rem; margin-bottom: 10px; }
+    .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--text-primary); }
+    .section-list { display: flex; flex-direction: column; gap: 15px; }
+    .list-item {
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+        padding: 15px; 
+        background: var(--card-light);
+        border-radius: 12px;
+    }
+</style>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3 id="totalServicesTitle">Total de Serviços</h3>
+        <div class="stat-value" id="totalServices">...</div>
+    </div>
+    <div class="stat-card">
+        <h3 id="estimatedProfitTitle">Lucro Estimado</h3>
+        <div class="stat-value" id="estimatedProfit">...</div>
+    </div>
+</div>
+
+<div class="form-section">
+    <h2 style="margin-bottom: 20px;"><i class="fas fa-crown" style="color: var(--primary-color); margin-right: 10px;"></i><span id="topBarbersTitle">Top Barbeiros</span></h2>
+    <div id="topBarbers" class="section-list"></div>
+</div>
+
+<div class="form-section" style="margin-top: 20px;">
+    <h2 style="margin-bottom: 20px;"><i class="fas fa-star" style="color: var(--primary-color); margin-right: 10px;"></i><span id="popularServicesTitle">Serviços Populares</span></h2>
+    <div id="popularServices" class="section-list"></div>
+</div>
+
+<div class="form-section" style="margin-top: 20px;">
+    <h2 style="margin-bottom: 20px;"><i class="fas fa-cogs" style="color: var(--primary-color); margin-right: 10px;"></i><span id="managementTitle">Gerenciamento</span></h2>
+    <div class="section-list">
+        <a href="/admin/manage-barbers" class="list-item">
+            <span id="manageBarbersLink">Gerenciar Barbeiros</span>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        <a href="/admin/manage-services" class="list-item">
+            <span id="manageServicesLink">Gerenciar Serviços</span>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+    </div>
+</div>
+
+<script>
+    async function loadStats() {
+        try {
+            const response = await fetch('/api/admin/stats');
+            if (!response.ok) throw new Error('Ocorreu um erro. Tente novamente.');
+            const stats = await response.json();
+
+            document.getElementById('totalServices').textContent = stats.totalServices || 0;
+            document.getElementById('estimatedProfit').textContent = `R$ ${(stats.estimatedProfit || 0).toFixed(2)}`;
+
+            const barbersContainer = document.getElementById('topBarbers');
+            barbersContainer.innerHTML = '';
+            if (stats.topBarbers && stats.topBarbers.length > 0) {
+                stats.topBarbers.forEach(b => {
+                    barbersContainer.innerHTML += `<div class="list-item"><span>${b.name}</span><span class="badge">${b.services} serviços</span></div>`;
+                });
+            } else {
+                barbersContainer.innerHTML = '<p>Nenhum barbeiro encontrado.</p>';
+            }
+
+            const servicesContainer = document.getElementById('popularServices');
+            servicesContainer.innerHTML = '';
+            if (stats.popularServices && stats.popularServices.length > 0) {
+                stats.popularServices.forEach(s => {
+                    servicesContainer.innerHTML += `<div class="list-item"><span>${s.name}</span><span class="badge">${s.count} vezes</span></div>`;
+                });
+            } else {
+                servicesContainer.innerHTML = '<p>Nenhum serviço popular encontrado.</p>';
+            }
+
+        } catch (error) {
+            showMessage(error.message, 'error');
+        }
+    }
+
+    loadStats();
+</script>

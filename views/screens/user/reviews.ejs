@@ -1,0 +1,197 @@
+<style>
+    .review-form-section {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 30px;
+        background: var(--card-dark);
+        border-radius: 20px;
+        box-shadow: 0 10px 40px var(--shadow-color);
+        border: 1px solid var(--border-color);
+    }
+    .star-rating {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+    .star-rating .fa-star {
+        font-size: 2rem;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .star-rating .fa-star.selected, .star-rating .fa-star:hover {
+        color: gold;
+    }
+    .reviews-list {
+        margin-top: 30px;
+    }
+    .review-item {
+        background: var(--card-light);
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 15px;
+        border-left: 4px solid var(--primary-color);
+    }
+    .review-item h4 { margin-bottom: 5px; color: var(--text-primary); }
+    .review-item .rating-display .fa-star { color: gold; }
+    .review-item p { color: var(--text-secondary); font-size: 0.95rem; }
+    .review-item span { font-size: 0.8rem; color: var(--text-muted); }
+</style>
+
+<div class="review-form-section">
+    <h2 style="text-align: center; margin-bottom: 25px; color: var(--primary-color);" id="reviewBarberTitle">Avalie o Barbeiro</h2>
+    <form id="reviewForm">
+        <div class="form-group">
+            <label for="barberSelect" id="labelBarberSelect">Barbeiro</label>
+            <select id="barberSelect" class="form-input" required></select>
+        </div>
+        <div class="form-group">
+            <label id="labelYourRating">Sua Avaliação</label>
+            <div class="star-rating" id="starRating">
+                <i class="far fa-star" data-rating="1"></i>
+                <i class="far fa-star" data-rating="2"></i>
+                <i class="far fa-star" data-rating="3"></i>
+                <i class="far fa-star" data-rating="4"></i>
+                <i class="far fa-star" data-rating="5"></i>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="comment" id="labelComment">Comentário (Opcional)</label>
+            <textarea id="comment" class="form-input" rows="4" placeholder="Deixe seu comentário sobre o serviço..."></textarea>
+        </div>
+        <button type="submit" class="submit-btn" id="sendReviewButton">Enviar Avaliação</button>
+    </form>
+</div>
+
+<div class="review-form-section reviews-list">
+    <h2 style="text-align: center; margin-bottom: 25px; color: var(--primary-color);" id="recentReviewsTitle">Avaliações Recentes</h2>
+    <div id="recentReviews"></div>
+    <p id="noReviewsMessage" style="text-align: center; color: var(--text-muted); display: none;">Nenhuma avaliação para este barbeiro ainda.</p>
+</div>
+
+<script>
+    let selectedRating = 0;
+    let currentBarberId = null;
+
+    async function fetchBarbersForReview() {
+        try {
+            const response = await fetch('/api/barbers');
+            const barbers = await response.json();
+            const select = document.getElementById('barberSelect');
+            select.innerHTML = '<option value="">Selecione um barbeiro...</option>';
+            barbers.forEach(barber => {
+                const option = document.createElement('option');
+                option.value = barber.id;
+                option.textContent = barber.name;
+                select.appendChild(option);
+            });
+            select.addEventListener('change', (e) => {
+                currentBarberId = e.target.value;
+                loadReviews(currentBarberId);
+            });
+        } catch (error) {
+            showMessage('Erro ao carregar barbeiros para avaliação.', 'error');
+        }
+    }
+
+    document.getElementById('starRating').addEventListener('click', (e) => {
+        if (e.target.classList.contains('fa-star')) {
+            selectedRating = parseInt(e.target.dataset.rating);
+            updateStarRating();
+        }
+    });
+
+    function updateStarRating() {
+        const stars = document.querySelectorAll('#starRating .fa-star');
+        stars.forEach((star, index) => {
+            if (index < selectedRating) {
+                star.classList.remove('far');
+                star.classList.add('fas');
+                star.classList.add('selected');
+            } else {
+                star.classList.remove('fas');
+                star.classList.remove('selected');
+                star.classList.add('far');
+            }
+        });
+    }
+
+    document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!currentBarberId || selectedRating === 0) {
+            showMessage('Por favor, selecione um barbeiro e dê uma avaliação.', 'error');
+            return;
+        }
+
+        const formData = {
+            barberId: currentBarberId,
+            rating: selectedRating,
+            comment: document.getElementById('comment').value
+        };
+
+        const button = e.target.querySelector('button');
+        button.disabled = true;
+        button.textContent = 'Enviando...';
+
+        try {
+            const response = await fetch('/api/reviews', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            const data = await response.json();
+            if (response.ok) {
+                showMessage(data.message, 'success');
+                e.target.reset();
+                selectedRating = 0;
+                updateStarRating();
+                loadReviews(currentBarberId);
+            } else {
+                throw new Error(data.error);
+            }
+        } catch (error) {
+            showMessage(error.message || 'Erro ao enviar avaliação.', 'error');
+        } finally {
+            button.disabled = false;
+            button.textContent = 'Enviar Avaliação';
+        }
+    });
+
+    async function loadReviews(barberId) {
+        const reviewsContainer = document.getElementById('recentReviews');
+        const noReviewsMessage = document.getElementById('noReviewsMessage');
+        reviewsContainer.innerHTML = '';
+        noReviewsMessage.style.display = 'none';
+
+        if (!barberId) return;
+
+        try {
+            const response = await fetch(`/api/reviews/${barberId}`);
+            if (!response.ok) throw new Error('Falha ao carregar avaliações.');
+            const reviews = await response.json();
+
+            if (reviews.length === 0) {
+                noReviewsMessage.style.display = 'block';
+                return;
+            }
+
+            reviews.forEach(review => {
+                const reviewItem = document.createElement('div');
+                reviewItem.className = 'review-item';
+                const starsHtml = ''.padStart(review.rating, '<i class="fas fa-star"></i>') + ''.padStart(5 - review.rating, '<i class="far fa-star"></i>');
+                reviewItem.innerHTML = `
+                    <h4>${review.userName}</h4>
+                    <div class="rating-display">${starsHtml}</div>
+                    <p>${review.comment || ''}</p>
+                    <span>${new Date(review.createdAt).toLocaleDateString('pt-BR')}</span>
+                `;
+                reviewsContainer.appendChild(reviewItem);
+            });
+
+        } catch (error) {
+            showMessage(error.message, 'error');
+        }
+    }
+
+    fetchBarbersForReview();
+</script>

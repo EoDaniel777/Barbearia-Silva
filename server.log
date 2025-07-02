@@ -1,0 +1,489 @@
+Servidor rodando em http://localhost:3004
+
+✅ Banco de dados SQLite configurado!
+
+📧 Credenciais de Admin:
+   Email: admin@barbearia.com
+   Senha: admin123
+
+💡 Dica: Coloque sua logo.png na pasta public/images/
+Servidor rodando em http://localhost:3004
+
+✅ Banco de dados SQLite configurado!
+
+📧 Credenciais de Admin:
+   Email: admin@barbearia.com
+   Senha: admin123
+
+💡 Dica: Coloque sua logo.png na pasta public/images/
+Error: Failed to lookup view "template" in views directory "C:\Users\Daniel\Documents\javascript\Barbearia Silva\views"
+    at Function.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:597:17)
+    at ServerResponse.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\response.js:1049:7)
+    at renderPage (C:\Users\Daniel\Documents\javascript\Barbearia Silva\server.js:61:9)
+    at C:\Users\Daniel\Documents\javascript\Barbearia Silva\server.js:84:5
+    at Layer.handle [as handle_request] (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\router\index.js:346:12)
+Servidor rodando em http://localhost:3000
+
+✅ Banco de dados SQLite configurado!
+
+📧 Credenciais de Admin:
+   Email: admin@barbearia.com
+   Senha: admin123
+
+💡 Dica: Coloque sua logo.png na pasta public/images/
+Error: Failed to lookup view "template" in views directory "C:\Users\Daniel\Documents\javascript\Barbearia Silva\views"
+    at Function.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:597:17)
+    at ServerResponse.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\response.js:1049:7)
+    at renderPage (C:\Users\Daniel\Documents\javascript\Barbearia Silva\server.js:61:9)
+    at C:\Users\Daniel\Documents\javascript\Barbearia Silva\server.js:84:5
+    at Layer.handle [as handle_request] (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\router\index.js:346:12)
+Servidor rodando em http://localhost:3000
+
+✅ Banco de dados SQLite configurado!
+
+📧 Credenciais de Admin:
+   Email: admin@barbearia.com
+   Senha: admin123
+
+💡 Dica: Coloque sua logo.png na pasta public/images/
+Error: C:\Users\Daniel\Documents\javascript\Barbearia Silva\views\template.ejs:569
+    567| 
+    568|     <div class="main-content">
+ >> 569|             <%- include(contentPage) %>
+    570|         </div>
+    571| 
+    572|             <%- include('partials/bottom_nav') %>
+
+Could not find the include file "auth/login.html"
+    at getIncludePath (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:185:13)
+    at includeFile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:311:19)
+    at include (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:701:16)
+    at eval (eval at compile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:673:12), <anonymous>:21:17)
+    at template (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:703:17)
+    at tryHandleCache (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:274:36)
+    at exports.renderFile [as engine] (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:491:10)
+    at View.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\view.js:135:8)
+    at tryRender (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:657:10)
+    at Function.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:609:3)
+Servidor rodando em http://localhost:3005
+
+✅ Banco de dados SQLite configurado!
+
+📧 Credenciais de Admin:
+   Email: admin@barbearia.com
+   Senha: admin123
+
+💡 Dica: Coloque sua logo.png na pasta public/images/
+Servidor rodando em http://localhost:3005
+
+✅ Banco de dados SQLite configurado!
+
+📧 Credenciais de Admin:
+   Email: admin@barbearia.com
+   Senha: admin123
+
+💡 Dica: Coloque sua logo.png na pasta public/images/
+Servidor rodando em http://localhost:3005
+
+✅ Banco de dados SQLite configurado!
+
+📧 Credenciais de Admin:
+   Email: admin@barbearia.com
+   Senha: admin123
+
+💡 Dica: Coloque sua logo.png na pasta public/images/
+Error: C:\Users\Daniel\Documents\javascript\Barbearia Silva\views\template.ejs:569
+    567| 
+    568|     <div class="main-content">
+ >> 569|             <%- include(contentPage) %>
+    570|         </div>
+    571| 
+    572|             <%- include('partials/bottom_nav') %>
+
+Could not find the include file "auth/login.html"
+    at getIncludePath (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:185:13)
+    at includeFile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:311:19)
+    at include (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:701:16)
+    at eval (eval at compile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:673:12), <anonymous>:21:17)
+    at template (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:703:17)
+    at tryHandleCache (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:274:36)
+    at exports.renderFile [as engine] (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:491:10)
+    at View.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\view.js:135:8)
+    at tryRender (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:657:10)
+    at Function.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:609:3)
+Servidor rodando em http://localhost:3000
+
+✅ Banco de dados SQLite configurado!
+
+📧 Credenciais de Admin:
+   Email: admin@barbearia.com
+   Senha: admin123
+
+💡 Dica: Coloque sua logo.png na pasta public/images/
+Error: C:\Users\Daniel\Documents\javascript\Barbearia Silva\views\template.ejs:569
+    567| 
+    568|     <div class="main-content">
+ >> 569|             <%- include(contentPage) %>
+    570|         </div>
+    571| 
+    572|             <%- include('partials/bottom_nav') %>
+
+Could not find the include file "auth/login.html"
+    at getIncludePath (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:185:13)
+    at includeFile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:311:19)
+    at include (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:701:16)
+    at eval (eval at compile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:673:12), <anonymous>:21:17)
+    at template (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:703:17)
+    at tryHandleCache (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:274:36)
+    at exports.renderFile [as engine] (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:491:10)
+    at View.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\view.js:135:8)
+    at tryRender (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:657:10)
+    at Function.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:609:3)
+Error: C:\Users\Daniel\Documents\javascript\Barbearia Silva\views\template.ejs:569
+    567| 
+    568|     <div class="main-content">
+ >> 569|             <%- include(contentPage) %>
+    570|         </div>
+    571| 
+    572|             <%- include('partials/bottom_nav') %>
+
+Could not find the include file "auth/login.html"
+    at getIncludePath (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:185:13)
+    at includeFile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:311:19)
+    at include (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:701:16)
+    at eval (eval at compile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:673:12), <anonymous>:21:17)
+    at template (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:703:17)
+    at tryHandleCache (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:274:36)
+    at exports.renderFile [as engine] (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:491:10)
+    at View.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\view.js:135:8)
+    at tryRender (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:657:10)
+    at Function.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:609:3)
+Error: C:\Users\Daniel\Documents\javascript\Barbearia Silva\views\template.ejs:569
+    567| 
+    568|     <div class="main-content">
+ >> 569|             <%- include(contentPage) %>
+    570|         </div>
+    571| 
+    572|             <%- include('partials/bottom_nav') %>
+
+Could not find the include file "auth/login.html"
+    at getIncludePath (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:185:13)
+    at includeFile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:311:19)
+    at include (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:701:16)
+    at eval (eval at compile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:673:12), <anonymous>:21:17)
+    at template (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:703:17)
+    at tryHandleCache (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:274:36)
+    at exports.renderFile [as engine] (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:491:10)
+    at View.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\view.js:135:8)
+    at tryRender (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:657:10)
+    at Function.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:609:3)
+Servidor rodando em http://localhost:3000
+
+✅ Banco de dados SQLite configurado!
+
+📧 Credenciais de Admin:
+   Email: admin@barbearia.com
+   Senha: admin123
+
+💡 Dica: Coloque sua logo.png na pasta public/images/
+Servidor rodando em http://localhost:3000
+
+✅ Banco de dados SQLite configurado!
+
+📧 Credenciais de Admin:
+   Email: admin@barbearia.com
+   Senha: admin123
+
+💡 Dica: Coloque sua logo.png na pasta public/images/
+Servidor rodando em http://localhost:3000
+
+✅ Banco de dados SQLite configurado!
+
+📧 Credenciais de Admin:
+   Email: admin@barbearia.com
+   Senha: admin123
+
+💡 Dica: Coloque sua logo.png na pasta public/images/
+Servidor rodando em http://localhost:3000
+
+✅ Banco de dados SQLite configurado!
+
+📧 Credenciais de Admin:
+   Email: admin@barbearia.com
+   Senha: admin123
+
+💡 Dica: Coloque sua logo.png na pasta public/images/
+Servidor rodando em http://localhost:3000
+
+✅ Banco de dados SQLite configurado!
+
+📧 Credenciais de Admin:
+   Email: admin@barbearia.com
+   Senha: admin123
+
+💡 Dica: Coloque sua logo.png na pasta public/images/
+Error: C:\Users\Daniel\Documents\javascript\Barbearia Silva\views\template.ejs:569
+    567| 
+    568|     <div class="main-content">
+ >> 569|             <%- include(contentPage) %>
+    570|         </div>
+    571| 
+    572|             <%- include('partials/bottom_nav') %>
+
+Could not find the include file "../public/screens/auth/login.html"
+    at getIncludePath (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:185:13)
+    at includeFile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:311:19)
+    at include (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:701:16)
+    at eval (eval at compile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:673:12), <anonymous>:21:17)
+    at template (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:703:17)
+    at tryHandleCache (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:274:36)
+    at exports.renderFile [as engine] (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:491:10)
+    at View.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\view.js:135:8)
+    at tryRender (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:657:10)
+    at Function.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:609:3)
+Error: C:\Users\Daniel\Documents\javascript\Barbearia Silva\views\template.ejs:569
+    567| 
+    568|     <div class="main-content">
+ >> 569|             <%- include(contentPage) %>
+    570|         </div>
+    571| 
+    572|             <%- include('partials/bottom_nav') %>
+
+Could not find the include file "../public/screens/auth/login.html"
+    at getIncludePath (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:185:13)
+    at includeFile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:311:19)
+    at include (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:701:16)
+    at eval (eval at compile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:673:12), <anonymous>:21:17)
+    at template (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:703:17)
+    at tryHandleCache (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:274:36)
+    at exports.renderFile [as engine] (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:491:10)
+    at View.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\view.js:135:8)
+    at tryRender (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:657:10)
+    at Function.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:609:3)
+Error: C:\Users\Daniel\Documents\javascript\Barbearia Silva\views\template.ejs:569
+    567| 
+    568|     <div class="main-content">
+ >> 569|             <%- include(contentPage) %>
+    570|         </div>
+    571| 
+    572|             <%- include('partials/bottom_nav') %>
+
+Could not find the include file "../public/screens/auth/login.html"
+    at getIncludePath (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:185:13)
+    at includeFile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:311:19)
+    at include (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:701:16)
+    at eval (eval at compile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:673:12), <anonymous>:21:17)
+    at template (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:703:17)
+    at tryHandleCache (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:274:36)
+    at exports.renderFile [as engine] (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:491:10)
+    at View.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\view.js:135:8)
+    at tryRender (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:657:10)
+    at Function.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:609:3)
+Error: C:\Users\Daniel\Documents\javascript\Barbearia Silva\views\template.ejs:569
+    567| 
+    568|     <div class="main-content">
+ >> 569|             <%- include(contentPage) %>
+    570|         </div>
+    571| 
+    572|             <%- include('partials/bottom_nav') %>
+
+Could not find the include file "../public/screens/auth/login.html"
+    at getIncludePath (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:185:13)
+    at includeFile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:311:19)
+    at include (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:701:16)
+    at eval (eval at compile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:673:12), <anonymous>:21:17)
+    at template (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:703:17)
+    at tryHandleCache (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:274:36)
+    at exports.renderFile [as engine] (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:491:10)
+    at View.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\view.js:135:8)
+    at tryRender (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:657:10)
+    at Function.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:609:3)
+Error: C:\Users\Daniel\Documents\javascript\Barbearia Silva\views\template.ejs:569
+    567| 
+    568|     <div class="main-content">
+ >> 569|             <%- include(contentPage) %>
+    570|         </div>
+    571| 
+    572|             <%- include('partials/bottom_nav') %>
+
+Could not find the include file "../public/screens/auth/login.html"
+    at getIncludePath (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:185:13)
+    at includeFile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:311:19)
+    at include (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:701:16)
+    at eval (eval at compile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:673:12), <anonymous>:21:17)
+    at template (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:703:17)
+    at tryHandleCache (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:274:36)
+    at exports.renderFile [as engine] (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:491:10)
+    at View.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\view.js:135:8)
+    at tryRender (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:657:10)
+    at Function.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:609:3)
+Servidor rodando em http://localhost:3000
+
+✅ Banco de dados SQLite configurado!
+
+📧 Credenciais de Admin:
+   Email: admin@barbearia.com
+   Senha: admin123
+
+💡 Dica: Coloque sua logo.png na pasta public/images/
+Error: C:\Users\Daniel\Documents\javascript\Barbearia Silva\views\template.ejs:569
+    567| 
+    568|     <div class="main-content">
+ >> 569|             <%- include(contentPage) %>
+    570|         </div>
+    571| 
+    572|             <%- include('partials/bottom_nav') %>
+
+Could not find the include file "../public/screens/auth/login.html"
+    at getIncludePath (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:185:13)
+    at includeFile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:311:19)
+    at include (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:701:16)
+    at eval (eval at compile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:673:12), <anonymous>:21:17)
+    at template (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:703:17)
+    at tryHandleCache (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:274:36)
+    at exports.renderFile [as engine] (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:491:10)
+    at View.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\view.js:135:8)
+    at tryRender (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:657:10)
+    at Function.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:609:3)
+Servidor rodando em http://localhost:3000
+
+✅ Banco de dados SQLite configurado!
+
+📧 Credenciais de Admin:
+   Email: admin@barbearia.com
+   Senha: admin123
+
+💡 Dica: Coloque sua logo.png na pasta public/images/
+Servidor rodando em http://localhost:3005
+
+✅ Banco de dados SQLite configurado!
+
+📧 Credenciais de Admin:
+   Email: admin@barbearia.com
+   Senha: admin123
+
+💡 Dica: Coloque sua logo.png na pasta public/images/
+Error: C:\Users\Daniel\Documents\javascript\Barbearia Silva\views\template.ejs:569
+    567| 
+    568|     <div class="main-content">
+ >> 569|             <%- include(contentPage) %>
+    570|         </div>
+    571| 
+    572|             <%- include('partials/bottom_nav') %>
+
+Could not find the include file "auth/login.html"
+    at getIncludePath (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:185:13)
+    at includeFile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:311:19)
+    at include (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:701:16)
+    at eval (eval at compile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:673:12), <anonymous>:21:17)
+    at template (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:703:17)
+    at tryHandleCache (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:274:36)
+    at exports.renderFile [as engine] (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:491:10)
+    at View.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\view.js:135:8)
+    at tryRender (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:657:10)
+    at Function.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:609:3)
+Error: C:\Users\Daniel\Documents\javascript\Barbearia Silva\views\template.ejs:569
+    567| 
+    568|     <div class="main-content">
+ >> 569|             <%- include(contentPage) %>
+    570|         </div>
+    571| 
+    572|             <%- include('partials/bottom_nav') %>
+
+Could not find the include file "auth/login.html"
+    at getIncludePath (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:185:13)
+    at includeFile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:311:19)
+    at include (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:701:16)
+    at eval (eval at compile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:673:12), <anonymous>:21:17)
+    at template (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:703:17)
+    at tryHandleCache (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:274:36)
+    at exports.renderFile [as engine] (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:491:10)
+    at View.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\view.js:135:8)
+    at tryRender (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:657:10)
+    at Function.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:609:3)
+Error: C:\Users\Daniel\Documents\javascript\Barbearia Silva\views\template.ejs:569
+    567| 
+    568|     <div class="main-content">
+ >> 569|             <%- include(contentPage) %>
+    570|         </div>
+    571| 
+    572|             <%- include('partials/bottom_nav') %>
+
+Could not find the include file "auth/login.html"
+    at getIncludePath (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:185:13)
+    at includeFile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:311:19)
+    at include (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:701:16)
+    at eval (eval at compile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:673:12), <anonymous>:21:17)
+    at template (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:703:17)
+    at tryHandleCache (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:274:36)
+    at exports.renderFile [as engine] (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:491:10)
+    at View.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\view.js:135:8)
+    at tryRender (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:657:10)
+    at Function.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:609:3)
+Error: C:\Users\Daniel\Documents\javascript\Barbearia Silva\views\template.ejs:569
+    567| 
+    568|     <div class="main-content">
+ >> 569|             <%- include(contentPage) %>
+    570|         </div>
+    571| 
+    572|             <%- include('partials/bottom_nav') %>
+
+Could not find the include file "auth/login.html"
+    at getIncludePath (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:185:13)
+    at includeFile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:311:19)
+    at include (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:701:16)
+    at eval (eval at compile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:673:12), <anonymous>:21:17)
+    at template (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:703:17)
+    at tryHandleCache (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:274:36)
+    at exports.renderFile [as engine] (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:491:10)
+    at View.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\view.js:135:8)
+    at tryRender (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:657:10)
+    at Function.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:609:3)
+Error: C:\Users\Daniel\Documents\javascript\Barbearia Silva\views\template.ejs:569
+    567| 
+    568|     <div class="main-content">
+ >> 569|             <%- include(contentPage) %>
+    570|         </div>
+    571| 
+    572|             <%- include('partials/bottom_nav') %>
+
+Could not find the include file "auth/login.html"
+    at getIncludePath (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:185:13)
+    at includeFile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:311:19)
+    at include (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:701:16)
+    at eval (eval at compile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:673:12), <anonymous>:21:17)
+    at template (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:703:17)
+    at tryHandleCache (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:274:36)
+    at exports.renderFile [as engine] (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:491:10)
+    at View.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\view.js:135:8)
+    at tryRender (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:657:10)
+    at Function.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:609:3)
+Error: C:\Users\Daniel\Documents\javascript\Barbearia Silva\views\template.ejs:569
+    567| 
+    568|     <div class="main-content">
+ >> 569|             <%- include(contentPage) %>
+    570|         </div>
+    571| 
+    572|             <%- include('partials/bottom_nav') %>
+
+Could not find the include file "auth/login.html"
+    at getIncludePath (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:185:13)
+    at includeFile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:311:19)
+    at include (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:701:16)
+    at eval (eval at compile (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:673:12), <anonymous>:21:17)
+    at template (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:703:17)
+    at tryHandleCache (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:274:36)
+    at exports.renderFile [as engine] (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\ejs\lib\ejs.js:491:10)
+    at View.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\view.js:135:8)
+    at tryRender (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:657:10)
+    at Function.render (C:\Users\Daniel\Documents\javascript\Barbearia Silva\node_modules\express\lib\application.js:609:3)
