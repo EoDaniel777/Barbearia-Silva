@@ -1,0 +1,343 @@
+@media  screen and (max-width:1600px){
+    .fidelidade{
+        width: 1000px;
+        height: 300px;
+    }
+
+    .bc_black p{
+        width: 600px;
+        top: 40px;
+        margin:0px 100px ;
+        font-size: 40px;
+    }
+
+    .bc_black a{
+        top: 100px;
+        right: -800px;
+    }
+
+    .card-white, .CardBalck{
+        width: 1200px;
+        
+    }
+    
+    .card, .card-text{
+        height: 400px;
+        width: 250px;
+    }
+
+    .card-img, .card-img img{
+        width: 220px;
+        object-fit: cover;
+    }
+
+    .foo-info{
+        width: 800px;
+        justify-content: center;
+        gap: 100px;
+        margin-bottom: 40px;
+    }
+
+    footer{
+        height: 600px;
+    }
+}
+
+@media screen and (max-width : 1350px){
+    header nav ul{
+        width: 400px;
+    }
+
+    a{
+        font-size: 18px;
+        margin:0px 20px;
+    }
+
+    .acessar-login-white a{
+        padding: 10px 35px;
+    }
+
+    /*main*/
+    main article{
+        height: 600px;
+        border-radius: 0px 0px 100px 100px;
+    }
+
+    .img-logo {
+        width: 250px;
+        margin: 0px auto;
+        padding-top: 100px ;
+    }
+
+    .img-logo img {
+        width: 300px;
+    }
+    
+    .card-white{
+        max-width: 1200px;
+    }
+    
+    .card, .card-text{
+        height: 400px;
+        width: 250px;
+    }
+
+    .card-img, .card-img img{
+        width:200px;
+        object-fit: cover;
+    }
+
+    .card .paragrafo{
+        color: white;
+        width: 230px;
+    }
+
+    .paragrafo p {
+     font-size: 13px;
+     font-family: "Poppins",sans-serif;
+    }
+}
+
+@media screen and (max-width : 1225px){
+    header nav ul{
+        width: 400px;
+    }
+
+    a{
+        font-size: 18px;
+        margin:0px 20px;
+    }
+
+    .acessar-login-white a{
+        padding: 10px 35px;
+    }
+
+    /*main*/
+    main article{
+        height: 600px;
+        border-radius: 0px 0px 100px 100px;
+    }
+
+    .img-logo {
+        width: 250px;
+        margin: 0px auto;
+        padding-top: 100px ;
+    }
+
+    .img-logo img {
+        width: 300px;
+    }
+    
+    .card-white{
+        width: 800px;
+        height: 1000px;
+    }
+    
+    .card, .card-text{
+        height: 400px;
+        width: 250px;
+    }
+
+    .card-img, .card-img img{
+        width:200px;
+        object-fit: cover;
+    }
+
+    .card .paragrafo{
+        color: white;
+        width: 230px;
+    }
+
+    .paragrafo p {
+     font-size: 13px;
+     font-family: "Poppins",sans-serif;
+    }
+}
+
+@media screen and (max-width: 1150px){
+    .acessar-login-white, nav, .moon, .sun{
+        display: none;
+    }
+    
+    header{
+        position: fixed;
+        background-color: rgba(255, 255, 255, 0);
+    }
+
+    .mobille{
+        width: 100%;
+        display: inline;
+        background-color: rgb(0, 0, 0);
+        height: 70px;
+        position: fixed;
+        bottom: 0px;
+    }
+
+    .mobille ul {
+        display: flex;
+        justify-content: space-around;
+        margin: 20px 0px;
+    }
+
+    main article{
+        height: 590px;
+    }
+
+    .img-logo img {
+        width: 250px;
+    }
+
+    .fidelidade{
+        width: 700px;
+        height: 250px;
+    }
+
+    .bc_black a{
+        top: 90px;
+        right: -500px;
+    }
+
+    .bc_black p{
+        margin:0px 50px ;
+        font-size: 30px;
+    }
+
+    .barber-white{
+        height: 600px;
+    }
+
+    .barber-white .foto-alison{
+        width: 400px;
+        height: 400px;
+    }
+
+    .barber-white h3{
+        width: 400px;
+        height: 300px;
+        font-size: 100px
+    }
+
+    .card-white{
+        width: 800px;
+        height: 1000px;
+    }
+
+    .foo-info{
+        width: 500px;
+        gap: 0px;
+        text-align: center;
+        flex-direction: column;
+    }
+    
+    footer{
+        height: 700px;
+    }
+}
+
+@media screen and (max-width: 800px){
+
+    main article {
+        border-radius: 0px;
+    }
+
+    .fidelidade{
+        display: none;
+    }
+
+    .barber-white{
+        margin: 0px;
+        background-color: rgb(26, 26, 28);
+        height: 1300px;
+        gap: 0px;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .barber-white .foto-alison{
+        width: 500px;
+        height: 500px;
+    }
+
+    .barber-white h3{
+        margin: 40px auto;
+        width: 500px;
+        text-align: center;
+        height: 300px;
+        font-size: 150px
+    }
+
+    .card-white{
+        width: 500px;
+        height: 2000px;
+    }
+
+    .card-text h2{
+        text-align: center;
+    }
+
+    .card-text a{
+        margin: 50px;
+    }
+
+    .foo-info{
+        width: 300px;
+    }
+
+    footer{
+        height: 900px;
+    }
+
+}
+
+@media screen and (max-width: 580px){
+    main article {
+        height: 800px;
+        border-radius: 0px;
+    }
+    
+    .mobille{
+        background-color: rgb(34, 34, 34);
+    }
+
+    .barber-white{
+        height: 900px;
+    }
+
+    .barber-white .foto-alison{
+        width: 300px;
+        height: 300px;
+    }
+
+    .barber-white h3{
+        margin: 10px auto;
+        width: 300px;
+        text-align: center;
+        height: 300px;
+        font-size: 90px
+    }
+
+    .card-white{
+        width: 300px;
+        height: 2000px;
+    }
+
+}
+
+@media screen and (max-width: 380px){
+
+    .barber-white h3{
+        width: 200px;
+        height: 100px;
+        font-size: 60px
+    }
+
+    .barber-white .foto-alison{
+        width: 250px;
+        height: 250px;
+    }
+
+       .barber-white {
+        height: 760px;
+    }
+
+}

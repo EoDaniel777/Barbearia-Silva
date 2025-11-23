@@ -1,0 +1,276 @@
+*{
+    font-family: Arial, Helvetica, sans-serif;
+    box-sizing: border-box;
+    padding: 0px;
+    margin: 0px;
+}
+body{
+    max-width: 1920px;
+    margin: 0 auto;
+}
+
+.mobille{
+    display: none;
+    z-index: 999999;
+}
+
+
+/*style navbar*/
+header{
+    z-index: 999999999;
+    width: 100%; 
+    height: 130px;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    margin: 0px auto;
+    background-color: #090A0C;
+}
+
+nav ul{
+    width: 500px;
+    display: flex;
+    justify-content: space-around;
+}
+
+li{
+    list-style: none;
+}
+
+a{
+    text-decoration: none;
+    color: white;
+    list-style: none;
+    font-size: 20px;
+    font-family:"Poppins", sans-serif;
+}
+
+.moon img{
+    cursor: pointer;
+}
+
+.acessar-login-white{
+    width: 100px;
+}
+
+.acessar-login-white a{
+    font-weight: bold;
+    border-radius: 10px;
+    color: rgb(255, 255, 255);
+    background-color: #0D7CA4;
+    padding: 12px 30px;
+    box-shadow:0px 0px 100px rgb(103, 109, 116);
+}
+/*Fim -> style navBars*/
+
+/*Conteúdo principal*/
+main article {
+    background-color: #090A0C;
+    width:100%;
+    height: 800px;
+    border-radius:0px 0px 100px 100px;
+}
+
+.img-logo {
+    width: 350px;
+    margin: 0px auto;
+    padding-top: 100px ;
+}
+
+.img-logo img {
+    width: 400px;
+}
+
+/*section fidelidade*/
+.fidelidade{
+    width: 1500px;
+    margin: 80px auto;
+    height: 400px;
+    background-image: url(../img/maquina.jpg);
+    background-size: cover;
+    background-position: 0px;
+    background-repeat: no-repeat;
+    border-radius: 20px;
+}
+
+.bc_black{
+    width: 100%;
+    height: 100%;
+    background-color: #000000b3;
+    background-position: -10px;
+    border-radius: 20px;
+}
+
+.bc_black p{
+    width: 800px;
+    position: relative  ;
+    top: 40px;
+    font-family: "Poppins", sans-serif;
+    font-weight: bold;
+    margin:0px 150px ;
+    font-size: 50px;
+    color: white;
+}
+
+.bc_black a{
+    position: relative;
+    font-weight: bolder;
+    top: 170px;
+    right: -1200px;
+    padding: 15px 30px;
+    border-radius: 10px;
+    background-color: #0D7CA4;
+
+}
+
+/*Section alisson*/
+.barber-white{
+    width: 100%;
+    height: 700px;
+    margin: 80px 0px;
+    background-color: #090A0C;
+    display: flex;
+    padding: 40px;
+    flex-direction: row;
+    justify-content: space-evenly;
+    gap: 50px;
+}
+
+.barber-white .foto-alison{
+    width: 500px;
+    height: 500px;
+    margin: 40px 0px;
+    background-image: url(../img/alissonFt.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    border-radius: 50px;
+}
+
+.img-ft{
+    width: 100%;
+    height: 100%;
+    border-radius: 50px;
+    background-color: #0000006a;
+}
+
+.barber-white h3{
+    width: 600px;
+    height: 500px;
+    font-size: 150px;
+    margin: 90px 0px;
+    font-family: "Secular One", sans-serifs;
+    color: #CBCBCB;
+}
+
+/*Section catálogo*/
+.card-white{
+    width: 1400px;
+    margin:60px auto;
+    display: flex;
+    height: 500px;
+    border-radius: 20px;
+    background-color: #F0F0F0;
+    justify-content: space-evenly;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    cursor: pointer;
+}
+
+.card, .card-text{
+    height: 400px;
+    width: 270px;
+    margin: 10px 10px;
+    background-color: #090A0C;
+    border-radius: 20px;
+}
+
+.card-img, .card-img img{
+    width: 240px;
+    margin: 10px auto;
+    border-radius: 20px;
+    object-fit: cover;
+}
+
+.card .paragrafo, .info{
+    color: white;
+    width: 240px;
+    text-align: left    ;
+    margin: 10px  auto auto 25px;
+}
+
+.paragrafo p {
+    font-size: 15px;
+    font-family: "Poppins",sans-serif;
+}
+
+.info{
+    display: flex;
+    flex-direction: row;
+    margin-top: 80px;
+    font-size: 20px;
+    justify-content: space-around;
+    width: 200px;
+}
+
+.card-text{
+    background-color: #00000000;
+}
+
+.card-text h2{
+    color: #000000;
+    font-family: "Poppins",sans-serif;
+    font-weight: bold;
+    margin: 20px;
+    text-align: left;
+    font-size: 50px;
+    line-height: 80px;
+}
+
+.card-text a{
+    background-color: #0D7CA4;
+    margin: 20px;
+    padding: 15px 35px;
+    border-radius: 10px 10px ;
+}
+
+aside{
+    width: 100%;
+    margin: 50px auto;
+}
+
+aside p {
+    text-align: center;
+    font-family: "Poppins",sans-serif;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+/*footer*/
+footer{
+    width: 100%;
+    background-color: #090A0C;
+    display: flex;
+    flex-direction: column;
+    height: 500px;
+}
+
+footer div{
+    width: 200px;
+    margin: 0px auto;
+}
+
+.foo-info{
+    color: #FFF;
+    margin: 40px auto;
+    width: 1400px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.foo-info ul li{
+    margin: 20px;
+    font-family: "Poppins", sans-serif;
+    font-size: 20px;
+}
