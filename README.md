@@ -3,12 +3,26 @@
 <div align="center">
 
 ![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow)
+![Go](https://img.shields.io/badge/Go-1.25.4-00ADD8?logo=go)
 ![License](https://img.shields.io/badge/License-MIT-blue)
-![Version](https://img.shields.io/badge/Version-1.0.0-green)
+![Version](https://img.shields.io/badge/Version-2.0.0-green)
 
 **Sistema Web Full-Stack para Gestão e Agendamento de Serviços em Barbearias**
 
-[Sobre](#-sobre) • [Funcionalidades](#-funcionalidades) • [Tecnologias](#-tecnologias) • [Instalação](#-instalação) • [Estrutura](#-estrutura-do-projeto) • [Roadmap](#-roadmap)
+Sistema profissional de agendamento online com backend em Go, notificações em tempo real e gerenciamento completo
+
+[Sobre](#-sobre) • [Funcionalidades](#-funcionalidades) • [Tecnologias](#-tecnologias) • [Instalação](#-instalação) • [Equipe](#-equipe)
+
+</div>
+
+---
+
+## 📸 Preview do Sistema
+
+<div align="center">
+
+![Sistema Barbearia Silva](docs/img01.png)
+*Interface moderna com tema escuro, sistema de agendamento completo e notificações em tempo real*
 
 </div>
 
@@ -16,7 +30,7 @@
 
 ## 📋 Sobre
 
-O **System-Barbearia-AS** é uma aplicação web completa desenvolvida para otimizar a gestão de barbearias, oferecendo uma experiência moderna e profissional tanto para clientes quanto para administradores. O sistema visa facilitar o agendamento de serviços, gerenciamento de profissionais e fidelização de clientes.
+O **System-Barbearia-AS** é uma aplicação web completa desenvolvida para otimizar a gestão de barbearias, oferecendo uma experiência moderna e profissional tanto para clientes quanto para administradores. O sistema combina backend robusto em Go, frontend responsivo e funcionalidades avançadas de notificação.
 
 ### 🎯 Objetivo
 
@@ -70,20 +84,24 @@ Criar uma plataforma integrada que simplifique a rotina das barbearias, permitin
 
 ## 🚀 Tecnologias
 
+### Backend
+- **Go 1.25.4** - Linguagem de programação
+- **Gin Framework v1.11.0** - Web framework HTTP
+- **SQLite** - Banco de dados embutido
+- **go-sqlite3** - Driver SQLite para Go
+- **Clean Architecture** - Separação de camadas (handlers, models, database)
+
 ### Frontend
 - **HTML5** - Estrutura semântica e acessível
-- **CSS3** - Estilização moderna com Flexbox
+- **CSS3** - Estilização moderna com Flexbox e Grid
 - **JavaScript (ES6+)** - Interatividade e manipulação do DOM
+- **LocalStorage API** - Persistência de dados client-side
 
 ### Design
-- **Google Fonts** - Poppins e Secular One
-- **SVG Icons** - Ícones vetoriais escaláveis
-- **Responsive Design** - Mobile-first approach
-
-### Ferramentas
-- LocalStorage API para persistência de dados
-- Media Queries para responsividade
-- CSS Transitions para animações suaves
+- **Mobile-First** - Prioridade para dispositivos móveis
+- **Responsive Design** - Adaptação automática de layout
+- **CSS Variables** - Temas claro/escuro dinâmicos
+- **Smooth Transitions** - Animações e transições suaves
 
 ---
 
@@ -279,12 +297,56 @@ System-Barbearia-AS-prod/
 
 ## 👥 Equipe
 
-**Barbearia Silva**
-- Barbeiro Principal: Alison Silva
+<div align="center">
 
-**Desenvolvimento**
-- Frontend Developer: [Seu Nome]
-- UI/UX Design: [Seu Nome]
+### Desenvolvedores
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/EoDaniel777">
+        <img src="https://img.shields.io/badge/Daniel%20Alisom-Backend%20Developer-00ADD8?style=for-the-badge&logo=go&logoColor=white" alt="Daniel Alisom"/>
+      </a><br>
+      <sub><strong>Daniel Alisom</strong></sub><br>
+      <p>🔧 Backend em Go<br>🗄️ Arquitetura de Banco<br>🔐 APIs & Autenticação</p>
+    </td>
+    <td align="center">
+      <a href="https://github.com/B-Evil">
+        <img src="https://img.shields.io/badge/Bruno%20Santiago-Frontend%20Developer-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="Bruno Santiago"/>
+      </a><br>
+      <sub><strong>Bruno Santiago</strong></sub><br>
+      <p>🎨 Interfaces Web<br>📱 Responsividade<br>🔌 Integração com APIs</p>
+    </td>
+    <td align="center">
+      <a href="https://github.com/Thaysantzs">
+        <img src="https://img.shields.io/badge/Tiago%20Santos-Frontend%20Developer-FF6B6B?style=for-the-badge&logo=html5&logoColor=white" alt="Tiago Santos"/>
+      </a><br>
+      <sub><strong>Tiago Santos</strong></sub><br>
+      <p>🎭 Design UI/UX<br>📲 Otimização Mobile<br>✨ Experiência do Usuário</p>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="3">
+      <a href="https://instagram.com/bradock_baber">
+        <img src="https://img.shields.io/badge/Alison%20Silva-Product%20Owner-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Alison Silva"/>
+      </a><br>
+      <sub><strong>Alison Silva</strong></sub><br>
+      <p>💈 Barbeiro Profissional | 📊 Proprietário da Barbearia Silva | 🎯 Visão do Produto</p>
+      <sub>📍 Morro Azul - Quadra 11 Conjunto A | 📱 @bradock_baber</sub>
+    </td>
+  </tr>
+</table>
+
+### Tecnologias Utilizadas
+
+![Go](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
+![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
+
+</div>
 
 ---
 
