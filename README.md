@@ -21,8 +21,15 @@ Sistema profissional de agendamento online com backend em Go, notificações em 
 
 <div align="center">
 
-![Sistema Barbearia Silva](docs/img01.png)
+### 💻 Versão Desktop
+
+![Sistema Barbearia Silva - Desktop](docs/img01.png)
 *Interface moderna com tema escuro, sistema de agendamento completo e notificações em tempo real*
+
+### 📱 Versão Mobile
+
+![Sistema Barbearia Silva - Mobile](docs/img02.png)
+*Layout responsivo com bottom navigation e experiência otimizada para dispositivos móveis*
 
 </div>
 
@@ -305,6 +312,7 @@ System-Barbearia-AS-prod/
   <tr>
     <td align="center">
       <a href="https://github.com/EoDaniel777">
+        <img src="https://github.com/EoDaniel777.png" width="120px;" style="border-radius: 50%;" alt="Daniel Alisom"/><br>
         <img src="https://img.shields.io/badge/Daniel%20Alisom-Backend%20Developer-00ADD8?style=for-the-badge&logo=go&logoColor=white" alt="Daniel Alisom"/>
       </a><br>
       <sub><strong>Daniel Alisom</strong></sub><br>
@@ -312,6 +320,7 @@ System-Barbearia-AS-prod/
     </td>
     <td align="center">
       <a href="https://github.com/B-Evil">
+        <img src="https://github.com/B-Evil.png" width="120px;" style="border-radius: 50%;" alt="Bruno Santiago"/><br>
         <img src="https://img.shields.io/badge/Bruno%20Santiago-Frontend%20Developer-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="Bruno Santiago"/>
       </a><br>
       <sub><strong>Bruno Santiago</strong></sub><br>
@@ -319,6 +328,7 @@ System-Barbearia-AS-prod/
     </td>
     <td align="center">
       <a href="https://github.com/Thaysantzs">
+        <img src="https://github.com/Thaysantzs.png" width="120px;" style="border-radius: 50%;" alt="Tiago Santos"/><br>
         <img src="https://img.shields.io/badge/Tiago%20Santos-Frontend%20Developer-FF6B6B?style=for-the-badge&logo=html5&logoColor=white" alt="Tiago Santos"/>
       </a><br>
       <sub><strong>Tiago Santos</strong></sub><br>
