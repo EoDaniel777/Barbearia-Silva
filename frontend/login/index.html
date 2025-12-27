@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0F0F0F">
+    <title>Login - Barbearia Silva</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: background 0.3s ease;
+        }
+
+        body.light-mode {
+            background: #FFFFFF;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.light-mode .login-container {
+            background: #FFFFFF;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo img {
+            width: 150px;
+            height: auto;
+        }
+
+        h1 {
+            color: #FFFFFF;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        body.light-mode h1 {
+            color: #1C1C1E;
+        }
+
+        p {
+            color: #8E8E93;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 14px;
+        }
+
+        .alert.success {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.4);
+            color: #4CAF50;
+        }
+
+        .alert.error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid rgba(244, 67, 54, 0.4);
+            color: #F44336;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #FFFFFF;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        body.light-mode label {
+            color: #1C1C1E;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #FFFFFF;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        body.light-mode input {
+            background: rgba(0, 0, 0, 0.02);
+            border-color: rgba(0, 0, 0, 0.1);
+            color: #1C1C1E;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #0D7CA4;
+            background: rgba(13, 124, 164, 0.1);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        body.light-mode input::placeholder {
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: #0D7CA4;
+            border: none;
+            border-radius: 12px;
+            color: #FFFFFF;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            background: #0a6282;
+            transform: translateY(-2px);
+        }
+
+        .btn-login:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-back {
+            width: 100%;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #FFFFFF;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        body.light-mode .btn-back {
+            background: rgba(0, 0, 0, 0.02);
+            border-color: rgba(0, 0, 0, 0.1);
+            color: #1C1C1E;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        body.light-mode .btn-back:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .credentials-info {
+            background: rgba(13, 124, 164, 0.1);
+            border: 1px solid rgba(13, 124, 164, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 25px;
+        }
+
+        .credentials-info h3 {
+            color: #0D7CA4;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .credentials-info p {
+            color: #8E8E93;
+            font-size: 12px;
+            margin: 4px 0;
+            text-align: left;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <img src="/img/logoDark.jpeg" id="logoImg" alt="Barbearia Silva">
+        </div>
+
+        <h1>Acesso ao Sistema</h1>
+        <p>Entre com suas credenciais</p>
+
+        <div class="credentials-info">
+            <h3>Credenciais para Teste:</h3>
+            <p><strong>Admin:</strong> admin@barbearia.com / admin123</p>
+            <p><strong>Cliente:</strong> cliente@teste.com / cliente123</p>
+        </div>
+
+        <div id="alert" class="alert"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" placeholder="seu@email.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" placeholder="Digite sua senha" required>
+            </div>
+
+            <button type="submit" class="btn-login" id="submitBtn">Entrar</button>
+        </form>
+
+        <a href="/" class="btn-back">← Voltar para Home</a>
+    </div>
+
+    <script>
+        // Theme Management - Inherit from home page
+        const logoImg = document.getElementById('logoImg');
+        const body = document.body;
+
+        // Load saved theme from localStorage (set by home page)
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        if (savedTheme === 'light') {
+            body.classList.add('light-mode');
+            logoImg.src = '/img/logoWhite.jpeg';
+        } else {
+            body.classList.remove('light-mode');
+            logoImg.src = '/img/logoDark.jpeg';
+        }
+
+        // Login Logic
+        const loginForm = document.getElementById('loginForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const alert = document.getElementById('alert');
+
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Disable button
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Entrando...';
+
+            try {
+                const response = await fetch('/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        senha: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Save user data
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    localStorage.setItem('token', data.token);
+
+                    // Show success
+                    alert.className = 'alert success';
+                    alert.style.display = 'block';
+                    alert.textContent = '✓ Login realizado com sucesso!';
+
+                    // Redirect based on user type
+                    setTimeout(() => {
+                        if (data.user.tipo === 'admin') {
+                            window.location.href = '/dashboard';
+                        } else {
+                            window.location.href = '/';
+                        }
+                    }, 1000);
+                } else {
+                    throw new Error(data.error || 'Erro ao fazer login');
+                }
+            } catch (error) {
+                alert.className = 'alert error';
+                alert.style.display = 'block';
+                alert.textContent = '✗ ' + error.message;
+
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Entrar';
+
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>

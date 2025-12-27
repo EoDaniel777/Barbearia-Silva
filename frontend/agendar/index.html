@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0F0F0F">
+    <title>Agendar - Barbearia Silva</title>
+    <link rel="stylesheet" href="/css/mobile-modern.css">
+    <style>
+        .booking-form {
+            background: var(--bg-dark-card);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-xl);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        body.light-mode .booking-form {
+            background: var(--bg-light-card);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-light);
+            margin-bottom: var(--spacing-sm);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        body.light-mode .form-group label {
+            color: var(--text-dark);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-sm);
+            color: var(--text-light);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        body.light-mode .form-group input,
+        body.light-mode .form-group select {
+            background: rgba(0, 0, 0, 0.02);
+            border-color: rgba(0, 0, 0, 0.1);
+            color: var(--text-dark);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(13, 124, 164, 0.1);
+        }
+
+        .form-group select {
+            cursor: pointer;
+        }
+
+        .form-group select option {
+            background: var(--bg-dark-card);
+            color: var(--text-light);
+        }
+
+        body.light-mode .form-group select option {
+            background: var(--bg-light-card);
+            color: var(--text-dark);
+        }
+
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+        }
+
+        .time-slot {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-sm);
+            color: var(--text-light);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        body.light-mode .time-slot {
+            background: rgba(0, 0, 0, 0.02);
+            border-color: rgba(0, 0, 0, 0.1);
+            color: var(--text-dark);
+        }
+
+        .time-slot:hover:not(.disabled) {
+            background: rgba(13, 124, 164, 0.2);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .time-slot.selected {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #FFFFFF;
+        }
+
+        .time-slot.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .alert {
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius-sm);
+            margin-bottom: var(--spacing-lg);
+            display: none;
+            font-weight: 500;
+        }
+
+        .alert.success {
+            background: rgba(76, 175, 80, 0.2);
+            border: 2px solid rgba(76, 175, 80, 0.4);
+            color: #4CAF50;
+        }
+
+        .alert.error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 2px solid rgba(244, 67, 54, 0.4);
+            color: #F44336;
+        }
+
+        @media (max-width: 768px) {
+            .booking-form {
+                padding: var(--spacing-lg);
+            }
+
+            .time-slots {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .time-slots {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Modern Header -->
+    <header>
+        <div class="header-logo">
+            <img src="/img/logoDark.jpeg" id="headerLogo" alt="Barbearia Silva">
+        </div>
+
+        <!-- Desktop Navigation -->
+        <nav class="header-nav">
+            <a href="/login" class="btn-login">Acessar</a>
+            <a href="/">Início</a>
+            <a href="/servicos">Serviços</a>
+            <a href="/agendar">Agendar</a>
+            <a href="/barbeiros">Equipe</a>
+        </nav>
+
+        <div class="header-actions">
+            <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">
+                <img src="/icons/moon.png" id="themeIcon" alt="Tema">
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <h1 class="hero-title">Agendar Horário</h1>
+        <p class="hero-subtitle">Escolha o melhor horário para você</p>
+    </section>
+
+    <!-- Main Content -->
+    <div class="content-wrapper">
+
+        <div id="alert" class="alert"></div>
+
+        <form class="booking-form" id="bookingForm">
+            <div class="form-group">
+                <label for="clientName">Seu Nome *</label>
+                <input type="text" id="clientName" placeholder="Digite seu nome completo" required>
+            </div>
+
+            <div class="form-group">
+                <label for="clientPhone">Telefone *</label>
+                <input type="tel" id="clientPhone" placeholder="(61) 00000-0000" required>
+            </div>
+
+            <div class="form-group">
+                <label for="service">Serviço *</label>
+                <select id="service" required>
+                    <option value="">Selecione um serviço</option>
+                    <option value="1">Corte - R$ 35,00 (30 min)</option>
+                    <option value="2">Barba - R$ 35,00 (30 min)</option>
+                    <option value="3">Kids - R$ 35,00 (30 min)</option>
+                    <option value="4">Corte + Barba - R$ 60,00 (50 min)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="barber">Barbeiro *</label>
+                <select id="barber" required>
+                    <option value="">Selecione um barbeiro</option>
+                    <option value="1">Alison Silva</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="date">Data *</label>
+                <input type="date" id="date" required>
+            </div>
+
+            <div class="form-group">
+                <label>Horário disponível *</label>
+                <div class="time-slots" id="timeSlots">
+                    <div class="time-slot" data-time="08:00">08:00</div>
+                    <div class="time-slot" data-time="08:30">08:30</div>
+                    <div class="time-slot" data-time="09:00">09:00</div>
+                    <div class="time-slot" data-time="09:30">09:30</div>
+                    <div class="time-slot" data-time="10:00">10:00</div>
+                    <div class="time-slot" data-time="10:30">10:30</div>
+                    <div class="time-slot" data-time="11:00">11:00</div>
+                    <div class="time-slot" data-time="11:30">11:30</div>
+                    <div class="time-slot" data-time="14:00">14:00</div>
+                    <div class="time-slot" data-time="14:30">14:30</div>
+                    <div class="time-slot" data-time="15:00">15:00</div>
+                    <div class="time-slot" data-time="15:30">15:30</div>
+                    <div class="time-slot" data-time="16:00">16:00</div>
+                    <div class="time-slot" data-time="16:30">16:30</div>
+                    <div class="time-slot" data-time="17:00">17:00</div>
+                    <div class="time-slot" data-time="17:30">17:30</div>
+                </div>
+                <input type="hidden" id="selectedTime" required>
+            </div>
+
+            <button type="submit" class="btn-primary" id="submitBtn" disabled>Confirmar Agendamento</button>
+        </form>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <img src="/img/logoDark.jpeg" id="footerLogo" alt="Barbearia Silva" class="footer-logo">
+        <div class="footer-info">
+            <p>📞 (61) 00000-0000</p>
+            <p>📍 Morro Azul - Quadra 11 Conjunto A</p>
+            <p>📱 <a href="https://instagram.com/bradock_baber" target="_blank">@bradock_baber</a></p>
+            <p style="margin-top: 20px; font-size: 12px;">&copy; 2025 Barbearia Silva - Todos os direitos reservados</p>
+        </div>
+    </footer>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="/" class="nav-item">
+            <img src="/icons/home.svg" alt="Início">
+            <span>Início</span>
+        </a>
+        <a href="/servicos" class="nav-item">
+            <img src="/icons/servico.svg" alt="Serviços">
+            <span>Serviços</span>
+        </a>
+        <a href="/agendar" class="nav-item active">
+            <img src="/icons/calendar2.svg" alt="Agendar">
+            <span>Agendar</span>
+        </a>
+        <a href="/barbeiros" class="nav-item">
+            <img src="/icons/person.svg" alt="Equipe">
+            <span>Equipe</span>
+        </a>
+    </nav>
+
+    <script>
+        // Authentication Check - Redirect to login if not authenticated
+        const user = localStorage.getItem('user');
+        if (!user) {
+            window.location.href = '/login';
+        }
+
+        // Theme Management
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const body = document.body;
+        const headerLogo = document.getElementById('headerLogo');
+        const footerLogo = document.getElementById('footerLogo');
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        applyTheme(savedTheme);
+
+        // Theme toggle
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = body.classList.contains('light-mode') ? 'light' : 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                body.classList.add('light-mode');
+                themeIcon.src = '/icons/sun.svg';
+                headerLogo.src = '/img/logoWhite.jpeg';
+                footerLogo.src = '/img/logoWhite.jpeg';
+            } else {
+                body.classList.remove('light-mode');
+                themeIcon.src = '/icons/moon.png';
+                headerLogo.src = '/img/logoDark.jpeg';
+                footerLogo.src = '/img/logoDark.jpeg';
+            }
+        }
+
+        // Active nav item
+        const currentPage = window.location.pathname;
+        document.querySelectorAll('.nav-item').forEach(item => {
+            if (item.getAttribute('href') === currentPage) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+
+        // Booking Form Logic
+        // Set minimum date to today
+        const dateInput = document.getElementById('date');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.min = today;
+        dateInput.value = today;
+
+        // Time slot selection
+        const timeSlots = document.querySelectorAll('.time-slot');
+        const selectedTimeInput = document.getElementById('selectedTime');
+        const submitBtn = document.getElementById('submitBtn');
+
+        timeSlots.forEach(slot => {
+            slot.addEventListener('click', function() {
+                if (!this.classList.contains('disabled')) {
+                    timeSlots.forEach(s => s.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedTimeInput.value = this.dataset.time;
+                    validateForm();
+                }
+            });
+        });
+
+        // Form validation
+        function validateForm() {
+            const clientName = document.getElementById('clientName').value;
+            const clientPhone = document.getElementById('clientPhone').value;
+            const service = document.getElementById('service').value;
+            const barber = document.getElementById('barber').value;
+            const date = document.getElementById('date').value;
+            const time = selectedTimeInput.value;
+
+            const isValid = clientName && clientPhone && service && barber && date && time;
+            submitBtn.disabled = !isValid;
+        }
+
+        // Add event listeners to all form inputs
+        document.querySelectorAll('#bookingForm input, #bookingForm select').forEach(input => {
+            input.addEventListener('change', validateForm);
+            input.addEventListener('input', validateForm);
+        });
+
+        // Form submission
+        document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = {
+                nomeCliente: document.getElementById('clientName').value,
+                telefone: document.getElementById('clientPhone').value,
+                servicoID: parseInt(document.getElementById('service').value),
+                barbeiroID: parseInt(document.getElementById('barber').value),
+                dataHora: `${document.getElementById('date').value}T${selectedTimeInput.value}:00`,
+                status: 'pendente'
+            };
+
+            try {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Processando...';
+
+                const response = await fetch('/api/v1/horarios', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const alert = document.getElementById('alert');
+
+                if (response.ok) {
+                    alert.className = 'alert success';
+                    alert.style.display = 'block';
+                    alert.textContent = '✓ Agendamento realizado com sucesso! Em breve enviaremos uma confirmação.';
+                    document.getElementById('bookingForm').reset();
+                    timeSlots.forEach(s => s.classList.remove('selected'));
+                    selectedTimeInput.value = '';
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Confirmar Agendamento';
+
+                    setTimeout(() => {
+                        alert.style.display = 'none';
+                    }, 5000);
+                } else {
+                    throw new Error('Erro ao agendar');
+                }
+            } catch (error) {
+                const alert = document.getElementById('alert');
+                alert.className = 'alert error';
+                alert.style.display = 'block';
+                alert.textContent = '✗ Erro ao realizar agendamento. Tente novamente ou entre em contato.';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Confirmar Agendamento';
+
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>

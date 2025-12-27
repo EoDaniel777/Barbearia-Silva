@@ -1,0 +1,246 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    max-width: 1920px;
+}
+
+/*--Navegação--*/
+
+header{
+    width: 250px;
+    height: 100%;
+    position: fixed;
+    background-color: #090A0C;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header img{
+    width: 190px;
+    height: 280px;
+}
+
+.navegacao ul li{
+    width: 225px;
+    text-align: center;
+    padding: 20px;
+    margin: 30px 10px;
+    border-radius: 30px;
+}
+
+.navegacao ul li:hover{
+    background-color: #27404A;
+}
+
+.navegacao ul li a{
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    text-decoration: none;
+    color: white;
+}
+
+#dashBoard::before{
+    content:'';
+    position: absolute;
+    left: 40px;
+    width: 20px;
+    height: 20px;
+    background-image: url(../icons/dashboard\ 1.svg);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+#barbeiros::before{
+    content:'';
+    position: absolute;
+    left: 40px;
+    width: 20px;
+    height: 20px;
+    background-image: url(../icons/person\ 1.svg);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+#horarios::before{
+    content:'';
+    position: absolute;
+    left: 35px;
+    width: 30px;
+    height: 23px;
+    background-image: url(../icons/calendar2\ 1.svg);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+
+#servicos::before{
+    content:'';
+    position: absolute;
+    left: 40px;
+    width: 20px;
+    height: 20px;
+    background-image: url(../icons/tesoura\ 1.svg);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+/*--Navegação--*/
+
+
+/*--Fomulário--*/
+
+main{    
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #ffffff;
+}
+
+article{
+    width: 1200px;
+    height: 350px;
+    margin: 20px  auto;
+    margin-left: 520px;
+    padding: 30px 40px;
+    border-radius: 30px;
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgb(194, 194, 194) 0px 10px 30px;
+}
+
+form{
+    height: 100%;
+    display: flex;
+    flex-direction:column;
+    flex-wrap: wrap;
+    align-content: space-between;
+    justify-content: space-between;
+}
+
+.cadastro-nome-email{
+    width: 300px;
+    height: 190px;
+    display: flex;
+    gap: 10px; 
+    flex-direction: column;
+}
+
+.cadastro-nome-email input{
+    width: 300px;
+    padding: 15px;
+    border: 1px solid rgb(156, 156, 156);
+    border-radius: 10px;
+}
+
+.cadastro-nome-email label{
+    font-size: 12px;
+    font-family: "Poppins", sans-serif;
+}
+
+.cadastro-sexo{
+    width: 300px;
+    height: 50px;
+    margin: 20px 10px;
+}
+
+.cadastro-sexo input{
+    width: 17px;
+    height: 17px;
+}
+
+.cadastro-sexo label{
+    padding: 0px 20px;
+    font-family: "Poppins", sans-serif;
+    font-size: 17px;
+}
+
+.cadastro-img{
+    width: 600px;
+    height: 200px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    text-align: center;
+    border-radius: 20px;
+    box-shadow: rgb(208, 208, 208) 0px 4px 20px;
+}
+
+/*--Inserindo fotos barbeiros--*/
+
+.view-foto{
+    width: 134px;
+    height: 128px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100%;
+    background-color: #339AEF;
+}
+
+.view-foto img{
+    width: 80px;
+    height: 80px;
+}
+
+.view-foto .foto-adicionada{
+    width: 134px;
+    height: 128px;
+    border-radius: 100%;
+    object-fit: cover;
+}
+
+.label-file{
+    width: 300px;
+    color: #339AEF;
+    height: 160px;
+    border: #339AEF 2px dashed;
+    border-radius: 10px;
+}
+
+.label-file p{
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+}
+
+.label-file:hover{
+    border-radius: 10px;
+    text-decoration: underline;
+    transition: 400ms;
+}
+
+.label-file input{
+    opacity: 0;
+}
+
+.drop{
+    width: 280px;
+    height: 140px;
+    margin: 10px auto;
+    padding-top: 50px;
+    border-radius: 10px;
+}
+
+.drop:hover{
+    color: white;
+    text-decoration: underline white;
+    background-color: #339AEF;
+    transition: 400ms;
+}
+/*--Inserindo fotos barbeiros--*/
+
+.btAdicionar{
+    width: 264px;
+    height: 70px;
+    font-size: 20px;
+    font-weight: 700;
+    font-family: "Poppins", sans-serif;
+    color: white;
+    border: 1px solid #08BA29;
+    background-color: #08BA29;
+    border-radius: 10px;
+}

@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Barbearia Silva</title>
+    <link rel="stylesheet" href="/dashboard/css/dashboard.css">
+</head>
+<body>
+    <!-- Top Bar (Mobile/Tablet) -->
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <img src="/img/logoDark.jpeg" alt="Barbearia Silva" class="top-bar-logo">
+            <span class="top-bar-title">Dashboard</span>
+        </div>
+        <div class="top-bar-right">
+            <!-- Notificações -->
+            <button class="top-bar-icon" id="notif-btn" aria-label="Notificações">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="badge" id="notif-badge">0</span>
+            </button>
+            <!-- Perfil -->
+            <div class="profile-dropdown">
+                <button class="profile-btn" id="profile-btn" aria-label="Perfil">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </button>
+                <div class="profile-menu" id="profile-menu">
+                    <div class="profile-menu-header">
+                        <strong id="user-name">Admin</strong>
+                        <small id="user-email">admin@barbearia.com</small>
+                    </div>
+                    <hr>
+                    <a href="#" class="profile-menu-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        Meu Perfil
+                    </a>
+                    <a href="#" class="profile-menu-item" id="theme-toggle-menu">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <span id="theme-text">Tema Claro</span>
+                    </a>
+                    <hr>
+                    <a href="/" class="profile-menu-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        Sair
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Painel de Notificações -->
+    <div class="notifications-panel" id="notifications-panel">
+        <div class="notifications-header">
+            <h3>Notificações</h3>
+            <button class="close-btn" id="close-notif">✕</button>
+        </div>
+        <div class="notifications-list" id="notifications-list">
+            <p class="empty-message">Carregando...</p>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="/img/logoDark.jpeg" alt="Barbearia Silva">
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-link active" data-page="dashboard">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="#" class="nav-link" data-page="barbeiros">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <span>Barbeiros</span>
+            </a>
+
+            <a href="#" class="nav-link" data-page="horarios">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                <span>Horários</span>
+            </a>
+
+            <a href="#" class="nav-link" data-page="servicos">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                </svg>
+                <span>Serviços</span>
+            </a>
+
+            <a href="#" class="nav-link" data-page="galeria">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <span>Galeria</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="/" class="btn-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                <span>Voltar ao Site</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard Page -->
+        <div id="dashboard-page" class="page active">
+            <div class="page-header">
+                <h1>Dashboard</h1>
+                <p>Bem-vindo ao painel administrativo</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(13, 124, 164, 0.1);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0D7CA4" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="stat-hoje">0</h3>
+                        <p>Agendamentos Hoje</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(76, 175, 80, 0.1);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="stat-semana">0</h3>
+                        <p>Esta Semana</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(255, 152, 0, 0.1);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF9800" stroke-width="2">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="stat-mes">0</h3>
+                        <p>Este Mês</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(156, 39, 176, 0.1);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9C27B0" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="stat-total">R$ 0</h3>
+                        <p>Receita do Mês</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Agendamentos Recentes</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="recent-bookings" class="bookings-list">
+                            <p class="empty-message">Carregando...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Serviços Mais Realizados</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="top-services" class="services-list">
+                            <p class="empty-message">Carregando...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barbeiros Page -->
+        <div id="barbeiros-page" class="page">
+            <div class="page-header">
+                <h1>Cadastro de Barbeiros</h1>
+                <p>Gerencie os barbeiros da equipe</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Novo Barbeiro</h2>
+                </div>
+                <div class="card-body">
+                    <form id="barber-form" class="form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="barber-name">Nome Completo *</label>
+                                <input type="text" id="barber-name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="barber-email">E-mail</label>
+                                <input type="email" id="barber-email">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="barber-phone">Telefone</label>
+                                <input type="tel" id="barber-phone" placeholder="(61) 00000-0000">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="barber-specialty">Especialidade</label>
+                                <input type="text" id="barber-specialty" placeholder="Ex: Cortes modernos">
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary" id="clear-form">Limpar</button>
+                            <button type="submit" class="btn-primary">Cadastrar Barbeiro</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Barbeiros Cadastrados</h2>
+                </div>
+                <div class="card-body">
+                    <div id="barbers-list" class="table-responsive">
+                        <p class="empty-message">Carregando...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Horários Page -->
+        <div id="horarios-page" class="page">
+            <div class="page-header">
+                <h1>Gestão de Horários</h1>
+                <p>Gerencie os agendamentos e horários de trabalho</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Agendamentos Pendentes</h2>
+                </div>
+                <div class="card-body">
+                    <div id="pending-bookings" class="table-responsive">
+                        <p class="empty-message">Carregando...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Todos os Agendamentos</h2>
+                </div>
+                <div class="card-body">
+                    <div id="all-bookings" class="table-responsive">
+                        <p class="empty-message">Carregando...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Serviços Page -->
+        <div id="servicos-page" class="page">
+            <div class="page-header">
+                <h1>Serviços e Produtos</h1>
+                <p>Gerencie os serviços prestados e produtos vendidos</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Novo Serviço/Produto</h2>
+                </div>
+                <div class="card-body">
+                    <form id="service-form" class="form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="service-name">Nome *</label>
+                                <input type="text" id="service-name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="service-type">Tipo *</label>
+                                <select id="service-type" required>
+                                    <option value="">Selecione</option>
+                                    <option value="servico">Serviço</option>
+                                    <option value="produto">Produto</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="service-price">Preço (R$) *</label>
+                                <input type="number" id="service-price" step="0.01" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="service-duration">Duração (min)</label>
+                                <input type="number" id="service-duration" placeholder="Ex: 30">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="service-description">Descrição</label>
+                            <textarea id="service-description" rows="3"></textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary" id="clear-service-form">Limpar</button>
+                            <button type="submit" class="btn-primary">Cadastrar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Serviços e Produtos Cadastrados</h2>
+                </div>
+                <div class="card-body">
+                    <div id="services-list" class="table-responsive">
+                        <p class="empty-message">Carregando...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Galeria Page -->
+        <div id="galeria-page" class="page">
+            <div class="page-header">
+                <h1>Galeria de Imagens</h1>
+                <p>Adicione fotos e vídeos dos trabalhos realizados</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Adicionar Mídia</h2>
+                </div>
+                <div class="card-body">
+                    <form id="gallery-form" class="form">
+                        <div class="form-group">
+                            <label for="gallery-title">Título</label>
+                            <input type="text" id="gallery-title" placeholder="Ex: Corte Moderno">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Upload de Imagem/Vídeo</label>
+                            <div class="upload-area" id="upload-area">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                                <p>Clique ou arraste arquivos aqui</p>
+                                <p class="small">Imagens (JPG, PNG) ou Vídeos (MP4)</p>
+                                <input type="file" id="gallery-file" accept="image/*,video/*" hidden>
+                            </div>
+                            <div id="preview-area" class="preview-area"></div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Adicionar à Galeria</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Galeria</h2>
+                </div>
+                <div class="card-body">
+                    <div id="gallery-grid" class="gallery-grid">
+                        <p class="empty-message">Nenhuma mídia adicionada ainda</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <nav class="bottom-nav-dash">
+        <a href="#" class="nav-item-dash active" data-page="dashboard">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item-dash" data-page="barbeiros">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>Barbeiros</span>
+        </a>
+        <a href="#" class="nav-item-dash" data-page="horarios">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span>Horários</span>
+        </a>
+        <a href="#" class="nav-item-dash" data-page="servicos">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+            </svg>
+            <span>Serviços</span>
+        </a>
+        <a href="#" class="nav-item-dash" data-page="galeria">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+            <span>Galeria</span>
+        </a>
+    </nav>
+
+    <script src="/dashboard/js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+/*--Icon sun--*/
+.sun img{
+    cursor: pointer;
+    width: 48px;
+}
+
+/*--Body modo--*/
+.bodyblack{
+    background-color: #18191C;
+}
+
+/*--foto barber--*/
+.barberBalck{
+    width: 100%;
+    height: auto;
+    min-height: 500px;
+    margin: 60px 0px;
+    padding: 60px 40px;
+    background-color: #282828;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 80px;
+}
+
+.barberBalck .foto-alison{
+    width: 350px;
+    height: 350px;
+    background-image: url(/img/alissonFt.png);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 30px;
+}
+
+.img-ft{
+    width: 100%;
+    height: 100%;
+    border-radius: 30px;
+    background-color: #0000006a;
+}
+
+.barberBalck h3{
+    font-size: 90px;
+    font-family: "Secular One", sans-serif;
+    color: #CBCBCB;
+    letter-spacing: 5px;
+}
+/*--Aside tag "p"--*/
+.asideBlack p {
+    color: white;
+}
+
+/*--Cards black--*/
+.CardBalck{
+    width: 90%;
+    max-width: 1400px;
+    margin: 60px auto;
+    padding: 40px 20px;
+    display: flex;
+    min-height: 450px;
+    border-radius: 20px;
+    background-color: #282828;
+    justify-content: space-evenly;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+}
+
+.card, .cardTextBlack{
+    height: 380px;
+    width: 260px;
+    margin: 10px;
+    background-color: #090A0C;
+    border-radius: 20px;
+    transition: transform 0.3s ease;
+}
+
+.card:hover{
+    transform: translateY(-10px);
+}
+
+.card-img, .card-img img{
+    width: 240px;
+    margin: 10px auto;
+    border-radius: 20px;
+    object-fit: cover;
+}
+
+.card .paragrafo, .info{
+    color: white;
+    width: 240px;
+    text-align: left    ;
+    margin: 10px  auto auto 25px;
+}
+
+.paragrafo p {
+    font-size: 15px;
+    font-family: "Poppins",sans-serif;
+}
+
+.info{
+    display: flex;
+    flex-direction: row;
+    margin-top: 80px;
+    font-size: 20px;
+    justify-content: space-around;
+    width: 200px;
+}
+
+.cardTextBlack{
+    background-color: #00000000;
+}
+
+.cardTextBlack h2{
+    color: #f4f4f4;
+    font-family: "Poppins",sans-serif;
+    font-weight: bold;
+    margin: 20px;
+    text-align: left;
+    font-size: 50px;
+    line-height: 80px;
+}
+
+.cardTextBlack a{
+    background-color: #0D7CA4;
+    margin: 20px;
+    padding: 15px 35px;
+    border-radius: 10px 10px ;
+}
+
+
+/*--Animações--*/
+.cardTextBlack a:hover{
+  border-radius: 20px 10px;
+  transition: .2s;
+}

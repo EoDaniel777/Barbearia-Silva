@@ -1,0 +1,53 @@
+/*------ Poppins--------*/
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+/*.poppins-thin {
+  font-family: "Poppins", sans-serif;
+  font-weight: 100;
+  font-style: normal;
+}*/
+
+/*----- Secular One ----*/
+@import url('https://fonts.googleapis.com/css2?family=Secular+One&display=swap');
+
+/*.secular-one-regular {
+  font-family: "Secular One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+*/
+
+/*Animação*/
+ul li a{
+  transition: .2s;
+  display: block;
+
+}
+
+ul:hover li a{
+  opacity: 0.3;
+}
+
+ul li a:hover {
+  transform: scale(1.2);
+  opacity: 1;
+}
+
+.bc_black a{
+  transition: .2s;
+}
+
+.bc_black a:hover, .acessar-login-white:hover a{
+  transition: .2s;
+  color: black;
+  background-color: white;
+}
+
+.card-text a:hover{
+  border-radius: 20px 10px;
+  transition: .2s;
+}
+
+.card:hover {
+  transform: scale(1.1);
+  transition: .2s;
+}
