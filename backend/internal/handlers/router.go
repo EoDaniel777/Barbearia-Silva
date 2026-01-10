@@ -74,6 +74,7 @@ func SetupRouter() *gin.Engine {
 		horarios := v1.Group("/horarios")
 		{
 			horarios.GET("", horarioHandler.List)
+			horarios.GET("/disponibilidade", horarioHandler.GetDisponibilidade)
 			horarios.POST("", horarioHandler.Create)
 			horarios.PATCH("/:id/status", horarioHandler.UpdateStatus)
 			horarios.DELETE("/:id", horarioHandler.Delete)

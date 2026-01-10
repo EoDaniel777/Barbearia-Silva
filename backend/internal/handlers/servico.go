@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"backend/internal/database"
 	"backend/internal/models"
 	"net/http"
 
@@ -15,35 +16,63 @@ func NewServicoHandler() *ServicoHandler {
 
 // List all services
 func (h *ServicoHandler) List(c *gin.Context) {
-	// TODO: Implement database query
-	servicos := []models.Servico{
-		{
-			ID:        1,
-			Nome:      "Corte",
-			Descricao: "Seu corte em 30 minutos. Qualidade e agilidade que você precisa.",
-			Preco:     35.00,
-			Duracao:   30,
-			Ativo:     true,
-		},
-		{
-			ID:        2,
-			Nome:      "Barba",
-			Descricao: "Sua barba em 30 minutos. Qualidade e agilidade que você precisa.",
-			Preco:     35.00,
-			Duracao:   30,
-			Ativo:     true,
-		},
-		{
-			ID:        3,
-			Nome:      "Kids",
-			Descricao: "Seu corte kids em 30 minutos. Qualidade e agilidade que você precisa.",
-			Preco:     35.00,
-			Duracao:   30,
-			Ativo:     true,
-		},
+	rows, err := database.DB.Query(`
+		SELECT id, nome, descricao, preco, duracao, ativo, criado_em, atualizado_em
+		FROM servicos
+		WHERE ativo = 1
+		ORDER BY nome ASC
+	`)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao buscar serviços"})
+		return
+	}
+	defer rows.Close()
+
+	servicos := []models.Servico{}
+	for rows.Next() {
+		var s models.Servico
+		var descricao *string
+
+		err := rows.Scan(&s.ID, &s.Nome, &descricao, &s.Preco, &s.Duracao, &s.Ativo, &s.CreatedAt, &s.UpdatedAt)
+		if err != nil {
+			continue
+		}
+
+		// Handle nullable fields
+		if descricao != nil {
+			s.Descricao = *descricao
+		}
+
+		servicos = append(servicos, s)
 	}
 
 	c.JSON(http.StatusOK, servicos)
+}
+
+// Get a service by ID
+func (h *ServicoHandler) Get(c *gin.Context) {
+	id := c.Param("id")
+
+	var s models.Servico
+	var descricao *string
+
+	err := database.DB.QueryRow(`
+		SELECT id, nome, descricao, preco, duracao, ativo, criado_em, atualizado_em
+		FROM servicos
+		WHERE id = ?
+	`, id).Scan(&s.ID, &s.Nome, &descricao, &s.Preco, &s.Duracao, &s.Ativo, &s.CreatedAt, &s.UpdatedAt)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Serviço não encontrado"})
+		return
+	}
+
+	// Handle nullable fields
+	if descricao != nil {
+		s.Descricao = *descricao
+	}
+
+	c.JSON(http.StatusOK, s)
 }
 
 // Create a new service
@@ -55,9 +84,21 @@ func (h *ServicoHandler) Create(c *gin.Context) {
 		return
 	}
 
-	// TODO: Save to database
+	// Insert into database
+	result, err := database.DB.Exec(`
+		INSERT INTO servicos (nome, descricao, preco, duracao, ativo)
+		VALUES (?, ?, ?, ?, ?)
+	`, input.Nome, input.Descricao, input.Preco, input.Duracao, 1)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao criar serviço"})
+		return
+	}
+
+	id, _ := result.LastInsertId()
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "Serviço criado com sucesso",
+		"id":      id,
 		"data":    input,
 	})
 }
@@ -72,7 +113,18 @@ func (h *ServicoHandler) Update(c *gin.Context) {
 		return
 	}
 
-	// TODO: Update in database
+	// Update in database
+	_, err := database.DB.Exec(`
+		UPDATE servicos
+		SET nome = ?, descricao = ?, preco = ?, duracao = ?, atualizado_em = CURRENT_TIMESTAMP
+		WHERE id = ?
+	`, input.Nome, input.Descricao, input.Preco, input.Duracao, id)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao atualizar serviço"})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Serviço atualizado com sucesso",
 		"id":      id,
@@ -84,7 +136,18 @@ func (h *ServicoHandler) Update(c *gin.Context) {
 func (h *ServicoHandler) Delete(c *gin.Context) {
 	id := c.Param("id")
 
-	// TODO: Delete from database
+	// Soft delete - apenas marcar como inativo
+	_, err := database.DB.Exec(`
+		UPDATE servicos
+		SET ativo = 0, atualizado_em = CURRENT_TIMESTAMP
+		WHERE id = ?
+	`, id)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao remover serviço"})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Serviço removido com sucesso",
 		"id":      id,

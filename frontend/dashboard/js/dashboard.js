@@ -244,6 +244,7 @@ document.getElementById('barber-form')?.addEventListener('submit', async (e) => 
         nome: document.getElementById('barber-name').value,
         email: document.getElementById('barber-email').value,
         telefone: document.getElementById('barber-phone').value,
+        sexo: document.getElementById('barber-gender').value,
         especialidade: document.getElementById('barber-specialty').value
     };
 

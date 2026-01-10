@@ -48,44 +48,10 @@
                 <a href="/servicos" class="section-link">Ver todos →</a>
             </div>
 
-            <div class="cards-container">
-                <!-- Service Card 1 -->
-                <div class="modern-card">
-                    <img src="/img/meta.jpg" alt="Corte" class="card-image">
-                    <div class="card-content">
-                        <h3 class="card-title">Corte</h3>
-                        <p class="card-description">Corte profissional com técnicas modernas em 30 minutos</p>
-                        <div class="card-footer">
-                            <span class="card-price">R$ 35</span>
-                            <span class="card-duration">⏱️ 30 min</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Service Card 2 -->
-                <div class="modern-card">
-                    <img src="/img/barba.png" alt="Barba" class="card-image">
-                    <div class="card-content">
-                        <h3 class="card-title">Barba</h3>
-                        <p class="card-description">Design e acabamento com navalha e toalha quente</p>
-                        <div class="card-footer">
-                            <span class="card-price">R$ 35</span>
-                            <span class="card-duration">⏱️ 30 min</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Service Card 3 -->
-                <div class="modern-card">
-                    <img src="/img/kids.jpg" alt="Kids" class="card-image">
-                    <div class="card-content">
-                        <h3 class="card-title">Kids</h3>
-                        <p class="card-description">Corte especial para crianças em ambiente acolhedor</p>
-                        <div class="card-footer">
-                            <span class="card-price">R$ 35</span>
-                            <span class="card-duration">⏱️ 30 min</span>
-                        </div>
-                    </div>
+            <div class="cards-container" id="services-container">
+                <!-- Os serviços serão carregados dinamicamente via JavaScript -->
+                <div class="loading-message" style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                    Carregando serviços...
                 </div>
             </div>
         </section>
@@ -184,6 +150,56 @@
     </nav>
 
     <script>
+        // Load Services from API
+        async function loadServices() {
+            const container = document.getElementById('services-container');
+
+            try {
+                const response = await fetch('/api/v1/servicos');
+
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar serviços');
+                }
+
+                const servicos = await response.json();
+
+                // Map service names to images
+                const imageMap = {
+                    'Corte': '/img/meta.jpg',
+                    'Barba': '/img/barba.png',
+                    'Kids': '/img/kids.jpg',
+                    'Corte + Barba': '/img/meta.jpg'
+                };
+
+                // Generate cards HTML
+                container.innerHTML = servicos.map(servico => `
+                    <div class="modern-card">
+                        <img src="${imageMap[servico.nome] || '/img/meta.jpg'}" alt="${servico.nome}" class="card-image">
+                        <div class="card-content">
+                            <h3 class="card-title">${servico.nome}</h3>
+                            <p class="card-description">${servico.descricao || 'Serviço de qualidade'}</p>
+                            <div class="card-footer">
+                                <span class="card-price">R$ ${servico.preco.toFixed(2).replace('.', ',')}</span>
+                                <span class="card-duration">⏱️ ${servico.duracao} min</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Erro ao carregar serviços:', error);
+                container.innerHTML = `
+                    <div class="error-message" style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                        <p>Não foi possível carregar os serviços.</p>
+                        <p style="font-size: 14px; margin-top: 10px;">Por favor, tente novamente mais tarde.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Load services on page load
+        document.addEventListener('DOMContentLoaded', loadServices);
+
         // Theme Management
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');

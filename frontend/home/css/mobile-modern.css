@@ -179,8 +179,8 @@ body.light-mode .hero-section {
 }
 
 body.light-mode .hero-section::before {
-    filter: blur(18px) brightness(1.1) saturate(0.8);
-    opacity: 0.25;
+    filter: blur(15px) brightness(0.85) saturate(1.1) contrast(1.2);
+    opacity: 0.65;
 }
 
 /* Overlay adicional no modo claro para melhor contraste */
@@ -191,7 +191,7 @@ body.light-mode .hero-section::after {
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.3) 70%);
+    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 70%);
     z-index: 0;
 }
 

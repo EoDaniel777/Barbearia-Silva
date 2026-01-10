@@ -1,15 +1,14 @@
 package handlers
 
 import (
+	"backend/internal/database"
 	"backend/internal/models"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-type BarbeiroHandler struct {
-	// TODO: Add service layer
-}
+type BarbeiroHandler struct{}
 
 func NewBarbeiroHandler() *BarbeiroHandler {
 	return &BarbeiroHandler{}
@@ -23,15 +22,44 @@ func NewBarbeiroHandler() *BarbeiroHandler {
 // @Success 200 {array} models.Barbeiro
 // @Router /api/v1/barbeiros [get]
 func (h *BarbeiroHandler) List(c *gin.Context) {
-	// TODO: Implement database query
-	barbeiros := []models.Barbeiro{
-		{
-			ID:    1,
-			Nome:  "Alison Silva",
-			Email: "alison@barbearia.com",
-			Sexo:  "Masculino",
-			Ativo: true,
-		},
+	rows, err := database.DB.Query(`
+		SELECT id, nome, email, telefone, sexo, foto, especialidade, descricao, ativo, criado_em, atualizado_em
+		FROM barbeiros
+		WHERE ativo = 1
+		ORDER BY nome ASC
+	`)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao buscar barbeiros"})
+		return
+	}
+	defer rows.Close()
+
+	barbeiros := []models.Barbeiro{}
+	for rows.Next() {
+		var b models.Barbeiro
+		var telefone, foto, especialidade, descricao *string
+
+		err := rows.Scan(&b.ID, &b.Nome, &b.Email, &telefone, &b.Sexo, &foto,
+			&especialidade, &descricao, &b.Ativo, &b.CreatedAt, &b.UpdatedAt)
+		if err != nil {
+			continue
+		}
+
+		// Handle nullable fields
+		if telefone != nil {
+			b.Telefone = *telefone
+		}
+		if foto != nil {
+			b.Foto = *foto
+		}
+		if especialidade != nil {
+			b.Especialidade = *especialidade
+		}
+		if descricao != nil {
+			b.Descricao = *descricao
+		}
+
+		barbeiros = append(barbeiros, b)
 	}
 
 	c.JSON(http.StatusOK, barbeiros)
@@ -48,19 +76,36 @@ func (h *BarbeiroHandler) List(c *gin.Context) {
 func (h *BarbeiroHandler) Get(c *gin.Context) {
 	id := c.Param("id")
 
-	// TODO: Implement database query
-	barbeiro := models.Barbeiro{
-		ID:    1,
-		Nome:  "Alison Silva",
-		Email: "alison@barbearia.com",
-		Sexo:  "Masculino",
-		Ativo: true,
+	var b models.Barbeiro
+	var telefone, foto, especialidade, descricao *string
+
+	err := database.DB.QueryRow(`
+		SELECT id, nome, email, telefone, sexo, foto, especialidade, descricao, ativo, criado_em, atualizado_em
+		FROM barbeiros
+		WHERE id = ?
+	`, id).Scan(&b.ID, &b.Nome, &b.Email, &telefone, &b.Sexo, &foto,
+		&especialidade, &descricao, &b.Ativo, &b.CreatedAt, &b.UpdatedAt)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Barbeiro não encontrado"})
+		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"id":      id,
-		"barbeiro": barbeiro,
-	})
+	// Handle nullable fields
+	if telefone != nil {
+		b.Telefone = *telefone
+	}
+	if foto != nil {
+		b.Foto = *foto
+	}
+	if especialidade != nil {
+		b.Especialidade = *especialidade
+	}
+	if descricao != nil {
+		b.Descricao = *descricao
+	}
+
+	c.JSON(http.StatusOK, b)
 }
 
 // Create godoc
@@ -80,9 +125,21 @@ func (h *BarbeiroHandler) Create(c *gin.Context) {
 		return
 	}
 
-	// TODO: Save to database
+	// Insert into database
+	result, err := database.DB.Exec(`
+		INSERT INTO barbeiros (nome, email, telefone, sexo, foto, especialidade, ativo)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
+	`, input.Nome, input.Email, input.Telefone, input.Sexo, input.Foto, input.Especialidade, 1)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao criar barbeiro"})
+		return
+	}
+
+	id, _ := result.LastInsertId()
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "Barbeiro criado com sucesso",
+		"id":      id,
 		"data":    input,
 	})
 }
@@ -106,7 +163,18 @@ func (h *BarbeiroHandler) Update(c *gin.Context) {
 		return
 	}
 
-	// TODO: Update in database
+	// Update in database
+	_, err := database.DB.Exec(`
+		UPDATE barbeiros
+		SET nome = ?, email = ?, telefone = ?, sexo = ?, foto = ?, especialidade = ?, atualizado_em = CURRENT_TIMESTAMP
+		WHERE id = ?
+	`, input.Nome, input.Email, input.Telefone, input.Sexo, input.Foto, input.Especialidade, id)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao atualizar barbeiro"})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Barbeiro atualizado com sucesso",
 		"id":      id,
@@ -116,7 +184,7 @@ func (h *BarbeiroHandler) Update(c *gin.Context) {
 
 // Delete godoc
 // @Summary Delete a barber
-// @Description Delete a barber by ID
+// @Description Delete a barber by ID (soft delete)
 // @Tags barbeiros
 // @Produce json
 // @Param id path int true "Barber ID"
@@ -125,7 +193,18 @@ func (h *BarbeiroHandler) Update(c *gin.Context) {
 func (h *BarbeiroHandler) Delete(c *gin.Context) {
 	id := c.Param("id")
 
-	// TODO: Delete from database
+	// Soft delete - apenas marcar como inativo
+	_, err := database.DB.Exec(`
+		UPDATE barbeiros
+		SET ativo = 0, atualizado_em = CURRENT_TIMESTAMP
+		WHERE id = ?
+	`, id)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao remover barbeiro"})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Barbeiro removido com sucesso",
 		"id":      id,

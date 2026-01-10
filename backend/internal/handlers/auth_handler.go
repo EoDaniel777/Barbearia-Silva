@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthHandler struct{}
@@ -35,9 +36,9 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	// Verificar senha (em produção, usar bcrypt)
-	// Por enquanto, comparação direta para testes
-	if user.Senha != req.Senha {
+	// Verificar senha com bcrypt
+	err = bcrypt.CompareHashAndPassword([]byte(user.Senha), []byte(req.Senha))
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Email ou senha incorretos"})
 		return
 	}
@@ -67,11 +68,18 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		user.Tipo = "cliente"
 	}
 
-	// Inserir usuário
+	// Hash da senha
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Senha), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao processar senha"})
+		return
+	}
+
+	// Inserir usuário com senha hasheada
 	result, err := database.DB.Exec(`
 		INSERT INTO usuarios (nome, email, senha, telefone, tipo)
 		VALUES (?, ?, ?, ?, ?)
-	`, user.Nome, user.Email, user.Senha, user.Telefone, user.Tipo)
+	`, user.Nome, user.Email, string(hashedPassword), user.Telefone, user.Tipo)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao criar usuário"})

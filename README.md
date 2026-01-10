@@ -2,10 +2,10 @@
 
 <div align="center">
 
-![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow)
+![Status](https://img.shields.io/badge/Status-Beta-blue)
 ![Go](https://img.shields.io/badge/Go-1.25.4-00ADD8?logo=go)
 ![License](https://img.shields.io/badge/License-MIT-blue)
-![Version](https://img.shields.io/badge/Version-2.0.0-green)
+![Version](https://img.shields.io/badge/Version-3.0.0-green)
 
 **Sistema Web Full-Stack para Gestão e Agendamento de Serviços em Barbearias**
 
@@ -115,36 +115,49 @@ Criar uma plataforma integrada que simplifique a rotina das barbearias, permitin
 ## 📦 Instalação
 
 ### Pré-requisitos
+- **Go 1.25.4+** instalado ([Download](https://go.dev/dl/))
 - Navegador web moderno (Chrome, Firefox, Safari, Edge)
-- Servidor local (opcional: Live Server, http-server)
 
 ### Passos
 
 1. **Clone o repositório**
 ```bash
 git clone https://github.com/seu-usuario/System-Barbearia-AS.git
+cd System-Barbearia-AS
 ```
 
-2. **Navegue até o diretório**
+2. **Instale as dependências do backend**
 ```bash
-cd System-Barbearia-AS-prod/Front-Barbearia-home
+cd backend
+go mod download
 ```
 
-3. **Abra o projeto**
-- Opção 1: Abra `home.html` diretamente no navegador
-- Opção 2: Use um servidor local
+3. **Inicie o servidor**
 ```bash
-# Com Live Server (VSCode)
-# Clique com botão direito em home.html > Open with Live Server
-
-# Ou use http-server
-npx http-server -p 8080
+cd cmd/api
+go run main.go
 ```
+
+O servidor iniciará em `http://localhost:8080` e criará automaticamente:
+- Banco de dados SQLite em `backend/cmd/api/data/barbearia.db`
+- Usuário admin: `admin@barbearia.com` / `admin123`
+- Usuário cliente teste: `cliente@teste.com` / `cliente123`
+- Barbeiro padrão: Alison Silva
+- 4 Serviços: Corte, Barba, Kids, Corte + Barba
 
 4. **Acesse no navegador**
 ```
-http://localhost:8080/home.html
+http://localhost:8080
 ```
+
+### 🎯 Rotas Principais
+- `/` - Página inicial
+- `/login` - Login de usuários
+- `/agendar` - Agendamento de horários (requer login)
+- `/dashboard` - Painel administrativo (requer login admin)
+
+### 💡 Dica
+O sistema funciona em Windows e Linux sem necessidade de compiladores C (CGO-free)!
 
 ---
 
@@ -279,26 +292,31 @@ System-Barbearia-AS-prod/
 - [x] Catálogo de serviços
 - [x] Seção de barbeiros
 
-### 🚧 Fase 2 - Backend (Em Desenvolvimento)
-- [ ] API REST para agendamentos
-- [ ] Banco de dados (PostgreSQL/MySQL)
-- [ ] Sistema de autenticação
-- [ ] Painel administrativo
-- [ ] Gerenciamento de horários
+### ✅ Fase 2 - Backend Completo (Concluído)
+- [x] API REST completa para agendamentos
+- [x] Banco de dados SQLite funcional
+- [x] Sistema de autenticação com bcrypt
+- [x] Painel administrativo funcional
+- [x] Gerenciamento de horários e disponibilidade
+- [x] CRUD de barbeiros e serviços
+- [x] Sistema de notificações
+- [x] Compatibilidade Windows/Linux (sem CGO)
 
-### 📋 Fase 3 - Funcionalidades Avançadas (Planejado)
-- [ ] Sistema de agendamento online
+### ✅ Fase 3 - Agendamento Online (Concluído)
+- [x] Sistema de agendamento online completo
+- [x] Verificação de disponibilidade em tempo real
+- [x] Página de login funcional
+- [x] Integração frontend com API
+- [x] Carregamento dinâmico de serviços
+- [x] Dashboard com métricas
+
+### 📋 Fase 4 - Melhorias Futuras (Planejado)
 - [ ] Notificações por email/SMS
-- [ ] Integração com calendário
-- [ ] Dashboard de métricas
-- [ ] Sistema de avaliações
-
-### 🎯 Fase 4 - Otimizações (Futuro)
 - [ ] PWA (Progressive Web App)
 - [ ] Pagamentos online
+- [ ] Sistema de avaliações
+- [ ] Analytics e relatórios detalhados
 - [ ] Chatbot de atendimento
-- [ ] App mobile nativo
-- [ ] Analytics e relatórios
 
 ---
 
@@ -360,6 +378,40 @@ System-Barbearia-AS-prod/
 
 ---
 
+## 🔌 APIs Disponíveis
+
+### Autenticação
+- **POST** `/api/v1/auth/login` - Login de usuários
+- **POST** `/api/v1/auth/register` - Registro de novos clientes
+- **GET** `/api/v1/auth/me` - Informações do usuário logado
+
+### Barbeiros
+- **GET** `/api/v1/barbeiros` - Listar todos os barbeiros ativos
+- **GET** `/api/v1/barbeiros/:id` - Buscar barbeiro por ID
+- **POST** `/api/v1/barbeiros` - Criar novo barbeiro (admin)
+- **PUT** `/api/v1/barbeiros/:id` - Atualizar barbeiro (admin)
+- **DELETE** `/api/v1/barbeiros/:id` - Desativar barbeiro (admin)
+
+### Serviços
+- **GET** `/api/v1/servicos` - Listar todos os serviços ativos
+- **GET** `/api/v1/servicos/:id` - Buscar serviço por ID
+- **POST** `/api/v1/servicos` - Criar novo serviço (admin)
+- **PUT** `/api/v1/servicos/:id` - Atualizar serviço (admin)
+- **DELETE** `/api/v1/servicos/:id` - Desativar serviço (admin)
+
+### Agendamentos
+- **GET** `/api/v1/horarios` - Listar todos os agendamentos
+- **GET** `/api/v1/horarios/disponibilidade` - Verificar horários disponíveis
+- **POST** `/api/v1/horarios` - Criar novo agendamento
+- **PATCH** `/api/v1/horarios/:id/status` - Atualizar status do agendamento
+- **DELETE** `/api/v1/horarios/:id` - Cancelar agendamento
+
+### Notificações
+- **GET** `/api/v1/notifications` - Listar notificações do usuário
+- **PATCH** `/api/v1/notifications/:id/read` - Marcar notificação como lida
+
+---
+
 ## 📄 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
@@ -388,6 +440,40 @@ Contribuições são bem-vindas! Para contribuir:
 ---
 
 ## 📝 Changelog
+
+### [3.0.0] - 2026-01-10
+#### Adicionado Backend
+- API REST completa com Go + Gin Framework
+- Banco de dados SQLite (compatível Windows/Linux sem CGO)
+- Sistema de autenticação com bcrypt
+- CRUD completo de Barbeiros e Serviços
+- Sistema de gerenciamento de horários de trabalho
+- Verificação de disponibilidade em tempo real
+- Sistema de notificações
+- Dashboard administrativo funcional
+- Seeds automáticos para dados iniciais
+
+#### Adicionado Frontend
+- Página de login com autenticação completa
+- Página de agendamento online integrada com API
+- Carregamento dinâmico de serviços da API
+- Verificação de horários disponíveis
+- Seleção de barbeiro, serviço, data e hora
+- Feedback visual em todas as interações
+- Proteção de rotas (redirecionamento para login)
+
+#### Melhorado
+- UI/UX mobile em todas as páginas
+- Performance no carregamento de dados
+- Segurança com hash de senhas
+- Tratamento de erros consistente
+
+### [2.0.0] - 2025-12-26
+#### Adicionado
+- Estrutura do backend em Go
+- Configuração inicial do banco de dados
+- Sistema de notificações
+- Dashboard base
 
 ### [1.0.0] - 2025-11-23
 #### Adicionado
