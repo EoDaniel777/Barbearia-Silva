@@ -5,7 +5,7 @@
 ![Status](https://img.shields.io/badge/Status-Beta-blue)
 ![Go](https://img.shields.io/badge/Go-1.25.4-00ADD8?logo=go)
 ![License](https://img.shields.io/badge/License-MIT-blue)
-![Version](https://img.shields.io/badge/Version-3.0.0-green)
+![Version](https://img.shields.io/badge/Version-3.1.0-green)
 
 **Sistema Web Full-Stack para Gestão e Agendamento de Serviços em Barbearias**
 
@@ -51,12 +51,6 @@ Criar uma plataforma integrada que simplifique a rotina das barbearias, permitin
 ---
 
 ## ✨ Funcionalidades
-
-### 🌓 Tema Claro/Escuro
-- Alternância entre modo claro e escuro
-- Persistência de preferência do usuário via LocalStorage
-- Aplicação automática do tema escolhido
-- Design otimizado para ambos os modos
 
 ### 📱 Design Responsivo
 - Layout adaptativo para todos os dispositivos
@@ -107,7 +101,7 @@ Criar uma plataforma integrada que simplifique a rotina das barbearias, permitin
 ### Design
 - **Mobile-First** - Prioridade para dispositivos móveis
 - **Responsive Design** - Adaptação automática de layout
-- **CSS Variables** - Temas claro/escuro dinâmicos
+- **CSS Variables** - Customização de cores e estilos
 - **Smooth Transitions** - Animações e transições suaves
 
 ---
@@ -202,22 +196,16 @@ System-Barbearia-AS-prod/
 
 ## 🎨 Paleta de Cores
 
-### Modo Claro
 ```css
---background-primary: #090A0C     /* Fundo escuro */
---background-secondary: #F0F0F0   /* Cards (cinza claro) */
---accent-color: #0D7CA4           /* Azul (botões/CTAs) */
---text-primary: #FFFFFF           /* Texto branco */
---text-secondary: #CBCBCB         /* Cinza claro */
-```
-
-### Modo Escuro
-```css
---background-primary: #18191C     /* Cinza escuro */
---background-secondary: #282828   /* Cards (cinza médio) */
---accent-color: #0D7CA4           /* Azul (botões/CTAs) */
---text-primary: #FFFFFF           /* Texto branco */
---text-secondary: #F4F4F4         /* Texto cinza claro */
+--primary-color: #0D7CA4          /* Azul primário (botões/CTAs) */
+--background: #F3F4F6             /* Fundo claro */
+--bg-card: #FFFFFF                /* Cards brancos */
+--text-primary: #1C1C1E           /* Texto principal */
+--text-secondary: #6B7280         /* Texto secundário */
+--border-color: #E5E7EB           /* Bordas */
+--success: #4CAF50                /* Verde (sucesso) */
+--warning: #FF9800                /* Laranja (aviso) */
+--error: #F44336                  /* Vermelho (erro) */
 ```
 
 ---
@@ -243,7 +231,7 @@ System-Barbearia-AS-prod/
 - Logo da barbearia
 - Menu de navegação (Início, Serviços, Agendar, Barbeiros)
 - Botão de acesso/login
-- Toggle de tema claro/escuro
+- Notificações e perfil do usuário
 
 ### Main
 - **Seção Logo**: Apresentação visual da marca
@@ -261,12 +249,12 @@ System-Barbearia-AS-prod/
 
 ## 🔧 Funcionalidades Técnicas
 
-### Theme Switcher (blackMode.js)
+### Sistema de Toasts
 ```javascript
-// Alterna entre temas claro e escuro
-// Persiste preferência em localStorage
-// Atualiza classes CSS dinamicamente
-// Troca ícones (sol/lua)
+// Notificações visuais modernas
+// 4 tipos: success, error, warning, info
+// Auto-fechamento após 5 segundos
+// Animações suaves de entrada/saída
 ```
 
 ### Responsividade
@@ -287,10 +275,10 @@ System-Barbearia-AS-prod/
 
 ### ✅ Fase 1 - Frontend Base (Concluído)
 - [x] Design da página inicial
-- [x] Sistema de temas claro/escuro
 - [x] Layout responsivo completo
-- [x] Catálogo de serviços
-- [x] Seção de barbeiros
+- [x] Catálogo de serviços dinâmico
+- [x] Seção de barbeiros com múltiplos profissionais
+- [x] Sistema de toasts moderno
 
 ### ✅ Fase 2 - Backend Completo (Concluído)
 - [x] API REST completa para agendamentos
@@ -440,6 +428,28 @@ Contribuições são bem-vindas! Para contribuir:
 ---
 
 ## 📝 Changelog
+
+### [3.1.0] - 2026-01-11
+#### Adicionado
+- Sistema de toasts moderno substituindo alerts
+- Upload de fotos para barbeiros e perfil admin
+- Modal de perfil do administrador
+- Múltiplos barbeiros na home (carregamento dinâmico)
+- Foto do perfil aparece no botão profile-btn
+- Campo "tipo" em serviços (serviço/produto)
+
+#### Reorganizado
+- Estrutura frontend em admin/, client/ e shared/
+- Separação clara entre área administrativa e cliente
+- Rotas do backend atualizadas para nova estrutura
+
+#### Melhorado
+- Layout do dashboard (card "Este Mês" expandido)
+- Grid responsivo de barbeiros (1/2/3 colunas)
+- Todas as notificações agora usam toasts visuais
+
+#### Temporariamente Desabilitado
+- Toggle de tema claro/escuro (aguardando correções)
 
 ### [3.0.0] - 2026-01-10
 #### Adicionado Backend
