@@ -6,6 +6,7 @@ import "time"
 type Servico struct {
 	ID        uint      `json:"id"`
 	Nome      string    `json:"nome" binding:"required"`
+	Tipo      string    `json:"tipo"` // "servico" ou "produto"
 	Descricao string    `json:"descricao"`
 	Preco     float64   `json:"preco" binding:"required,min=0"`
 	Duracao   int       `json:"duracao"` // em minutos
@@ -17,6 +18,7 @@ type Servico struct {
 // ServicoInput é usado para criar/atualizar serviços
 type ServicoInput struct {
 	Nome      string  `json:"nome" binding:"required"`
+	Tipo      string  `json:"tipo" binding:"required,oneof=servico produto"`
 	Descricao string  `json:"descricao"`
 	Preco     float64 `json:"preco" binding:"required,min=0"`
 	Duracao   int     `json:"duracao" binding:"required,min=1"`

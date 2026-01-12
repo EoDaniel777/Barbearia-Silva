@@ -102,12 +102,9 @@
                 <a href="/barbeiros" class="section-link">Ver perfil →</a>
             </div>
 
-            <div class="barber-card">
-                <div class="barber-photo">
-                    <img src="/img/alissonFt.png" alt="Alison Silva">
-                </div>
-                <h3 class="barber-name">Alison Silva</h3>
-                <p class="barber-role">Barbeiro Profissional</p>
+            <div class="barbers-grid" id="barbers-grid">
+                <!-- Barbeiros carregados dinamicamente -->
+                <p style="text-align: center; color: #888;">Carregando barbeiros...</p>
             </div>
         </section>
 
@@ -197,46 +194,93 @@
             }
         }
 
-        // Load services on page load
-        document.addEventListener('DOMContentLoaded', loadServices);
+        // Load Barbers from API
+        async function loadBarbers() {
+            const container = document.getElementById('barbers-grid');
 
-        // Theme Management
-        const themeToggle = document.getElementById('themeToggle');
-        const themeIcon = document.getElementById('themeIcon');
-        const body = document.body;
-        const headerLogo = document.getElementById('headerLogo');
-        const heroLogo = document.getElementById('heroLogo');
-        const footerLogo = document.getElementById('footerLogo');
+            try {
+                const response = await fetch('/api/v1/barbeiros');
 
-        // Load saved theme
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        applyTheme(savedTheme);
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar barbeiros');
+                }
 
-        // Theme toggle
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = body.classList.contains('light-mode') ? 'light' : 'dark';
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            applyTheme(newTheme);
-            localStorage.setItem('theme', newTheme);
-        });
+                const barbeiros = await response.json();
 
-        function applyTheme(theme) {
-            if (theme === 'light') {
-                body.classList.add('light-mode');
-                themeIcon.src = '/icons/sun.svg';
-                // Light mode = white header = white logo
-                headerLogo.src = '/img/logoWhite.jpeg';
-                heroLogo.src = '/img/logoWhite.jpeg';
-                footerLogo.src = '/img/logoWhite.jpeg';
-            } else {
-                body.classList.remove('light-mode');
-                themeIcon.src = '/icons/moon.png';
-                // Dark mode = black header = dark logo
-                headerLogo.src = '/img/logoDark.jpeg';
-                heroLogo.src = '/img/logoDark.jpeg';
-                footerLogo.src = '/img/logoDark.jpeg';
+                if (barbeiros.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #888;">Nenhum barbeiro cadastrado.</p>';
+                    return;
+                }
+
+                // Generate barber cards HTML
+                container.innerHTML = barbeiros.map(barbeiro => `
+                    <div class="barber-card">
+                        <div class="barber-photo">
+                            <img src="${barbeiro.foto || '/img/alissonFt.png'}" alt="${barbeiro.nome}">
+                        </div>
+                        <h3 class="barber-name">${barbeiro.nome}</h3>
+                        <p class="barber-role">${barbeiro.especialidade || 'Barbeiro Profissional'}</p>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Erro ao carregar barbeiros:', error);
+                container.innerHTML = `
+                    <div class="error-message" style="text-align: center; padding: 20px; color: var(--text-secondary);">
+                        <p>Não foi possível carregar os barbeiros.</p>
+                    </div>
+                `;
             }
         }
+
+        // Load services and barbers on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadServices();
+            loadBarbers();
+        });
+
+        /* ===================================
+           THEME TOGGLE (COMENTADO TEMPORARIAMENTE)
+           Remover comentários quando compatibilidade for corrigida
+           =================================== */
+
+        // Theme Management
+        // const themeToggle = document.getElementById('themeToggle');
+        // const themeIcon = document.getElementById('themeIcon');
+        // const body = document.body;
+        // const headerLogo = document.getElementById('headerLogo');
+        // const heroLogo = document.getElementById('heroLogo');
+        // const footerLogo = document.getElementById('footerLogo');
+
+        // Load saved theme
+        // const savedTheme = localStorage.getItem('theme') || 'dark';
+        // applyTheme(savedTheme);
+
+        // Theme toggle
+        // themeToggle.addEventListener('click', () => {
+        //     const currentTheme = body.classList.contains('light-mode') ? 'light' : 'dark';
+        //     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        //     applyTheme(newTheme);
+        //     localStorage.setItem('theme', newTheme);
+        // });
+
+        // function applyTheme(theme) {
+        //     if (theme === 'light') {
+        //         body.classList.add('light-mode');
+        //         themeIcon.src = '/icons/sun.svg';
+        //         // Light mode = white header = white logo
+        //         headerLogo.src = '/img/logoWhite.jpeg';
+        //         heroLogo.src = '/img/logoWhite.jpeg';
+        //         footerLogo.src = '/img/logoWhite.jpeg';
+        //     } else {
+        //         body.classList.remove('light-mode');
+        //         themeIcon.src = '/icons/moon.png';
+        //         // Dark mode = black header = dark logo
+        //         headerLogo.src = '/img/logoDark.jpeg';
+        //         heroLogo.src = '/img/logoDark.jpeg';
+        //         footerLogo.src = '/img/logoDark.jpeg';
+        //     }
+        // }
 
         // Active nav item
         const currentPage = window.location.pathname;

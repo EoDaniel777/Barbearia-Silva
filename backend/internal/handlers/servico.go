@@ -17,7 +17,7 @@ func NewServicoHandler() *ServicoHandler {
 // List all services
 func (h *ServicoHandler) List(c *gin.Context) {
 	rows, err := database.DB.Query(`
-		SELECT id, nome, descricao, preco, duracao, ativo, criado_em, atualizado_em
+		SELECT id, nome, tipo, descricao, preco, duracao, ativo, criado_em, atualizado_em
 		FROM servicos
 		WHERE ativo = 1
 		ORDER BY nome ASC
@@ -31,14 +31,19 @@ func (h *ServicoHandler) List(c *gin.Context) {
 	servicos := []models.Servico{}
 	for rows.Next() {
 		var s models.Servico
-		var descricao *string
+		var tipo, descricao *string
 
-		err := rows.Scan(&s.ID, &s.Nome, &descricao, &s.Preco, &s.Duracao, &s.Ativo, &s.CreatedAt, &s.UpdatedAt)
+		err := rows.Scan(&s.ID, &s.Nome, &tipo, &descricao, &s.Preco, &s.Duracao, &s.Ativo, &s.CreatedAt, &s.UpdatedAt)
 		if err != nil {
 			continue
 		}
 
 		// Handle nullable fields
+		if tipo != nil {
+			s.Tipo = *tipo
+		} else {
+			s.Tipo = "servico" // default
+		}
 		if descricao != nil {
 			s.Descricao = *descricao
 		}
@@ -86,9 +91,9 @@ func (h *ServicoHandler) Create(c *gin.Context) {
 
 	// Insert into database
 	result, err := database.DB.Exec(`
-		INSERT INTO servicos (nome, descricao, preco, duracao, ativo)
-		VALUES (?, ?, ?, ?, ?)
-	`, input.Nome, input.Descricao, input.Preco, input.Duracao, 1)
+		INSERT INTO servicos (nome, tipo, descricao, preco, duracao, ativo)
+		VALUES (?, ?, ?, ?, ?, ?)
+	`, input.Nome, input.Tipo, input.Descricao, input.Preco, input.Duracao, 1)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao criar serviço"})
@@ -116,9 +121,9 @@ func (h *ServicoHandler) Update(c *gin.Context) {
 	// Update in database
 	_, err := database.DB.Exec(`
 		UPDATE servicos
-		SET nome = ?, descricao = ?, preco = ?, duracao = ?, atualizado_em = CURRENT_TIMESTAMP
+		SET nome = ?, tipo = ?, descricao = ?, preco = ?, duracao = ?, atualizado_em = CURRENT_TIMESTAMP
 		WHERE id = ?
-	`, input.Nome, input.Descricao, input.Preco, input.Duracao, id)
+	`, input.Nome, input.Tipo, input.Descricao, input.Preco, input.Duracao, id)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao atualizar serviço"})

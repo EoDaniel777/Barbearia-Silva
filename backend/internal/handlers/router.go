@@ -24,19 +24,34 @@ func SetupRouter() *gin.Engine {
 
 	// Serve static files from frontend directories
 	// Path is relative to backend/cmd/api (where go run is executed)
-	// Home/Customer frontend
-	router.Static("/css", "../../../frontend/home/css")
-	router.Static("/js", "../../../frontend/home/js")
-	router.Static("/assets", "../../../frontend/home/assets")
-	router.Static("/icons", "../../../frontend/home/assets/icons")
-	router.Static("/img", "../../../frontend/home/assets/images")
 
+	// ===================================
+	// CLIENT AREA (Clientes/Usuários)
+	// ===================================
+	// Home/Customer frontend
+	router.Static("/css", "../../../frontend/client/home/css")
+	router.Static("/js", "../../../frontend/client/home/js")
+	router.Static("/assets", "../../../frontend/client/home/assets")
+	router.Static("/icons", "../../../frontend/client/home/assets/icons")
+	router.Static("/img", "../../../frontend/client/home/assets/images")
+
+	// ===================================
+	// ADMIN AREA (Administrativo)
+	// ===================================
 	// Dashboard frontend
-	router.Static("/dashboard/css", "../../../frontend/dashboard/css")
-	router.Static("/dashboard/js", "../../../frontend/dashboard/js")
-	router.Static("/dashboard/assets", "../../../frontend/dashboard/assets")
-	router.Static("/dashboard/icons", "../../../frontend/dashboard/assets/icons")
-	router.Static("/dashboard/img", "../../../frontend/dashboard/assets/images")
+	router.Static("/dashboard/css", "../../../frontend/admin/dashboard/css")
+	router.Static("/dashboard/js", "../../../frontend/admin/dashboard/js")
+	router.Static("/dashboard/assets", "../../../frontend/admin/dashboard/assets")
+	router.Static("/dashboard/icons", "../../../frontend/admin/dashboard/assets/icons")
+	router.Static("/dashboard/img", "../../../frontend/admin/dashboard/assets/images")
+
+	// ===================================
+	// SHARED AREA (Compartilhado)
+	// ===================================
+	// Login (shared between client and admin)
+	router.Static("/login/css", "../../../frontend/shared/login/css")
+	router.Static("/login/js", "../../../frontend/shared/login/js")
+	router.Static("/login/assets", "../../../frontend/shared/login/assets")
 
 	// Page routes
 	router.GET("/", pagesHandler.Home)
@@ -68,6 +83,10 @@ func SetupRouter() *gin.Engine {
 			barbeiros.POST("", barbeiroHandler.Create)
 			barbeiros.PUT("/:id", barbeiroHandler.Update)
 			barbeiros.DELETE("/:id", barbeiroHandler.Delete)
+
+			// Horários de trabalho do barbeiro
+			barbeiros.GET("/:id/horarios", barbeiroHandler.GetHorarios)
+			barbeiros.POST("/:id/horarios", barbeiroHandler.SaveHorarios)
 		}
 
 		// Horários (Schedules)

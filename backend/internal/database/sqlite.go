@@ -163,6 +163,23 @@ func runMigrations() error {
 		// então tentamos adicionar e ignoramos se já existir
 	}
 
+	// Adicionar coluna tipo à tabela servicos se não existir
+	_, err = DB.Exec(`
+		ALTER TABLE servicos ADD COLUMN tipo TEXT DEFAULT 'servico' CHECK(tipo IN ('servico', 'produto'))
+	`)
+	// Ignorar erro se a coluna já existir
+	if err != nil && err.Error() != "duplicate column name: tipo" {
+		// Coluna já existe, ignorar
+	}
+
+	// Atualizar coluna atualizado_em na tabela horarios_trabalho (estava faltando)
+	_, err = DB.Exec(`
+		ALTER TABLE horarios_trabalho ADD COLUMN atualizado_em DATETIME DEFAULT CURRENT_TIMESTAMP
+	`)
+	if err != nil && err.Error() != "duplicate column name: atualizado_em" {
+		// Coluna já existe, ignorar
+	}
+
 	log.Println("✓ Migrações executadas com sucesso")
 	return nil
 }

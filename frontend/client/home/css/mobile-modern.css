@@ -485,12 +485,37 @@ body.light-mode .about-card h3 {
 }
 
 /* === BARBER PROFILE === */
+.barbers-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+}
+
+/* Múltiplos barbeiros: 2 colunas no mobile */
+@media (min-width: 480px) {
+    .barbers-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Desktop: 3 colunas */
+@media (min-width: 1024px) {
+    .barbers-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
 .barber-card {
     background: var(--bg-dark-card);
     border-radius: var(--border-radius);
     padding: var(--spacing-lg);
     text-align: center;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.barber-card:hover {
+    transform: translateY(-5px);
 }
 
 body.light-mode .barber-card {

@@ -25,7 +25,8 @@
             <!-- Perfil -->
             <div class="profile-dropdown">
                 <button class="profile-btn" id="profile-btn" aria-label="Perfil">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <img id="profile-btn-img" class="profile-btn-photo" src="" alt="Perfil" style="display: none;">
+                    <svg id="profile-btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                         <circle cx="12" cy="7" r="4"></circle>
                     </svg>
@@ -43,6 +44,7 @@
                         </svg>
                         Meu Perfil
                     </a>
+                    <!-- THEME TOGGLE COMENTADO TEMPORARIAMENTE
                     <a href="#" class="profile-menu-item" id="theme-toggle-menu">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="5"></circle>
@@ -57,6 +59,7 @@
                         </svg>
                         <span id="theme-text">Tema Claro</span>
                     </a>
+                    -->
                     <hr>
                     <a href="/" class="profile-menu-item">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -150,8 +153,7 @@
         <!-- Dashboard Page -->
         <div id="dashboard-page" class="page active">
             <div class="page-header">
-                <h1>Dashboard</h1>
-                <p>Bem-vindo ao painel administrativo</p>
+                <h1>Bem-vindo ao painel administrativo</h1>
             </div>
 
             <div class="stats-grid">
@@ -183,7 +185,7 @@
                     </div>
                 </div>
 
-                <div class="stat-card">
+                <div class="stat-card stat-card-large">
                     <div class="stat-icon" style="background: rgba(255, 152, 0, 0.1);">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF9800" stroke-width="2">
                             <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
@@ -196,7 +198,8 @@
                     </div>
                 </div>
 
-                <div class="stat-card">
+                <!-- Card de Receita comentado para uso futuro -->
+                <!-- <div class="stat-card">
                     <div class="stat-icon" style="background: rgba(156, 39, 176, 0.1);">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9C27B0" stroke-width="2">
                             <line x1="12" y1="1" x2="12" y2="23"></line>
@@ -207,7 +210,7 @@
                         <h3 id="stat-total">R$ 0</h3>
                         <p>Receita do Mês</p>
                     </div>
-                </div>
+                </div> -->
             </div>
 
             <div class="content-grid">
@@ -238,8 +241,7 @@
         <!-- Barbeiros Page -->
         <div id="barbeiros-page" class="page">
             <div class="page-header">
-                <h1>Cadastro de Barbeiros</h1>
-                <p>Gerencie os barbeiros da equipe</p>
+                <h1>Gerencie os barbeiros da equipe</h1>
             </div>
 
             <div class="card">
@@ -304,8 +306,7 @@
         <!-- Horários Page -->
         <div id="horarios-page" class="page">
             <div class="page-header">
-                <h1>Gestão de Horários</h1>
-                <p>Gerencie os agendamentos e horários de trabalho</p>
+                <h1>Gerencie os agendamentos e horários de trabalho</h1>
             </div>
 
             <div class="card">
@@ -334,8 +335,7 @@
         <!-- Serviços Page -->
         <div id="servicos-page" class="page">
             <div class="page-header">
-                <h1>Serviços e Produtos</h1>
-                <p>Gerencie os serviços prestados e produtos vendidos</p>
+                <h1>Gerencie os serviços prestados e produtos vendidos</h1>
             </div>
 
             <div class="card">
@@ -400,8 +400,7 @@
         <!-- Galeria Page -->
         <div id="galeria-page" class="page">
             <div class="page-header">
-                <h1>Galeria de Imagens</h1>
-                <p>Adicione fotos e vídeos dos trabalhos realizados</p>
+                <h1>Adicione fotos e vídeos dos trabalhos realizados</h1>
             </div>
 
             <div class="card">
@@ -449,6 +448,245 @@
             </div>
         </div>
     </main>
+
+    <!-- Modal de Edição de Barbeiro -->
+    <div class="modal-overlay" id="editBarbeiroModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Barbeiro</h2>
+                <button class="modal-close" id="closeEditBarbeiroModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-barber-form">
+                    <input type="hidden" id="edit-barber-id">
+
+                    <!-- Foto do Barbeiro -->
+                    <div class="form-group">
+                        <label>Foto do Barbeiro</label>
+                        <div class="photo-upload-area" id="edit-photo-upload">
+                            <div class="photo-preview" id="edit-photo-preview">
+                                <img id="edit-preview-img" src="" alt="Preview" style="display: none;">
+                                <div class="photo-placeholder" id="edit-photo-placeholder">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                    <p>Clique para adicionar foto</p>
+                                </div>
+                            </div>
+                            <input type="file" id="edit-barber-photo" accept="image/*" hidden>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-barber-name">Nome Completo *</label>
+                        <input type="text" id="edit-barber-name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-barber-email">E-mail *</label>
+                        <input type="email" id="edit-barber-email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-barber-phone">Telefone</label>
+                        <input type="tel" id="edit-barber-phone" placeholder="(00) 00000-0000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-barber-gender">Sexo *</label>
+                        <select id="edit-barber-gender" required>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Feminino">Feminino</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-barber-specialty">Especialidade</label>
+                        <input type="text" id="edit-barber-specialty" placeholder="Ex: Cortes modernos">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelEditBarbeiro">Cancelar</button>
+                <button class="btn-primary" id="saveEditBarbeiro">Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Horários -->
+    <div class="modal-overlay" id="horariosModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Gerenciar Horários de Trabalho</h2>
+                <button class="modal-close" id="closeHorariosModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtitle">Defina os horários de trabalho para <strong id="barbeiro-nome-modal"></strong></p>
+
+                <div class="horarios-semana">
+                    <div class="dia-horario">
+                        <div class="dia-header">
+                            <input type="checkbox" id="dia-0" data-dia="0" checked>
+                            <label for="dia-0">Segunda-feira</label>
+                        </div>
+                        <div class="horario-inputs">
+                            <input type="time" id="inicio-0" value="09:00">
+                            <span>até</span>
+                            <input type="time" id="fim-0" value="18:00">
+                        </div>
+                    </div>
+
+                    <div class="dia-horario">
+                        <div class="dia-header">
+                            <input type="checkbox" id="dia-1" data-dia="1" checked>
+                            <label for="dia-1">Terça-feira</label>
+                        </div>
+                        <div class="horario-inputs">
+                            <input type="time" id="inicio-1" value="09:00">
+                            <span>até</span>
+                            <input type="time" id="fim-1" value="18:00">
+                        </div>
+                    </div>
+
+                    <div class="dia-horario">
+                        <div class="dia-header">
+                            <input type="checkbox" id="dia-2" data-dia="2" checked>
+                            <label for="dia-2">Quarta-feira</label>
+                        </div>
+                        <div class="horario-inputs">
+                            <input type="time" id="inicio-2" value="09:00">
+                            <span>até</span>
+                            <input type="time" id="fim-2" value="18:00">
+                        </div>
+                    </div>
+
+                    <div class="dia-horario">
+                        <div class="dia-header">
+                            <input type="checkbox" id="dia-3" data-dia="3" checked>
+                            <label for="dia-3">Quinta-feira</label>
+                        </div>
+                        <div class="horario-inputs">
+                            <input type="time" id="inicio-3" value="09:00">
+                            <span>até</span>
+                            <input type="time" id="fim-3" value="18:00">
+                        </div>
+                    </div>
+
+                    <div class="dia-horario">
+                        <div class="dia-header">
+                            <input type="checkbox" id="dia-4" data-dia="4" checked>
+                            <label for="dia-4">Sexta-feira</label>
+                        </div>
+                        <div class="horario-inputs">
+                            <input type="time" id="inicio-4" value="09:00">
+                            <span>até</span>
+                            <input type="time" id="fim-4" value="18:00">
+                        </div>
+                    </div>
+
+                    <div class="dia-horario">
+                        <div class="dia-header">
+                            <input type="checkbox" id="dia-5" data-dia="5" checked>
+                            <label for="dia-5">Sábado</label>
+                        </div>
+                        <div class="horario-inputs">
+                            <input type="time" id="inicio-5" value="09:00">
+                            <span>até</span>
+                            <input type="time" id="fim-5" value="14:00">
+                        </div>
+                    </div>
+
+                    <div class="dia-horario">
+                        <div class="dia-header">
+                            <input type="checkbox" id="dia-6" data-dia="6">
+                            <label for="dia-6">Domingo</label>
+                        </div>
+                        <div class="horario-inputs">
+                            <input type="time" id="inicio-6" value="09:00" disabled>
+                            <span>até</span>
+                            <input type="time" id="fim-6" value="14:00" disabled>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelHorariosModal">Cancelar</button>
+                <button class="btn-primary" id="saveHorarios">Salvar Horários</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Perfil do Administrador -->
+    <div class="modal-overlay" id="perfilAdminModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Meu Perfil</h2>
+                <button class="modal-close" id="closePerfilAdminModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="perfil-admin-form">
+                    <!-- Foto do Perfil -->
+                    <div class="form-group">
+                        <label>Foto de Perfil</label>
+                        <div class="photo-upload-area" id="perfil-photo-upload">
+                            <div class="photo-preview" id="perfil-photo-preview">
+                                <img id="perfil-preview-img" src="" alt="Preview" style="display: none;">
+                                <div class="photo-placeholder" id="perfil-photo-placeholder">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                    <p>Clique para adicionar foto</p>
+                                </div>
+                            </div>
+                            <input type="file" id="perfil-admin-photo" accept="image/*" hidden>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="perfil-admin-name">Nome Completo *</label>
+                        <input type="text" id="perfil-admin-name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="perfil-admin-email">E-mail *</label>
+                        <input type="email" id="perfil-admin-email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="perfil-admin-phone">Telefone</label>
+                        <input type="tel" id="perfil-admin-phone" placeholder="(00) 00000-0000">
+                    </div>
+
+                    <hr style="margin: 24px 0; border: none; border-top: 1px solid var(--border-color);">
+                    <h3 style="font-size: 16px; margin-bottom: 16px;">Alterar Senha</h3>
+
+                    <div class="form-group">
+                        <label for="perfil-admin-senha-atual">Senha Atual</label>
+                        <input type="password" id="perfil-admin-senha-atual">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="perfil-admin-senha-nova">Nova Senha</label>
+                        <input type="password" id="perfil-admin-senha-nova">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="perfil-admin-senha-confirmar">Confirmar Nova Senha</label>
+                        <input type="password" id="perfil-admin-senha-confirmar">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelPerfilAdmin">Cancelar</button>
+                <button class="btn-primary" id="savePerfilAdmin">Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
 
     <!-- Bottom Navigation (Mobile) -->
     <nav class="bottom-nav-dash">
