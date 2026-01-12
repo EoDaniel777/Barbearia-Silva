@@ -158,38 +158,78 @@ O sistema funciona em Windows e Linux sem necessidade de compiladores C (CGO-fre
 ## 📁 Estrutura do Projeto
 
 ```
-System-Barbearia-AS-prod/
+System-Barbearia-AS/
 │
-├── README.md                          # Documentação do projeto
+├── README.md                          # Documentação unificada do projeto
 │
-└── Front-Barbearia-home/              # Frontend da aplicação
-    │
-    ├── home.html                      # Página principal
-    ├── blackMode.js                   # Gerenciador de temas
-    │
-    ├── css/                           # Folhas de estilo
-    │   ├── desktopHome.css           # Estilos desktop (principal)
-    │   ├── desktopHomeBlackMode.css  # Estilos modo escuro
-    │   ├── fontStyleHome.css         # Fontes e animações
-    │   ├── responsivo.css            # Media queries (modo claro)
-    │   └── responsivoBlack.css       # Media queries (modo escuro)
-    │
-    ├── icons/                         # Ícones da interface
-    │   ├── calendar2.svg             # Ícone de agendamento
-    │   ├── home.svg                  # Ícone de início
-    │   ├── moon.png                  # Ícone modo escuro
-    │   ├── sun.svg                   # Ícone modo claro
-    │   ├── person.svg                # Ícone de perfil
-    │   └── servico.svg               # Ícone de serviços
-    │
-    └── img/                           # Imagens e logos
-        ├── alissonFt.png             # Foto do barbeiro
-        ├── barba.png                 # Serviço de barba
-        ├── kids.jpg                  # Serviço kids
-        ├── logoDark.jpeg             # Logo modo escuro
-        ├── logoWhite.jpeg            # Logo modo claro
-        ├── maquina.jpg               # Background fidelidade
-        └── meta.jpg                  # Serviço de corte
+├── backend/                           # Backend em Go
+│   ├── cmd/
+│   │   └── api/
+│   │       ├── main.go               # Entry point da aplicação
+│   │       └── data/
+│   │           └── barbearia.db      # Banco de dados SQLite
+│   ├── internal/
+│   │   ├── handlers/                 # Controllers e rotas HTTP
+│   │   │   ├── auth.go              # Autenticação
+│   │   │   ├── barbeiro.go          # CRUD de barbeiros
+│   │   │   ├── horario.go           # Gestão de agendamentos
+│   │   │   ├── servico.go           # CRUD de serviços
+│   │   │   ├── pages.go             # Renderização de páginas
+│   │   │   └── router.go            # Configuração de rotas
+│   │   ├── models/                   # Modelos de dados
+│   │   │   ├── barbeiro.go          # Model de barbeiro
+│   │   │   ├── horario.go           # Model de agendamento
+│   │   │   ├── servico.go           # Model de serviço
+│   │   │   └── usuario.go           # Model de usuário
+│   │   └── database/
+│   │       └── sqlite.go             # Configuração e migrações do BD
+│   ├── go.mod                        # Dependências Go
+│   └── go.sum                        # Lock de dependências
+│
+├── frontend/                          # Frontend da aplicação
+│   │
+│   ├── admin/                        # 👨‍💼 ÁREA ADMINISTRATIVA
+│   │   └── dashboard/
+│   │       ├── index.html           # Dashboard administrativo
+│   │       ├── css/
+│   │       │   └── dashboard.css    # Estilos do dashboard
+│   │       └── js/
+│   │           └── dashboard.js     # Lógica do dashboard
+│   │
+│   ├── client/                       # 👤 ÁREA DO CLIENTE
+│   │   ├── home/
+│   │   │   ├── index.html           # Página inicial
+│   │   │   ├── css/
+│   │   │   │   ├── mobile-modern.css    # Estilos mobile
+│   │   │   │   ├── elite-design.css     # Design principal
+│   │   │   │   └── responsivo.css       # Media queries
+│   │   │   └── assets/
+│   │   │       ├── icons/           # Ícones (home, calendar, person)
+│   │   │       └── images/          # Imagens dos serviços
+│   │   ├── agendar/
+│   │   │   └── index.html           # Página de agendamento
+│   │   ├── barbeiros/
+│   │   │   └── index.html           # Perfil dos barbeiros
+│   │   └── servicos/
+│   │       └── index.html           # Catálogo de serviços
+│   │
+│   └── shared/                       # 🔄 COMPONENTES COMPARTILHADOS
+│       └── login/
+│           └── index.html            # Página de login
+│
+├── assets/                            # Assets globais
+│   ├── icons/                        # Ícones do sistema
+│   └── img/                          # Imagens globais
+│       ├── logoDark.jpeg            # Logo escuro
+│       ├── logoWhite.jpeg           # Logo claro
+│       ├── alissonFt.png            # Foto do barbeiro
+│       ├── barba.png                # Serviço de barba
+│       ├── kids.jpg                 # Serviço kids
+│       └── meta.jpg                 # Serviço de corte
+│
+└── docs/                              # Documentação e screenshots
+    ├── img01.png                     # Preview desktop
+    └── img02.png                     # Preview mobile
 ```
 
 ---
