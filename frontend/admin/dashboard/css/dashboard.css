@@ -167,13 +167,13 @@ body {
    =================================== */
 
 .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
     gap: 24px;
     margin-bottom: 32px;
 }
 
 .stat-card {
+    width: 500px;
     background: var(--bg-card);
     border-radius: 16px;
     padding: 24px;
@@ -1229,11 +1229,18 @@ tr:last-child td {
     }
 
     .stats-grid {
+        display: flex;
+        flex-wrap: wrap;
         grid-template-columns: repeat(2, 1fr) !important; /* FORÇAR 2x2 no mobile */
         gap: 12px !important;
     }
 
+    div#end-card{
+        width: 350px;
+    }
+
     .stat-card {
+        width: 170px;
         padding: 12px !important;
         flex-direction: column !important; /* Ícone em cima, texto embaixo */
         align-items: center !important;
