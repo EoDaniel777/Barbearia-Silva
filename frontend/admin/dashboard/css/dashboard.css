@@ -168,6 +168,7 @@ body {
 
 .stats-grid {
     display: flex;
+    justify-content: center;
     gap: 24px;
     margin-bottom: 32px;
 }
@@ -1189,6 +1190,7 @@ tr:last-child td {
    =================================== */
 
 @media (max-width: 1024px) {
+
     .sidebar {
         width: 240px;
     }
@@ -1230,17 +1232,18 @@ tr:last-child td {
 
     .stats-grid {
         display: flex;
+        justify-content: center;
         flex-wrap: wrap;
         grid-template-columns: repeat(2, 1fr) !important; /* FORÇAR 2x2 no mobile */
         gap: 12px !important;
     }
 
     div#end-card{
-        width: 350px;
+        width: 310px;
     }
 
     .stat-card {
-        width: 170px;
+        width: 150px;
         padding: 12px !important;
         flex-direction: column !important; /* Ícone em cima, texto embaixo */
         align-items: center !important;
