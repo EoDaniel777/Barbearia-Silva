@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -7,6 +8,7 @@
     <title>Barbearia Silva - Cortes Modernos e Profissionais</title>
     <link rel="stylesheet" href="/css/mobile-modern.css">
 </head>
+
 <body>
     <!-- Modern Header -->
     <header>
@@ -25,7 +27,7 @@
 
         <div class="header-actions">
             <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">
-              <img src="/icons/moon.png" id="themeIcon" alt="Tema">
+                <img src="/icons/moon.png" id="themeIcon" alt="Tema">
             </button>
         </div>
     </header>
@@ -33,7 +35,7 @@
     <!-- Hero Section -->
     <section class="hero-section">
         <div class="hero-logo">
-           <img src="./assets/images/logoSemFundo.png" id="heroLogo" alt="Barbearia Silva">
+            <img src="./assets/images/SemFundoBlack.png" id="heroLogo" alt="Barbearia Silva">
         </div>
         <h1 class="hero-title">Barbearia Silva</h1>
     </section>
@@ -66,24 +68,30 @@
                 <!-- About Barbershop -->
                 <div class="about-card">
                     <h3>A Barbearia</h3>
-                    <p>A Barbearia Silva é um espaço moderno e acolhedor, dedicado a oferecer serviços de qualidade premium com técnicas contemporâneas e atendimento personalizado.</p>
-                    <p>Localizada no coração de Morro Azul, nos destacamos pela excelência em cada corte e pela experiência única que proporcionamos aos nossos clientes.</p>
+                    <p>A Barbearia Silva é um espaço moderno e acolhedor, dedicado a oferecer serviços de qualidade
+                        premium com técnicas contemporâneas e atendimento personalizado.</p>
+                    <p>Localizada no coração de Morro Azul, nos destacamos pela excelência em cada corte e pela
+                        experiência única que proporcionamos aos nossos clientes.</p>
                 </div>
 
                 <!-- About Alison -->
                 <div class="about-card">
                     <img src="/img/alissonFt.png" alt="Alison Silva" class="about-image">
                     <h3>Alison Silva</h3>
-                    <p>Barbeiro profissional com anos de experiência em cortes modernos e clássicos. Especialista em design de barba e técnicas de finalização premium.</p>
-                    <p>Apaixonado pela arte da barbearia, Alison busca constantemente atualização em novas técnicas e tendências do mercado.</p>
+                    <p>Barbeiro profissional com anos de experiência em cortes modernos e clássicos. Especialista em
+                        design de barba e técnicas de finalização premium.</p>
+                    <p>Apaixonado pela arte da barbearia, Alison busca constantemente atualização em novas técnicas e
+                        tendências do mercado.</p>
                 </div>
 
                 <!-- Our Work -->
                 <div class="about-card">
                     <img src="/img/meta.jpg" alt="Nossos Cortes" class="about-image">
                     <h3>Nosso Trabalho</h3>
-                    <p>Trabalhamos com técnicas modernas de corte, degradê, barba e acabamentos profissionais que destacam o melhor de cada cliente.</p>
-                    <p>Cada serviço é realizado com atenção aos detalhes, garantindo resultados impecáveis e satisfação total.</p>
+                    <p>Trabalhamos com técnicas modernas de corte, degradê, barba e acabamentos profissionais que
+                        destacam o melhor de cada cliente.</p>
+                    <p>Cada serviço é realizado com atenção aos detalhes, garantindo resultados impecáveis e satisfação
+                        total.</p>
                 </div>
             </div>
         </section>
@@ -112,8 +120,8 @@
         <section class="section">
             <a href="/agendar" class="btn-primary">Agendar Meu Horário</a>
         </section>
-
     </div>
+
 
     <!-- Footer -->
     <footer>
@@ -244,42 +252,49 @@
            Remover comentários quando compatibilidade for corrigida
            =================================== */
         // Theme Management
-        // const themeToggle = document.getElementById('themeToggle');
-        // const themeIcon = document.getElementById('themeIcon');
-        // const body = document.body;
-        // const headerLogo = document.getElementById('headerLogo');
-        // const heroLogo = document.getElementById('heroLogo');
-        // const footerLogo = document.getElementById('footerLogo');
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const body = document.body;
+        const headerLogo = document.getElementById('headerLogo');
+        const heroLogo = document.getElementById('heroLogo');
+        const footerLogo = document.getElementById('footerLogo');
 
         // Load saved theme
-        // const savedTheme = localStorage.getItem('theme') || 'dark';
-        // applyTheme(savedTheme);
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        applyTheme(savedTheme);
 
         // Theme toggle
-        // themeToggle.addEventListener('click', () => {
-        //     const currentTheme = body.classList.contains('light-mode') ? 'light' : 'dark';
-        //     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        //     applyTheme(newTheme);
-        //     localStorage.setItem('theme', newTheme);
-        // });
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = body.classList.contains('theme-white') ? 'light' : 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
 
-        // function applyTheme(theme) {
-        //     if (theme === 'light') {
-        //         body.classList.add('light-mode');
-        //         themeIcon.src = '/icons/sun.svg';
-        //         // Light mode = white header = white logo
-        //         headerLogo.src = '/img/logoWhite.jpeg';
-        //         heroLogo.src = '/img/logoWhite.jpeg';
-        //         footerLogo.src = '/img/logoWhite.jpeg';
-        //     } else {
-        //         body.classList.remove('light-mode');
-        //         themeIcon.src = '/icons/moon.png';
-        //         // Dark mode = black header = dark logo
-        //         headerLogo.src = '/img/logoDark.jpeg';
-        //         heroLogo.src = '/img/logoDark.jpeg';
-        //         footerLogo.src = '/img/logoDark.jpeg';
-        //     }
-        // }
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                body.className = "theme-white";
+                themeIcon.src = '/icons/sun.svg';
+                // Light mode = white header = white logo
+                headerLogo.src = '/img/logoWhite.jpeg';
+                heroLogo.src = '/img/logoSemFundo.png';
+                footerLogo.src = '/img/SemFundoBlack.png';
+            } else {
+                body.classList.remove('theme-white');
+                themeIcon.src = '/icons/moon.png';
+                // Dark mode = black header = dark logo
+                headerLogo.src = '/img/logoSemFundo.png';
+                heroLogo.src = '/img/logoSemFundo.png';
+                footerLogo.src = '/img/logoSemFundo.png';
+            }
+        }
+
+       // const themeToggle = document.querySelector('#themeToggle');
+       // const body = document.querySelector('body');
+
+       // theme.addEventListener('click', () => {
+       //     const currentTheme = body.classList.contains('ligth-mode') ? 'ligth' : 'dark';
+       // });
 
         // Active nav item
         const currentPage = window.location.pathname;
@@ -293,4 +308,5 @@
         });
     </script>
 </body>
+
 </html>
