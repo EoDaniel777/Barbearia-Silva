@@ -168,6 +168,7 @@ body {
 
 .stats-grid {
     display: flex;
+    justify-content: center;
     gap: 24px;
     margin-bottom: 32px;
 }
@@ -1230,6 +1231,7 @@ tr:last-child td {
 
     .stats-grid {
         display: flex;
+        justify-content: center;
         flex-wrap: wrap;
         grid-template-columns: repeat(2, 1fr) !important; /* FORÇAR 2x2 no mobile */
         gap: 12px !important;
@@ -1555,6 +1557,10 @@ tr:last-child td {
 @media (max-width: 768px) {
     .stat-card-large {
         grid-column: span 2; /* Ocupa 2 colunas no mobile (toda a linha) */
+    }
+
+    .stats-grid {
+       justify-content: center;
     }
 
     .toast-container {

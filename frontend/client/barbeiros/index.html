@@ -75,7 +75,7 @@
 
     <!-- Footer -->
     <footer>
-        <img src="/img/logoDark.jpeg" id="footerLogo" alt="Barbearia Silva" class="footer-logo">
+        <img src="/img/logoSemFundo.png" id="footerLogo" alt="Barbearia Silva" class="footer-logo">
         <div class="footer-info">
             <p>📞 (61) 00000-0000</p>
             <p>📍 Morro Azul - Quadra 11 Conjunto A</p>
@@ -118,7 +118,7 @@
 
         // Theme toggle
         themeToggle.addEventListener('click', () => {
-            const currentTheme = body.classList.contains('light-mode') ? 'light' : 'dark';
+            const currentTheme = body.classList.contains('them-white') ? 'light' : 'dark';
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
             applyTheme(newTheme);
             localStorage.setItem('theme', newTheme);
@@ -126,15 +126,15 @@
 
         function applyTheme(theme) {
             if (theme === 'light') {
-                body.classList.add('light-mode');
+                body.classList.add('them-white');
                 themeIcon.src = '/icons/sun.svg';
-                headerLogo.src = '/img/logoWhite.jpeg';
-                footerLogo.src = '/img/logoWhite.jpeg';
+                headerLogo.src = '/img/SemFundoBlack.png';
+                footerLogo.src = '/img/SemFundoBlack.png';
             } else {
-                body.classList.remove('light-mode');
+                body.classList.remove('them-white');
                 themeIcon.src = '/icons/moon.png';
-                headerLogo.src = '/img/logoDark.jpeg';
-                footerLogo.src = '/img/logoDark.jpeg';
+                headerLogo.src = '/img/logoSemFundo.png';
+                footerLogo.src = '/img/logoSemFundo.png';
             }
         }
 
