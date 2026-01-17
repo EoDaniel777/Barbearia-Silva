@@ -5,8 +5,9 @@ services:
     runtime: go
     region: oregon
     plan: free
-    buildCommand: cd backend && go build -tags netgo -ldflags '-s -w' -o app cmd/api/main.go
-    startCommand: cd backend && ./app
+    rootDirectory: backend
+    buildCommand: go build -tags netgo -ldflags '-s -w' -o app cmd/api/main.go
+    startCommand: ./app
     envVars:
       - key: PORT
         value: 8080

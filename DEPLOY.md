@@ -38,13 +38,14 @@
    Name: barbearia-silva-api
    Region: Oregon (US West)
    Branch: master
-   Root Directory: (deixe vazio)
+   Root Directory: backend
    Runtime: Go
-   Build Command: cd backend && go build -tags netgo -ldflags '-s -w' -o app cmd/api/main.go
-   Start Command: cd backend && ./app
+   Build Command: go build -tags netgo -ldflags '-s -w' -o app cmd/api/main.go
+   Start Command: ./app
    ```
 
    **Por que esses comandos?**
+   - `Root Directory: backend`: Define o diretório de trabalho (onde está o go.mod)
    - `-tags netgo`: Usa implementação Go pura (melhor para containers)
    - `-ldflags '-s -w'`: Remove símbolos de debug, reduz tamanho do binário (~30% menor)
    - `-o app`: Nome do executável final
