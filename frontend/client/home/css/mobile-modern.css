@@ -90,12 +90,19 @@ header {
     width: auto;
 }
 
-/* Desktop Navigation */
+/* Navigation */
 .header-nav {
-    display: none;
+    display: flex;
     gap: var(--spacing-lg);
     align-items: center;
 }
+
+/* Mobile: Hide all links except login button */
+.header-nav a:not(.btn-login) {
+    display: none;
+}
+
+/* Desktop will show all links - configured in media query */
 
 .header-nav a {
     color: var(--text-light);
@@ -107,10 +114,10 @@ header {
     border-radius: 8px;
 }
 
-
 body.theme-white .header-nav a:hover{
     background-color: #b8b8bd;
 }
+
 .header-nav a:hover {
     background: rgba(255, 255, 255, 0.1);
 }
@@ -122,7 +129,8 @@ body.theme-light .header-nav a:hover {
 .header-nav a.btn-login {
     background: var(--primary-color);
     color: #FFFFFF;
-    padding: 10px 24px;
+    padding: 10px 20px;
+    font-size: 14px;
 }
 
 .header-nav a.btn-login:hover {
@@ -135,28 +143,72 @@ body.theme-light .header-nav a:hover {
     gap: var(--spacing-md);
 }
 
-.theme-toggle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
+/* Theme Toggle Label */
+.theme-toggle-label {
     display: flex;
     align-items: center;
-    justify-content: center;
     cursor: pointer;
-    transition: var(--transition);
 }
 
-.theme-toggle:active {
-    transform: scale(0.95);
+/* Theme Checkbox - From Uiverse.io by yaroslavhorbach */
+.theme-checkbox {
+    --toggle-size: 16px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 48px;
+    height: 32px;
+    background: -webkit-gradient(
+        linear,
+        left top,
+        right top,
+        color-stop(50%, #efefef),
+        color-stop(50%, #2a2a2a)
+    ) no-repeat;
+    background: -o-linear-gradient(left, #efefef 50%, #2a2a2a 50%) no-repeat;
+    background: linear-gradient(to right, #efefef 50%, #2a2a2a 50%) no-repeat;
+    background-size: 205%;
+    background-position: 0;
+    -webkit-transition: 0.4s;
+    -o-transition: 0.4s;
+    transition: 0.4s;
+    border-radius: 99em;
+    position: relative;
+    cursor: pointer;
+    font-size: var(--toggle-size);
 }
 
+.theme-checkbox::before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: -webkit-gradient(
+        linear,
+        left top,
+        right top,
+        color-stop(50%, #efefef),
+        color-stop(50%, #2a2a2a)
+    ) no-repeat;
+    background: -o-linear-gradient(left, #efefef 50%, #2a2a2a 50%) no-repeat;
+    background: linear-gradient(to right, #efefef 50%, #2a2a2a 50%) no-repeat;
+    background-size: 205%;
+    background-position: 100%;
+    border-radius: 50%;
+    -webkit-transition: 0.4s;
+    -o-transition: 0.4s;
+    transition: 0.4s;
+}
 
+.theme-checkbox:checked::before {
+    left: 24px;
+    background-position: 0;
+}
 
-.theme-toggle img {
-    width: 24px;
-    height: 24px;
+.theme-checkbox:checked {
+    background-position: 100%;
 }
 
 /* === MODERN HERO === */
@@ -715,6 +767,167 @@ body.theme-white footer {
 .mt-lg { margin-top: var(--spacing-lg); }
 .mt-xl { margin-top: var(--spacing-xl); }
 
+/* === PROFILE DROPDOWN (Cliente Autenticado) === */
+.profile-dropdown {
+    position: relative;
+}
+
+.profile-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--primary-color);
+    background: var(--bg-dark-card);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    overflow: hidden;
+}
+
+body.theme-white .profile-btn {
+    background: #FFFFFF;
+    border-color: var(--primary-color);
+}
+
+.profile-btn:hover {
+    transform: scale(1.05);
+    border-color: var(--primary-dark);
+}
+
+.profile-btn-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.profile-btn svg {
+    color: var(--text-light);
+}
+
+body.theme-white .profile-btn svg {
+    color: var(--text-dark);
+}
+
+.profile-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 220px;
+    background: var(--bg-dark-card);
+    border-radius: var(--border-radius-sm);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: var(--transition);
+    z-index: 1000;
+    overflow: hidden;
+}
+
+body.theme-white .profile-menu {
+    background: #FFFFFF;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.profile-menu.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.profile-menu-header {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.theme-white .profile-menu-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.profile-menu-header strong {
+    display: block;
+    color: var(--text-light);
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+body.theme-white .profile-menu-header strong {
+    color: var(--text-dark);
+}
+
+.profile-menu-header small {
+    color: var(--text-gray);
+    font-size: 12px;
+}
+
+.profile-menu hr {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 0;
+}
+
+body.theme-white .profile-menu hr {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.profile-menu-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 14px;
+    transition: var(--transition);
+}
+
+body.theme-white .profile-menu-item {
+    color: var(--text-dark);
+}
+
+.profile-menu-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+body.theme-white .profile-menu-item:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.profile-menu-item svg {
+    flex-shrink: 0;
+}
+
+/* Botão de login para não autenticados */
+.btn-login-client {
+    background: var(--primary-color);
+    color: #FFFFFF;
+    padding: 10px 20px;
+    font-size: 14px;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: var(--transition);
+    font-weight: 500;
+    display: inline-block;
+}
+
+.btn-login-client:hover {
+    background: var(--primary-dark);
+}
+
+/* Mobile only - esconder em desktop */
+.btn-login-client.mobile-only {
+    display: inline-block;
+}
+
+@media (min-width: 768px) {
+    .btn-login-client.mobile-only {
+        display: none;
+    }
+}
+
 /* === RESPONSIVE === */
 @media (min-width: 768px) {
     .content-wrapper {
@@ -752,10 +965,9 @@ body.theme-white footer {
         padding-bottom: 0;
     }
 
-    /* Show desktop navigation */
-    .header-nav {
-        display: flex;
-        
+    /* Show all navigation links on desktop */
+    .header-nav a:not(.btn-login) {
+        display: block;
     }
 }
 

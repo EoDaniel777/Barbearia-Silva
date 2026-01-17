@@ -1,0 +1,27 @@
+{
+  "name": "system-barbearia-as-master",
+  "version": "1.0.0",
+  "description": "<div align=\"center\">",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/B-Evil/System-Barbearia-AS.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/B-Evil/System-Barbearia-AS/issues"
+  },
+  "homepage": "https://github.com/B-Evil/System-Barbearia-AS#readme",
+  "dependencies": {
+    "firebase": "^12.8.0"
+  }
+}

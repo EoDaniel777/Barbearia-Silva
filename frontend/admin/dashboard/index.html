@@ -87,9 +87,28 @@
 
     <!-- Sidebar -->
     <aside class="sidebar">
-        <div class="sidebar-logo">
-            <img src="/img/logoDark.jpeg" alt="Barbearia Silva">
+        <!-- Perfil do Admin/Barbeiro -->
+        <div class="sidebar-profile">
+            <div class="sidebar-avatar">
+                <img id="sidebar-profile-img" src="" alt="Perfil" style="display: none;">
+                <svg id="sidebar-profile-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </div>
+            <div class="sidebar-profile-info">
+                <strong id="sidebar-user-name">Admin</strong>
+                <small id="sidebar-user-email">admin@barbearia.com</small>
+            </div>
         </div>
+
+        <!-- Theme Toggle - Removido (agora está na home do site) -->
+        <!-- <div class="theme-toggle-container">
+            <label class="theme-toggle-label">
+                <span class="theme-label-text">Tema</span>
+                <input class="theme-checkbox" type="checkbox" id="theme-toggle-checkbox" />
+            </label>
+        </div> -->
 
         <nav class="sidebar-nav">
             <a href="#" class="nav-link active" data-page="dashboard">
@@ -138,6 +157,9 @@
         </nav>
 
         <div class="sidebar-footer">
+            <div class="sidebar-logo">
+                <img src="/img/logoDark.jpeg" alt="Barbearia Silva">
+            </div>
             <a href="/" class="btn-back">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -712,6 +734,8 @@
         </a>
     </nav>
 
+    <!-- Auth Guard - DEVE ser o primeiro script a carregar -->
+    <script src="/dashboard/js/auth-guard.js"></script>
     <script src="/dashboard/js/dashboard.js"></script>
 </body>
 </html>

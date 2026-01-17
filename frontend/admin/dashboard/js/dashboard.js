@@ -12,6 +12,23 @@ let horarios = [];
 // NAVIGATION
 // ===================================
 
+// Inicializar clique no avatar da sidebar para abrir modal de perfil
+function initSidebarAvatarClick() {
+    const sidebarAvatar = document.querySelector('.sidebar-avatar');
+
+    if (!sidebarAvatar) {
+        console.error('[SIDEBAR AVATAR] Elemento não encontrado');
+        return;
+    }
+
+    sidebarAvatar.addEventListener('click', () => {
+        console.log('[SIDEBAR AVATAR] Avatar clicado, abrindo modal de perfil');
+        openPerfilAdminModal();
+    });
+
+    console.log('[SIDEBAR AVATAR] Evento de clique configurado');
+}
+
 function init() {
     initNavigation();
     initMobileMenu();
@@ -19,6 +36,8 @@ function init() {
     initNotifications();
     initEditBarbeiroModal(); // Modal de edição de barbeiro
     initHorariosModal(); // Modal de horários de trabalho
+    initThemeToggle(); // Inicializa o theme toggle
+    initSidebarAvatarClick(); // Clique no avatar da sidebar para editar perfil
     loadUserInfo();
     loadDashboardData();
     loadNotifications(); // Carrega notificações e atualiza badge ao iniciar
@@ -138,8 +157,9 @@ async function loadDashboardData() {
         document.getElementById('stat-mes').textContent = monthBookings.length;
 
         // Calculate revenue (assuming average price of R$ 35)
-        const revenue = monthBookings.filter(h => h.status === 'concluido').length * 35;
-        document.getElementById('stat-total').textContent = `R$ ${revenue}`;
+        // Comentado porque o card stat-total está desabilitado no HTML
+        // const revenue = monthBookings.filter(h => h.status === 'concluido').length * 35;
+        // document.getElementById('stat-total').textContent = `R$ ${revenue}`;
 
         // Show recent bookings
         displayRecentBookings(horarios.slice(0, 5));
@@ -832,22 +852,66 @@ function initNotifications() {
     });
 }
 
+function initThemeToggle() {
+    const themeCheckbox = document.getElementById('theme-toggle-checkbox');
+
+    if (!themeCheckbox) return;
+
+    // Carregar tema salvo do localStorage
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    const isLightMode = savedTheme === 'light';
+
+    // Aplicar tema inicial
+    if (isLightMode) {
+        document.body.classList.add('light-mode');
+        themeCheckbox.checked = true;
+    } else {
+        document.body.classList.remove('light-mode');
+        themeCheckbox.checked = false;
+    }
+
+    // Event listener para mudança de tema
+    themeCheckbox.addEventListener('change', () => {
+        const isChecked = themeCheckbox.checked;
+
+        if (isChecked) {
+            // Ativar light mode
+            document.body.classList.add('light-mode');
+            localStorage.setItem('theme', 'light');
+        } else {
+            // Ativar dark mode
+            document.body.classList.remove('light-mode');
+            localStorage.setItem('theme', 'dark');
+        }
+
+        console.log(`[THEME] Tema alterado para: ${isChecked ? 'light' : 'dark'}`);
+    });
+}
+
 function loadUserInfo() {
     try {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-        // Update profile info
+        // Update profile info (top-bar mobile)
         const userName = document.getElementById('user-name');
         const userEmail = document.getElementById('user-email');
         const profilePhoto = document.getElementById('profile-btn-img');
         const profileIcon = document.getElementById('profile-btn-icon');
 
+        // Update sidebar profile
+        const sidebarUserName = document.getElementById('sidebar-user-name');
+        const sidebarUserEmail = document.getElementById('sidebar-user-email');
+        const sidebarProfileImg = document.getElementById('sidebar-profile-img');
+        const sidebarProfileIcon = document.getElementById('sidebar-profile-icon');
+
         if (user.nome) {
             userName && (userName.textContent = user.nome);
             userEmail && (userEmail.textContent = user.email || '');
+            sidebarUserName && (sidebarUserName.textContent = user.nome);
+            sidebarUserEmail && (sidebarUserEmail.textContent = user.email || '');
         }
 
-        // Update profile photo
+        // Update profile photo (top-bar)
         if (user.foto && profilePhoto && profileIcon) {
             profilePhoto.src = user.foto;
             profilePhoto.style.display = 'block';
@@ -855,6 +919,19 @@ function loadUserInfo() {
         } else if (profilePhoto && profileIcon) {
             profilePhoto.style.display = 'none';
             profileIcon.style.display = 'block';
+        }
+
+        // Update sidebar profile photo
+        if (user.foto && sidebarProfileImg && sidebarProfileIcon) {
+            console.log('[LOAD USER INFO] Atualizando foto do sidebar. Tamanho:', user.foto.length);
+            sidebarProfileImg.src = user.foto;
+            sidebarProfileImg.style.display = 'block';
+            sidebarProfileIcon.style.display = 'none';
+            console.log('[LOAD USER INFO] Foto do sidebar atualizada com sucesso');
+        } else if (sidebarProfileImg && sidebarProfileIcon) {
+            console.log('[LOAD USER INFO] Usuário não tem foto. Mostrando ícone padrão');
+            sidebarProfileImg.style.display = 'none';
+            sidebarProfileIcon.style.display = 'block';
         }
 
         /* THEME TOGGLE COMENTADO TEMPORARIAMENTE
@@ -1295,28 +1372,81 @@ function initPerfilPhotoUpload() {
         }
 
         console.log('[PERFIL ADMIN] Iniciando leitura do arquivo...');
-        const reader = new FileReader();
 
-        reader.onload = (e) => {
-            const base64 = e.target.result;
-            console.log('[PERFIL ADMIN] Arquivo convertido para base64');
-            console.log('[PERFIL ADMIN] Tamanho do base64:', base64.length, 'caracteres');
-            console.log('[PERFIL ADMIN] Preview dos primeiros 100 chars:', base64.substring(0, 100));
+        // Criar URL temporária como fallback
+        try {
+            const reader = new FileReader();
 
-            currentPerfilPhoto = base64;
-            previewImg.src = base64;
-            previewImg.style.display = 'block';
-            placeholder.style.display = 'none';
+            reader.onload = (e) => {
+                try {
+                    const base64 = e.target.result;
+                    console.log('[PERFIL ADMIN] Arquivo convertido para base64');
+                    console.log('[PERFIL ADMIN] Tamanho do base64:', base64.length, 'caracteres');
+                    console.log('[PERFIL ADMIN] Preview dos primeiros 100 chars:', base64.substring(0, 100));
 
-            console.log('[PERFIL ADMIN] Preview atualizado com sucesso');
-        };
+                    currentPerfilPhoto = base64;
+                    previewImg.src = base64;
+                    previewImg.style.display = 'block';
+                    placeholder.style.display = 'none';
 
-        reader.onerror = (error) => {
-            console.error('[PERFIL ADMIN] Erro ao ler arquivo:', error);
-            showToast('Erro ao processar imagem', 'error');
-        };
+                    console.log('[PERFIL ADMIN] Preview atualizado com sucesso');
+                } catch (err) {
+                    console.error('[PERFIL ADMIN] Erro ao processar base64:', err);
+                    showToast('Erro ao processar imagem', 'error');
+                }
+            };
 
-        reader.readAsDataURL(file);
+            reader.onerror = (error) => {
+                console.error('[PERFIL ADMIN] Erro ao ler arquivo:', error);
+                console.error('[PERFIL ADMIN] Detalhes do erro:', {
+                    readyState: reader.readyState,
+                    error: reader.error,
+                    errorName: reader.error?.name,
+                    errorMessage: reader.error?.message
+                });
+
+                // Tentar usar URL.createObjectURL como fallback
+                console.warn('[PERFIL ADMIN] Tentando método alternativo com URL.createObjectURL');
+                try {
+                    const objectURL = URL.createObjectURL(file);
+                    console.log('[PERFIL ADMIN] URL criada:', objectURL);
+
+                    // Criar um Image para converter para base64
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        const base64 = canvas.toDataURL(file.type);
+
+                        console.log('[PERFIL ADMIN] Conversão alternativa bem-sucedida');
+                        currentPerfilPhoto = base64;
+                        previewImg.src = base64;
+                        previewImg.style.display = 'block';
+                        placeholder.style.display = 'none';
+
+                        URL.revokeObjectURL(objectURL);
+                        showToast('Imagem carregada com sucesso', 'success');
+                    };
+                    img.onerror = () => {
+                        console.error('[PERFIL ADMIN] Falha no método alternativo também');
+                        showToast('Não foi possível ler o arquivo. Tente outro formato de imagem.', 'error');
+                        URL.revokeObjectURL(objectURL);
+                    };
+                    img.src = objectURL;
+                } catch (fallbackError) {
+                    console.error('[PERFIL ADMIN] Erro no método alternativo:', fallbackError);
+                    showToast('Erro ao processar imagem. Tente um arquivo diferente.', 'error');
+                }
+            };
+
+            reader.readAsDataURL(file);
+        } catch (err) {
+            console.error('[PERFIL ADMIN] Erro fatal ao iniciar FileReader:', err);
+            showToast('Erro ao inicializar leitor de arquivos', 'error');
+        }
     });
 }
 
@@ -1458,9 +1588,11 @@ async function savePerfilAdmin() {
         user.telefone = telefone;
         if (currentPerfilPhoto) {
             user.foto = currentPerfilPhoto;
+            console.log('[PERFIL ADMIN] Foto salva no localStorage. Tamanho:', currentPerfilPhoto.length);
         }
         localStorage.setItem('user', JSON.stringify(user));
 
+        console.log('[PERFIL ADMIN] Perfil atualizado. Chamando loadUserInfo()');
         showToast('Perfil atualizado com sucesso!', 'success');
         loadUserInfo(); // Atualizar info no menu
         document.getElementById('perfilAdminModal').classList.remove('active');
