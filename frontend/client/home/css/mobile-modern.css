@@ -4,6 +4,8 @@
    =================================== */
 
 /* === VARIABLES === */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Secular+One&display=swap');
 :root {
     --primary-color: #0D7CA4;
     --primary-dark: #0a6282;
@@ -44,9 +46,27 @@ body {
 }
 
 /* Light mode */
-body.light-mode {
-    background-color: var(--bg-light-secondary);
+body.theme-white{
+    background-color: #ffffff;
+}
+
+body.theme-white header{
+    background-color: #fff;
+    border-bottom: 1px solid rgb(96, 96, 96);
+}
+
+body.theme-white .header-nav a {
     color: var(--text-dark);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    transition: var(--transition);
+    padding: 8px 16px;
+    border-radius: 8px;
+}
+
+body.theme-white .header-nav .btn-login {
+    color: #fff;
 }
 
 /* === MODERN HEADER === */
@@ -64,10 +84,6 @@ header {
     z-index: 1000;
 }
 
-body.light-mode header {
-    background: var(--bg-light);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-}
 
 .header-logo img {
     height: 100px;
@@ -91,15 +107,15 @@ body.light-mode header {
     border-radius: 8px;
 }
 
-body.light-mode .header-nav a {
-    color: var(--text-dark);
-}
 
+body.theme-white .header-nav a:hover{
+    background-color: #b8b8bd;
+}
 .header-nav a:hover {
     background: rgba(255, 255, 255, 0.1);
 }
 
-body.light-mode .header-nav a:hover {
+body.theme-light .header-nav a:hover {
     background: rgba(0, 0, 0, 0.05);
 }
 
@@ -111,29 +127,6 @@ body.light-mode .header-nav a:hover {
 
 .header-nav a.btn-login:hover {
     background: var(--primary-dark);
-}
-
-/* Mobile Login Button */
-.btn-login-mobile {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--primary-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #FFFFFF;
-    transition: var(--transition);
-    text-decoration: none;
-}
-
-.btn-login-mobile:hover {
-    background: var(--primary-dark);
-    transform: scale(1.05);
-}
-
-.btn-login-mobile svg {
-    flex-shrink: 0;
 }
 
 .header-actions {
@@ -159,9 +152,7 @@ body.light-mode .header-nav a:hover {
     transform: scale(0.95);
 }
 
-body.light-mode .theme-toggle {
-    background: rgba(0, 0, 0, 0.05);
-}
+
 
 .theme-toggle img {
     width: 24px;
@@ -183,8 +174,8 @@ body.light-mode .theme-toggle {
     overflow: hidden;
 }
 
-body.light-mode .hero-section {
-    background: var(--bg-light);
+.theme-light .hero-section {
+    background-color: #fff;
 }
 
 .hero-section::before {
@@ -195,18 +186,17 @@ body.light-mode .hero-section {
     right: 0;
     bottom: 0;
     background: url('/img/meta.jpg') center/cover no-repeat;
-    filter: blur(15px) brightness(0.7);
     opacity: 0.35;
     z-index: 0;
 }
 
-body.light-mode .hero-section::before {
+body.theme-light .hero-section::before {
     filter: blur(15px) brightness(0.85) saturate(1.1) contrast(1.2);
     opacity: 0.65;
 }
 
 /* Overlay adicional no modo claro para melhor contraste */
-body.light-mode .hero-section::after {
+body.theme-white .hero-section::after {
     content: '';
     position: absolute;
     top: 0;
@@ -243,6 +233,7 @@ body.light-mode .hero-section::after {
 }
 
 .hero-logo img {
+    margin-top: 30px;
     width: 100%;
     height: 100%;
     object-fit: contain;
@@ -250,15 +241,16 @@ body.light-mode .hero-section::after {
 }
 
 .hero-title {
+    font-family: "Secular One", sans-serif;
     font-size: 28px;
-    font-weight: 700;
+    font-weight: 500;
     color: var(--text-light);
     margin-bottom: var(--spacing-sm);
     position: relative;
     z-index: 1;
 }
 
-body.light-mode .hero-title {
+body.theme-lights .hero-title {
     color: var(--text-dark);
 }
 
@@ -293,8 +285,8 @@ body.light-mode .hero-title {
     color: var(--text-light);
 }
 
-body.light-mode .section-title {
-    color: var(--text-dark);
+body.theme-white .section-title {
+    color: #000;
 }
 
 .section-link {
@@ -321,9 +313,9 @@ body.light-mode .section-title {
     transition: var(--transition);
 }
 
-body.light-mode .modern-card {
-    background: var(--bg-light-card);
-    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+body.theme-white .modern-card {
+    background-color: #ffffff;
+    box-shadow: 15px 20px 50px #c0c0c0;
 }
 
 .modern-card:active {
@@ -348,8 +340,8 @@ body.light-mode .modern-card {
     color: var(--text-light);
 }
 
-body.light-mode .card-title {
-    color: var(--text-dark);
+body.theme-white .card-title {
+    color: #000000;
 }
 
 .card-description {
@@ -390,7 +382,7 @@ body.light-mode .card-title {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-body.light-mode .fidelity-banner {
+body.theme-white .fidelity-banner {
     background: var(--bg-light-card);
     border: 2px solid rgba(13, 124, 164, 0.3);
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
@@ -430,7 +422,7 @@ body.light-mode .fidelity-banner {
     z-index: 1;
 }
 
-body.light-mode .fidelity-text {
+body.theme-white .fidelity-text {
     color: var(--text-dark);
 }
 
@@ -473,9 +465,9 @@ body.light-mode .fidelity-text {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-body.light-mode .about-card {
+body.theme-white .about-card {
     background: var(--bg-light-card);
-    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 20px rgb(198, 198, 198);
 }
 
 .about-card h3 {
@@ -485,8 +477,12 @@ body.light-mode .about-card {
     margin-bottom: var(--spacing-md);
 }
 
-body.light-mode .about-card h3 {
+body.theme-white .about-card h3 {
     color: var(--text-dark);
+}
+
+body.theme-white .about-card p{
+    color: #000;
 }
 
 .about-card p {
@@ -540,7 +536,7 @@ body.light-mode .about-card h3 {
     transform: translateY(-5px);
 }
 
-body.light-mode .barber-card {
+body.theme-white .barber-card {
     background: var(--bg-light-card);
     box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
 }
@@ -567,7 +563,7 @@ body.light-mode .barber-card {
     margin-bottom: var(--spacing-xs);
 }
 
-body.light-mode .barber-name {
+body.theme-white .barber-name {
     color: var(--text-dark);
 }
 
@@ -593,7 +589,7 @@ body.light-mode .barber-name {
     border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-body.light-mode .bottom-nav {
+body.theme-white .bottom-nav {
     background: var(--bg-light);
     border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
@@ -665,13 +661,16 @@ body.light-mode .bottom-nav {
     width: 100%;
 }
 
-body.light-mode .btn-secondary {
+body.theme-white .btn-secondary {
     background: rgba(0, 0, 0, 0.05);
     color: var(--text-dark);
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 /* === FOOTER === */
+body.theme-white footer{
+    background-color: #fff;
+}
 footer {
     background: var(--bg-dark);
     padding: var(--spacing-xl) var(--spacing-lg);
@@ -680,7 +679,7 @@ footer {
     border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-body.light-mode footer {
+body.theme-white footer {
     background: var(--bg-light);
     border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
@@ -756,12 +755,7 @@ body.light-mode footer {
     /* Show desktop navigation */
     .header-nav {
         display: flex;
-
-    }
-
-    /* Hide mobile login button on desktop */
-    .btn-login-mobile {
-        display: none;
+        
     }
 }
 

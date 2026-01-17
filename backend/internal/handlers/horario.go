@@ -53,10 +53,8 @@ func (h *HorarioHandler) Create(c *gin.Context) {
 	}
 
 	// Set default status if not provided
-	// NOTA: Status alterado para "confirmado" - agendamentos são aprovados automaticamente
-	// Para habilitar aprovação manual, mudar para "pendente" e descomentar seção de aprovação no dashboard
 	if input.Status == "" {
-		input.Status = "confirmado" // Aprovação automática (era "pendente")
+		input.Status = "pendente"
 	}
 
 	// Save to database

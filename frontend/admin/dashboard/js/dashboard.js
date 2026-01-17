@@ -18,7 +18,6 @@ function init() {
     initProfileDropdown();
     initNotifications();
     initEditBarbeiroModal(); // Modal de edição de barbeiro
-    initEditServicoModal(); // Modal de edição de serviço/produto
     initHorariosModal(); // Modal de horários de trabalho
     loadUserInfo();
     loadDashboardData();
@@ -134,19 +133,13 @@ async function loadDashboardData() {
         const monthBookings = horarios.filter(h => new Date(h.dataHora) >= startOfMonth);
 
         // Update stats
-        const statHoje = document.getElementById('stat-hoje');
-        const statSemana = document.getElementById('stat-semana');
-        const statMes = document.getElementById('stat-mes');
-
-        if (statHoje) statHoje.textContent = todayBookings.length;
-        if (statSemana) statSemana.textContent = weekBookings.length;
-        if (statMes) statMes.textContent = monthBookings.length;
+        document.getElementById('stat-hoje').textContent = todayBookings.length;
+        document.getElementById('stat-semana').textContent = weekBookings.length;
+        document.getElementById('stat-mes').textContent = monthBookings.length;
 
         // Calculate revenue (assuming average price of R$ 35)
-        // COMENTADO: Card de receita não está sendo usado no momento
-        // const revenue = monthBookings.filter(h => h.status === 'concluido').length * 35;
-        // const statTotal = document.getElementById('stat-total');
-        // if (statTotal) statTotal.textContent = `R$ ${revenue}`;
+        const revenue = monthBookings.filter(h => h.status === 'concluido').length * 35;
+        document.getElementById('stat-total').textContent = `R$ ${revenue}`;
 
         // Show recent bookings
         displayRecentBookings(horarios.slice(0, 5));
@@ -422,13 +415,11 @@ async function loadHorarios() {
 }
 
 function displayHorarios() {
-    // const pending = horarios.filter(h => h.status === 'pendente'); // COMENTADO: Aprovação automática
-    // displayPendingBookings(pending); // COMENTADO: Aprovação automática
+    const pending = horarios.filter(h => h.status === 'pendente');
+    displayPendingBookings(pending);
     displayAllBookings(horarios);
 }
 
-/* FUNÇÃO COMENTADA - Aprovação automática de agendamentos está ativada
-   Descomentar se quiser habilitar aprovação manual de agendamentos
 function displayPendingBookings(bookings) {
     const container = document.getElementById('pending-bookings');
 
@@ -468,7 +459,6 @@ function displayPendingBookings(bookings) {
         </table>
     `;
 }
-*/
 
 function displayAllBookings(bookings) {
     const container = document.getElementById('all-bookings');
@@ -583,7 +573,9 @@ function displayServicos() {
     `;
 }
 
-// Service Form (criação)
+let editingServicoId = null;
+
+// Service Form
 document.getElementById('service-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -595,86 +587,93 @@ document.getElementById('service-form')?.addEventListener('submit', async (e) =>
         descricao: document.getElementById('service-description').value
     };
 
-    // Adicionar foto se houver
-    if (currentServicoPhoto) {
-        formData.foto = currentServicoPhoto;
-    }
-
     try {
-        const response = await fetch('/api/v1/servicos', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
-        });
+        let response;
+        let message;
+
+        if (editingServicoId) {
+            // Modo de edição - PUT
+            response = await fetch(`/api/v1/servicos/${editingServicoId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            message = 'Serviço/Produto atualizado com sucesso!';
+        } else {
+            // Modo de criação - POST
+            response = await fetch('/api/v1/servicos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            message = 'Serviço/Produto cadastrado com sucesso!';
+        }
 
         if (response.ok) {
-            showToast('Serviço/Produto cadastrado com sucesso!', 'success');
-            document.getElementById('service-form').reset();
-
-            // Resetar preview da foto
-            currentServicoPhoto = null;
-            const previewImg = document.getElementById('create-servico-preview-img');
-            const placeholder = document.getElementById('create-servico-photo-placeholder');
-            if (previewImg) previewImg.style.display = 'none';
-            if (placeholder) placeholder.style.display = 'flex';
-
+            showToast(message, 'success');
+            cancelEditServico();
             loadServicos();
         } else {
-            showToast('Erro ao cadastrar', 'error');
+            showToast('Erro ao salvar', 'error');
         }
     } catch (error) {
         console.error('Erro:', error);
-        showToast('Erro ao cadastrar', 'error');
+        showToast('Erro ao salvar', 'error');
     }
 });
 
 document.getElementById('clear-service-form')?.addEventListener('click', () => {
-    document.getElementById('service-form').reset();
-
-    // Resetar preview da foto
-    currentServicoPhoto = null;
-    const previewImg = document.getElementById('create-servico-preview-img');
-    const placeholder = document.getElementById('create-servico-photo-placeholder');
-    if (previewImg) previewImg.style.display = 'none';
-    if (placeholder) placeholder.style.display = 'flex';
+    cancelEditServico();
 });
 
-let currentServicoPhoto = null; // Base64 da foto do serviço (criação)
-let currentServicoPhotoEdit = null; // Base64 da foto do serviço (edição)
-
-// Função para EDITAR serviço/produto (abre modal)
 async function editServico(id) {
     const servico = servicos.find(s => s.id === id);
     if (!servico) {
-        showToast('Serviço/Produto não encontrado', 'error');
+        showToast('Serviço não encontrado', 'error');
         return;
     }
 
-    // Preencher formulário do modal com dados do serviço
-    document.getElementById('edit-servico-id').value = servico.id;
-    document.getElementById('edit-servico-name').value = servico.nome;
-    document.getElementById('edit-servico-type').value = servico.tipo || 'servico';
-    document.getElementById('edit-servico-price').value = servico.preco;
-    document.getElementById('edit-servico-duration').value = servico.duracao || '';
-    document.getElementById('edit-servico-description').value = servico.descricao || '';
+    // Preencher formulário com dados do serviço
+    document.getElementById('service-name').value = servico.nome;
+    document.getElementById('service-type').value = servico.tipo || 'servico';
+    document.getElementById('service-price').value = servico.preco;
+    document.getElementById('service-duration').value = servico.duracao || '';
+    document.getElementById('service-description').value = servico.descricao || '';
 
-    // Resetar preview de foto
-    const previewImg = document.getElementById('edit-servico-preview-img');
-    const placeholder = document.getElementById('edit-servico-photo-placeholder');
+    // Definir modo de edição
+    editingServicoId = id;
 
-    if (servico.foto) {
-        currentServicoPhotoEdit = servico.foto;
-        previewImg.src = servico.foto;
-        previewImg.style.display = 'block';
-        placeholder.style.display = 'none';
-    } else {
-        currentServicoPhotoEdit = null;
-        previewImg.style.display = 'none';
-        placeholder.style.display = 'flex';
+    // Mudar texto do botão
+    const submitBtn = document.querySelector('#service-form button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.textContent = 'Atualizar Serviço/Produto';
     }
 
-    // Abrir modal de edição
-    document.getElementById('editServicoModal').classList.add('active');
+    // Mudar texto do botão de limpar para "Cancelar"
+    const clearBtn = document.getElementById('clear-service-form');
+    if (clearBtn) {
+        clearBtn.textContent = 'Cancelar Edição';
+    }
+
+    // Scroll para o formulário
+    document.getElementById('service-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function cancelEditServico() {
+    editingServicoId = null;
+    document.getElementById('service-form').reset();
+
+    // Restaurar texto do botão
+    const submitBtn = document.querySelector('#service-form button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.textContent = 'Cadastrar';
+    }
+
+    // Restaurar texto do botão de limpar
+    const clearBtn = document.getElementById('clear-service-form');
+    if (clearBtn) {
+        clearBtn.textContent = 'Limpar';
+    }
 }
 
 async function deleteServico(id) {
@@ -785,44 +784,37 @@ function getStartOfMonth() {
 function initProfileDropdown() {
     const profileBtn = document.getElementById('profile-btn');
     const profileMenu = document.getElementById('profile-menu');
-    const profileBtnDesktop = document.getElementById('profile-btn-desktop');
-    const profileMenuDesktop = document.getElementById('profile-menu-desktop');
+    // THEME TOGGLE COMENTADO: const themeToggle = document.getElementById('theme-toggle-menu');
 
-    // Toggle profile menu (mobile)
+    // Toggle profile menu
     profileBtn?.addEventListener('click', (e) => {
         e.stopPropagation();
         profileMenu?.classList.toggle('active');
-    });
-
-    // Toggle profile menu (desktop)
-    profileBtnDesktop?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        profileMenuDesktop?.classList.toggle('active');
     });
 
     // Close menu when clicking outside
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.profile-dropdown')) {
             profileMenu?.classList.remove('active');
-            profileMenuDesktop?.classList.remove('active');
         }
     });
+
+    /* THEME TOGGLE COMENTADO TEMPORARIAMENTE
+    // Theme toggle
+    themeToggle?.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleTheme();
+    });
+    */
 }
 
 function initNotifications() {
     const notifBtn = document.getElementById('notif-btn');
-    const notifBtnDesktop = document.getElementById('notif-btn-desktop');
     const notifPanel = document.getElementById('notifications-panel');
     const closeBtn = document.getElementById('close-notif');
 
-    // Open notifications panel (mobile)
+    // Open notifications panel
     notifBtn?.addEventListener('click', () => {
-        notifPanel?.classList.add('active');
-        loadNotifications();
-    });
-
-    // Open notifications panel (desktop)
-    notifBtnDesktop?.addEventListener('click', () => {
         notifPanel?.classList.add('active');
         loadNotifications();
     });
@@ -841,75 +833,34 @@ function initNotifications() {
 }
 
 function loadUserInfo() {
-    console.log('[LOAD USER INFO] Carregando informações do usuário');
     try {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
-        console.log('[LOAD USER INFO] Usuário carregado:', {
-            id: user.id,
-            nome: user.nome,
-            email: user.email,
-            temFoto: !!user.foto,
-            tamanhoFoto: user.foto ? user.foto.length : 0
-        });
 
-        // Update profile info (mobile)
+        // Update profile info
         const userName = document.getElementById('user-name');
         const userEmail = document.getElementById('user-email');
         const profilePhoto = document.getElementById('profile-btn-img');
         const profileIcon = document.getElementById('profile-btn-icon');
 
-        // Update profile info (desktop)
-        const userNameDesktop = document.getElementById('user-name-desktop');
-        const userEmailDesktop = document.getElementById('user-email-desktop');
-        const profilePhotoDesktop = document.getElementById('profile-btn-img-desktop');
-        const profileIconDesktop = document.getElementById('profile-btn-icon-desktop');
-
-        console.log('[LOAD USER INFO] Elementos encontrados:', {
-            mobile: {
-                userName: !!userName,
-                userEmail: !!userEmail,
-                profilePhoto: !!profilePhoto,
-                profileIcon: !!profileIcon
-            },
-            desktop: {
-                userNameDesktop: !!userNameDesktop,
-                userEmailDesktop: !!userEmailDesktop,
-                profilePhotoDesktop: !!profilePhotoDesktop,
-                profileIconDesktop: !!profileIconDesktop
-            }
-        });
-
         if (user.nome) {
             userName && (userName.textContent = user.nome);
             userEmail && (userEmail.textContent = user.email || '');
-            userNameDesktop && (userNameDesktop.textContent = user.nome);
-            userEmailDesktop && (userEmailDesktop.textContent = user.email || '');
-            console.log('[LOAD USER INFO] Nome e email atualizados');
         }
 
-        // Update profile photo (mobile)
+        // Update profile photo
         if (user.foto && profilePhoto && profileIcon) {
-            console.log('[LOAD USER INFO] Exibindo foto do perfil (mobile)');
             profilePhoto.src = user.foto;
             profilePhoto.style.display = 'block';
             profileIcon.style.display = 'none';
         } else if (profilePhoto && profileIcon) {
-            console.log('[LOAD USER INFO] Exibindo ícone padrão (mobile)');
             profilePhoto.style.display = 'none';
             profileIcon.style.display = 'block';
         }
 
-        // Update profile photo (desktop)
-        if (user.foto && profilePhotoDesktop && profileIconDesktop) {
-            console.log('[LOAD USER INFO] Exibindo foto do perfil (desktop)');
-            profilePhotoDesktop.src = user.foto;
-            profilePhotoDesktop.style.display = 'block';
-            profileIconDesktop.style.display = 'none';
-        } else if (profilePhotoDesktop && profileIconDesktop) {
-            console.log('[LOAD USER INFO] Exibindo ícone padrão (desktop)');
-            profilePhotoDesktop.style.display = 'none';
-            profileIconDesktop.style.display = 'block';
-        }
+        /* THEME TOGGLE COMENTADO TEMPORARIAMENTE
+        // Update theme text
+        updateThemeText();
+        */
     } catch (error) {
         console.error('Erro ao carregar informações do usuário:', error);
     }
@@ -947,7 +898,6 @@ function loadUserInfo() {
 async function loadNotifications() {
     const notifList = document.getElementById('notifications-list');
     const notifBadge = document.getElementById('notif-badge');
-    const notifBadgeDesktop = document.getElementById('notif-badge-desktop');
 
     try {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -964,17 +914,11 @@ async function loadNotifications() {
 
         const notifications = await response.json();
 
-        // Update badge count (mobile)
+        // Update badge count
         const unreadCount = notifications.filter(n => !n.lida).length;
         if (notifBadge) {
             notifBadge.textContent = unreadCount;
             notifBadge.style.display = unreadCount > 0 ? 'flex' : 'none';
-        }
-
-        // Update badge count (desktop)
-        if (notifBadgeDesktop) {
-            notifBadgeDesktop.textContent = unreadCount;
-            notifBadgeDesktop.style.display = unreadCount > 0 ? 'flex' : 'none';
         }
 
         // Display notifications
@@ -1113,85 +1057,6 @@ function initEditBarbeiroModal() {
         }
     });
 }
-
-// ===================================
-// MODAL DE EDIÇÃO DE SERVIÇO/PRODUTO
-// ===================================
-
-function initEditServicoModal() {
-    const modal = document.getElementById('editServicoModal');
-    const closeBtn = document.getElementById('closeEditServicoModal');
-    const cancelBtn = document.getElementById('cancelEditServico');
-    const saveBtn = document.getElementById('saveEditServico');
-
-    // Fechar modal
-    const closeModal = () => {
-        modal?.classList.remove('active');
-    };
-
-    closeBtn?.addEventListener('click', closeModal);
-    cancelBtn?.addEventListener('click', closeModal);
-
-    // Fechar ao clicar fora
-    modal?.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
-
-    // Salvar alterações
-    saveBtn?.addEventListener('click', async () => {
-        const id = document.getElementById('edit-servico-id').value;
-        const formData = {
-            nome: document.getElementById('edit-servico-name').value,
-            tipo: document.getElementById('edit-servico-type').value,
-            preco: parseFloat(document.getElementById('edit-servico-price').value),
-            duracao: parseInt(document.getElementById('edit-servico-duration').value) || 0,
-            descricao: document.getElementById('edit-servico-description').value
-        };
-
-        if (!formData.nome || !formData.tipo || !formData.preco) {
-            showToast('Preencha todos os campos obrigatórios (*)', 'warning');
-            return;
-        }
-
-        // Adicionar foto se houver
-        if (currentServicoPhotoEdit) {
-            formData.foto = currentServicoPhotoEdit;
-        }
-
-        try {
-            saveBtn.disabled = true;
-            saveBtn.textContent = 'Salvando...';
-
-            const response = await fetch(`/api/v1/servicos/${id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
-
-            if (response.ok) {
-                showToast('Serviço/Produto atualizado com sucesso!', 'success');
-                closeModal();
-                loadServicos(); // Recarregar lista
-                currentServicoPhotoEdit = null; // Resetar foto
-            } else {
-                const error = await response.text();
-                showToast(`Erro ao atualizar: ${error}`, 'error');
-            }
-        } catch (error) {
-            console.error('Erro:', error);
-            showToast('Erro ao atualizar. Tente novamente.', 'error');
-        } finally {
-            saveBtn.disabled = false;
-            saveBtn.textContent = 'Salvar Alterações';
-        }
-    });
-}
-
-// ===================================
-// MODAL DE HORÁRIOS
-// ===================================
 
 function initHorariosModal() {
     const modal = document.getElementById('horariosModal');
@@ -1464,15 +1329,15 @@ function initPerfilAdminModal() {
     const closeBtn = document.getElementById('closePerfilAdminModal');
     const cancelBtn = document.getElementById('cancelPerfilAdmin');
     const saveBtn = document.getElementById('savePerfilAdmin');
-    const perfilMenuItems = document.querySelectorAll('.profile-edit-link');
+    const perfilMenuItem = document.querySelector('.profile-menu-item[href="#"]');
 
-    // Abrir modal ao clicar em "Meu Perfil" (tanto mobile quanto desktop)
-    perfilMenuItems.forEach(item => {
-        item.addEventListener('click', (e) => {
+    // Abrir modal ao clicar em "Meu Perfil"
+    if (perfilMenuItem) {
+        perfilMenuItem.addEventListener('click', (e) => {
             e.preventDefault();
             openPerfilAdminModal();
         });
-    });
+    }
 
     // Fechar modal
     const closeModal = () => {
@@ -1497,17 +1362,8 @@ function initPerfilAdminModal() {
 }
 
 function openPerfilAdminModal() {
-    console.log('[PERFIL ADMIN] Abrindo modal de perfil');
     try {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
-        console.log('[PERFIL ADMIN] Dados do usuário carregados:', {
-            id: user.id,
-            nome: user.nome,
-            email: user.email,
-            telefone: user.telefone,
-            temFoto: !!user.foto,
-            tamanhoFoto: user.foto ? user.foto.length : 0
-        });
 
         // Preencher formulário com dados atuais
         document.getElementById('perfil-admin-name').value = user.nome || '';
@@ -1524,32 +1380,25 @@ function openPerfilAdminModal() {
         const placeholder = document.getElementById('perfil-photo-placeholder');
 
         if (user.foto) {
-            console.log('[PERFIL ADMIN] Carregando foto existente do usuário');
-            console.log('[PERFIL ADMIN] Preview da foto (100 chars):', user.foto.substring(0, 100));
             previewImg.src = user.foto;
             previewImg.style.display = 'block';
             placeholder.style.display = 'none';
         } else {
-            console.log('[PERFIL ADMIN] Usuário não possui foto, mostrando placeholder');
             previewImg.style.display = 'none';
             placeholder.style.display = 'flex';
         }
 
         currentPerfilPhoto = user.foto || null;
-        console.log('[PERFIL ADMIN] currentPerfilPhoto definido:', !!currentPerfilPhoto);
 
         // Abrir modal
         document.getElementById('perfilAdminModal').classList.add('active');
-        console.log('[PERFIL ADMIN] Modal aberto com sucesso');
     } catch (error) {
-        console.error('[PERFIL ADMIN] Erro ao abrir perfil:', error);
+        console.error('Erro ao abrir perfil:', error);
         showToast('Erro ao carregar dados do perfil', 'error');
     }
 }
 
 async function savePerfilAdmin() {
-    console.log('[PERFIL ADMIN] Iniciando salvamento do perfil');
-
     const nome = document.getElementById('perfil-admin-name').value;
     const email = document.getElementById('perfil-admin-email').value;
     const telefone = document.getElementById('perfil-admin-phone').value;
@@ -1557,38 +1406,22 @@ async function savePerfilAdmin() {
     const senhaNova = document.getElementById('perfil-admin-senha-nova').value;
     const senhaConfirmar = document.getElementById('perfil-admin-senha-confirmar').value;
 
-    console.log('[PERFIL ADMIN] Dados do formulário:', {
-        nome,
-        email,
-        telefone,
-        temSenhaAtual: !!senhaAtual,
-        temSenhaNova: !!senhaNova,
-        temSenhaConfirmar: !!senhaConfirmar,
-        temFoto: !!currentPerfilPhoto,
-        tamanhoFoto: currentPerfilPhoto ? currentPerfilPhoto.length : 0
-    });
-
     if (!nome || !email) {
-        console.warn('[PERFIL ADMIN] Validação falhou: campos obrigatórios vazios');
         showToast('Preencha todos os campos obrigatórios (*)', 'warning');
         return;
     }
 
     // Validar senha se estiver tentando mudar
     if (senhaAtual || senhaNova || senhaConfirmar) {
-        console.log('[PERFIL ADMIN] Validando alteração de senha');
         if (!senhaAtual) {
-            console.warn('[PERFIL ADMIN] Senha atual não fornecida');
             showToast('Digite a senha atual para alterá-la', 'warning');
             return;
         }
         if (!senhaNova || senhaNova.length < 6) {
-            console.warn('[PERFIL ADMIN] Senha nova inválida (< 6 caracteres)');
             showToast('A nova senha deve ter no mínimo 6 caracteres', 'warning');
             return;
         }
         if (senhaNova !== senhaConfirmar) {
-            console.warn('[PERFIL ADMIN] Senhas não coincidem');
             showToast('As senhas não coincidem', 'warning');
             return;
         }
@@ -1605,23 +1438,10 @@ async function savePerfilAdmin() {
     if (senhaAtual && senhaNova) {
         formData.senhaAtual = senhaAtual;
         formData.senhaNova = senhaNova;
-        console.log('[PERFIL ADMIN] Senha será atualizada');
     }
-
-    console.log('[PERFIL ADMIN] Dados preparados para envio:', {
-        ...formData,
-        senhaAtual: formData.senhaAtual ? '***' : undefined,
-        senhaNova: formData.senhaNova ? '***' : undefined,
-        foto: formData.foto ? `${formData.foto.substring(0, 50)}... (${formData.foto.length} chars)` : null
-    });
 
     try {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
-        console.log('[PERFIL ADMIN] Usuário atual:', {
-            id: user.id,
-            nome: user.nome,
-            email: user.email
-        });
 
         // TODO: Implementar endpoint de atualização de perfil
         // const response = await fetch(`/api/v1/usuarios/${user.id}`, {
@@ -1632,40 +1452,20 @@ async function savePerfilAdmin() {
 
         // if (!response.ok) throw new Error('Erro ao atualizar perfil');
 
-        console.log('[PERFIL ADMIN] Atualizando localStorage (modo mock - endpoint não implementado)');
-
         // Atualizar localStorage (mock)
         user.nome = nome;
         user.email = email;
         user.telefone = telefone;
         if (currentPerfilPhoto) {
-            console.log('[PERFIL ADMIN] Salvando foto no localStorage');
             user.foto = currentPerfilPhoto;
-        } else {
-            console.log('[PERFIL ADMIN] Nenhuma foto para salvar');
         }
-
-        const userJson = JSON.stringify(user);
-        console.log('[PERFIL ADMIN] Tamanho total do objeto user:', userJson.length, 'caracteres');
-
-        localStorage.setItem('user', userJson);
-        console.log('[PERFIL ADMIN] localStorage atualizado com sucesso');
-
-        // Verificar se foi salvo corretamente
-        const savedUser = JSON.parse(localStorage.getItem('user') || '{}');
-        console.log('[PERFIL ADMIN] Verificação pós-salvamento:', {
-            salvou: true,
-            temFoto: !!savedUser.foto,
-            tamanhoFoto: savedUser.foto ? savedUser.foto.length : 0
-        });
+        localStorage.setItem('user', JSON.stringify(user));
 
         showToast('Perfil atualizado com sucesso!', 'success');
         loadUserInfo(); // Atualizar info no menu
         document.getElementById('perfilAdminModal').classList.remove('active');
-        console.log('[PERFIL ADMIN] Perfil salvo e modal fechado');
     } catch (error) {
-        console.error('[PERFIL ADMIN] Erro ao salvar perfil:', error);
-        console.error('[PERFIL ADMIN] Stack trace:', error.stack);
+        console.error('Erro ao salvar perfil:', error);
         showToast('Erro ao atualizar perfil. Tente novamente.', 'error');
     }
 }
@@ -1674,73 +1474,9 @@ async function savePerfilAdmin() {
 // ATUALIZAR FUNÇÕES EXISTENTES COM TOAST
 // ===================================
 
-// Upload de foto no formulário de CRIAR serviço/produto
-function initCreateServicoPhotoUpload() {
-    const uploadArea = document.getElementById('create-servico-photo-upload');
-    const fileInput = document.getElementById('create-servico-photo');
-    const previewImg = document.getElementById('create-servico-preview-img');
-    const placeholder = document.getElementById('create-servico-photo-placeholder');
-
-    if (!uploadArea || !fileInput) return;
-
-    uploadArea.addEventListener('click', () => fileInput.click());
-
-    fileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        if (!file.type.startsWith('image/')) {
-            showToast('Por favor, selecione apenas arquivos de imagem', 'error');
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            currentServicoPhoto = e.target.result;
-            previewImg.src = currentServicoPhoto;
-            previewImg.style.display = 'block';
-            placeholder.style.display = 'none';
-        };
-        reader.readAsDataURL(file);
-    });
-}
-
-// Upload de foto no modal de EDITAR serviço/produto
-function initEditServicoPhotoUpload() {
-    const uploadArea = document.getElementById('edit-servico-photo-upload');
-    const fileInput = document.getElementById('edit-servico-photo');
-    const previewImg = document.getElementById('edit-servico-preview-img');
-    const placeholder = document.getElementById('edit-servico-photo-placeholder');
-
-    if (!uploadArea || !fileInput) return;
-
-    uploadArea.addEventListener('click', () => fileInput.click());
-
-    fileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        if (!file.type.startsWith('image/')) {
-            showToast('Por favor, selecione apenas arquivos de imagem', 'error');
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            currentServicoPhotoEdit = e.target.result;
-            previewImg.src = currentServicoPhotoEdit;
-            previewImg.style.display = 'block';
-            placeholder.style.display = 'none';
-        };
-        reader.readAsDataURL(file);
-    });
-}
-
 // Chamar as novas funções de inicialização
 document.addEventListener('DOMContentLoaded', () => {
     initBarbeiroPhotoUpload();
-    initCreateServicoPhotoUpload(); // Upload no formulário de criação
-    initEditServicoPhotoUpload(); // Upload no modal de edição
     initPerfilPhotoUpload();
     initPerfilAdminModal();
 });
