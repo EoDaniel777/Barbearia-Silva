@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0F0F0F">
+    <title>Barbeiros - Barbearia Silva</title>
+    <link rel="stylesheet" href="/css/mobile-modern.css">
+</head>
+<body>
+    <!-- Modern Header -->
+    <header>
+        <div class="header-logo">
+            <img src="/img/logoDark.jpeg" id="headerLogo" alt="Barbearia Silva">
+        </div>
+
+        <!-- Desktop Navigation -->
+        <nav class="header-nav">
+            <a href="/login" class="btn-login">Acessar</a>
+            <a href="/">Início</a>
+            <a href="/servicos">Serviços</a>
+            <a href="/agendar">Agendar</a>
+            <a href="/barbeiros">Equipe</a>
+        </nav>
+
+        <div class="header-actions">
+            <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">
+                <img src="/icons/moon.png" id="themeIcon" alt="Tema">
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <h1 class="hero-title">Nossa Equipe</h1>
+        <p class="hero-subtitle">Profissionais qualificados e apaixonados pela arte</p>
+    </section>
+
+    <!-- Main Content -->
+    <div class="content-wrapper">
+
+        <!-- Barber Profile -->
+        <section class="section">
+            <div class="barber-card">
+                <div class="barber-photo">
+                    <img src="/img/alissonFt.png" alt="Alison Silva">
+                </div>
+                <h3 class="barber-name">Alison Silva</h3>
+                <p class="barber-role">Barbeiro Profissional | Proprietário</p>
+            </div>
+        </section>
+
+        <!-- About Barber -->
+        <section class="section">
+            <div class="modern-card">
+                <div class="card-content">
+                    <h3 class="card-title">Sobre Alison</h3>
+                    <p class="card-description" style="margin-bottom: 16px;">
+                        Com anos de experiência, Alison é especialista em cortes modernos e clássicos.
+                        Apaixonado pela barbearia, busca constantemente atualização em novas técnicas e tendências do mercado.
+                    </p>
+                    <p class="card-description" style="color: var(--primary-color); font-style: italic;">
+                        "Minha missão é fazer cada cliente sair daqui se sentindo mais confiante e satisfeito."
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="section">
+            <a href="/agendar" class="btn-primary">Agendar com Alison</a>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <img src="/img/logoDark.jpeg" id="footerLogo" alt="Barbearia Silva" class="footer-logo">
+        <div class="footer-info">
+            <p>📞 (61) 00000-0000</p>
+            <p>📍 Morro Azul - Quadra 11 Conjunto A</p>
+            <p>📱 <a href="https://instagram.com/bradock_baber" target="_blank">@bradock_baber</a></p>
+            <p style="margin-top: 20px; font-size: 12px;">&copy; 2025 Barbearia Silva - Todos os direitos reservados</p>
+        </div>
+    </footer>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="/" class="nav-item">
+            <img src="/icons/home.svg" alt="Início">
+            <span>Início</span>
+        </a>
+        <a href="/servicos" class="nav-item">
+            <img src="/icons/servico.svg" alt="Serviços">
+            <span>Serviços</span>
+        </a>
+        <a href="/agendar" class="nav-item">
+            <img src="/icons/calendar2.svg" alt="Agendar">
+            <span>Agendar</span>
+        </a>
+        <a href="/barbeiros" class="nav-item active">
+            <img src="/icons/person.svg" alt="Equipe">
+            <span>Equipe</span>
+        </a>
+    </nav>
+
+    <script>
+        // Theme Management
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const body = document.body;
+        const headerLogo = document.getElementById('headerLogo');
+        const footerLogo = document.getElementById('footerLogo');
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        applyTheme(savedTheme);
+
+        // Theme toggle
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = body.classList.contains('light-mode') ? 'light' : 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                body.classList.add('light-mode');
+                themeIcon.src = '/icons/sun.svg';
+                headerLogo.src = '/img/logoWhite.jpeg';
+                footerLogo.src = '/img/logoWhite.jpeg';
+            } else {
+                body.classList.remove('light-mode');
+                themeIcon.src = '/icons/moon.png';
+                headerLogo.src = '/img/logoDark.jpeg';
+                footerLogo.src = '/img/logoDark.jpeg';
+            }
+        }
+
+        // Active nav item
+        const currentPage = window.location.pathname;
+        document.querySelectorAll('.nav-item').forEach(item => {
+            if (item.getAttribute('href') === currentPage) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

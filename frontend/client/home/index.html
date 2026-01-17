@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0F0F0F">
+    <title>Barbearia Silva - Cortes Modernos e Profissionais</title>
+    <link rel="icon" type="image/jpeg" href="/img/logoDark.jpeg">
+    <link rel="stylesheet" href="/css/mobile-modern.css">
+</head>
+<body>
+    <!-- Modern Header -->
+    <header>
+        <div class="header-logo">
+            <img src="/img/logoDark.jpeg" id="headerLogo" alt="Barbearia Silva">
+        </div>
+
+        <!-- Desktop Navigation -->
+        <nav class="header-nav">
+            <a href="/login" class="btn-login">Acessar</a>
+            <a href="/">Início</a>
+            <a href="/servicos">Serviços</a>
+            <a href="/agendar">Agendar</a>
+            <a href="/barbeiros">Equipe</a>
+        </nav>
+
+        <div class="header-actions">
+            <a href="/login" class="btn-login-mobile">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </a>
+            <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">
+              <img src="/icons/moon.png" id="themeIcon" alt="Tema">
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-logo">
+           <img src="/img/logoSemFundo.png" id="heroLogo" alt="Barbearia Silva">
+        </div>
+        <h1 class="hero-title">Barbearia Silva</h1>
+    </section>
+
+    <!-- Main Content -->
+    <div class="content-wrapper">
+
+        <!-- Services Section -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Serviços</h2>
+                <a href="/servicos" class="section-link">Ver todos →</a>
+            </div>
+
+            <div class="cards-container" id="services-container">
+                <!-- Os serviços serão carregados dinamicamente via JavaScript -->
+                <div class="loading-message" style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                    Carregando serviços...
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Sobre Nós</h2>
+            </div>
+
+            <div class="about-grid">
+                <!-- About Barbershop -->
+                <div class="about-card">
+                    <h3>A Barbearia</h3>
+                    <p>A Barbearia Silva é um espaço moderno e acolhedor, dedicado a oferecer serviços de qualidade premium com técnicas contemporâneas e atendimento personalizado.</p>
+                    <p>Localizada no coração de Morro Azul, nos destacamos pela excelência em cada corte e pela experiência única que proporcionamos aos nossos clientes.</p>
+                </div>
+
+                <!-- About Alison -->
+                <div class="about-card">
+                    <img src="/img/alissonFt.png" alt="Alison Silva" class="about-image">
+                    <h3>Alison Silva</h3>
+                    <p>Barbeiro profissional com anos de experiência em cortes modernos e clássicos. Especialista em design de barba e técnicas de finalização premium.</p>
+                    <p>Apaixonado pela arte da barbearia, Alison busca constantemente atualização em novas técnicas e tendências do mercado.</p>
+                </div>
+
+                <!-- Our Work -->
+                <div class="about-card">
+                    <img src="/img/meta.jpg" alt="Nossos Cortes" class="about-image">
+                    <h3>Nosso Trabalho</h3>
+                    <p>Trabalhamos com técnicas modernas de corte, degradê, barba e acabamentos profissionais que destacam o melhor de cada cliente.</p>
+                    <p>Cada serviço é realizado com atenção aos detalhes, garantindo resultados impecáveis e satisfação total.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fidelity Banner (AFTER Services) -->
+        <div class="fidelity-banner">
+            <div class="fidelity-icon">🎁</div>
+            <p class="fidelity-text">Complete 10 visitas e ganhe seu próximo corte!</p>
+            <a href="/agendar" class="fidelity-btn">Agendar Agora</a>
+        </div>
+
+        <!-- Barber Section -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Nossa Equipe</h2>
+                <a href="/barbeiros" class="section-link">Ver perfil →</a>
+            </div>
+
+            <div class="barbers-grid" id="barbers-grid">
+                <!-- Barbeiros carregados dinamicamente -->
+                <p style="text-align: center; color: #888;">Carregando barbeiros...</p>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="section">
+            <a href="/agendar" class="btn-primary">Agendar Meu Horário</a>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <img src="/img/logoDark.jpeg" id="footerLogo" alt="Barbearia Silva" class="footer-logo">
+        <div class="footer-info">
+            <p>📞 (61) 00000-0000</p>
+            <p>📍 Morro Azul - Quadra 11 Conjunto A</p>
+            <p>📱 <a href="https://instagram.com/bradock_baber" target="_blank">@bradock_baber</a></p>
+            <p style="margin-top: 20px; font-size: 12px;">&copy; 2025 Barbearia Silva - Todos os direitos reservados</p>
+        </div>
+    </footer>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="/" class="nav-item active">
+            <img src="/icons/home.svg" alt="Início">
+            <span>Início</span>
+        </a>
+        <a href="/servicos" class="nav-item">
+            <img src="/icons/servico.svg" alt="Serviços">
+            <span>Serviços</span>
+        </a>
+        <a href="/agendar" class="nav-item">
+            <img src="/icons/calendar2.svg" alt="Agendar">
+            <span>Agendar</span>
+        </a>
+        <a href="/barbeiros" class="nav-item">
+            <img src="/icons/person.svg" alt="Equipe">
+            <span>Equipe</span>
+        </a>
+    </nav>
+
+    <script>
+        // Load Services from API
+        async function loadServices() {
+            const container = document.getElementById('services-container');
+
+            try {
+                const response = await fetch('/api/v1/servicos');
+
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar serviços');
+                }
+
+                const servicos = await response.json();
+
+                // Map service names to images
+                const imageMap = {
+                    'Corte': '/img/meta.jpg',
+                    'Barba': '/img/barba.png',
+                    'Kids': '/img/kids.jpg',
+                    'Corte + Barba': '/img/meta.jpg'
+                };
+
+                // Generate cards HTML
+                container.innerHTML = servicos.map(servico => `
+                    <div class="modern-card">
+                        <img src="${imageMap[servico.nome] || '/img/meta.jpg'}" alt="${servico.nome}" class="card-image">
+                        <div class="card-content">
+                            <h3 class="card-title">${servico.nome}</h3>
+                            <p class="card-description">${servico.descricao || 'Serviço de qualidade'}</p>
+                            <div class="card-footer">
+                                <span class="card-price">R$ ${servico.preco.toFixed(2).replace('.', ',')}</span>
+                                <span class="card-duration">⏱️ ${servico.duracao} min</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Erro ao carregar serviços:', error);
+                container.innerHTML = `
+                    <div class="error-message" style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                        <p>Não foi possível carregar os serviços.</p>
+                        <p style="font-size: 14px; margin-top: 10px;">Por favor, tente novamente mais tarde.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Load Barbers from API
+        async function loadBarbers() {
+            const container = document.getElementById('barbers-grid');
+
+            try {
+                const response = await fetch('/api/v1/barbeiros');
+
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar barbeiros');
+                }
+
+                const barbeiros = await response.json();
+
+                if (barbeiros.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #888;">Nenhum barbeiro cadastrado.</p>';
+                    return;
+                }
+
+                // Generate barber cards HTML
+                container.innerHTML = barbeiros.map(barbeiro => `
+                    <div class="barber-card">
+                        <div class="barber-photo">
+                            <img src="${barbeiro.foto || '/img/alissonFt.png'}" alt="${barbeiro.nome}">
+                        </div>
+                        <h3 class="barber-name">${barbeiro.nome}</h3>
+                        <p class="barber-role">${barbeiro.especialidade || 'Barbeiro Profissional'}</p>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Erro ao carregar barbeiros:', error);
+                container.innerHTML = `
+                    <div class="error-message" style="text-align: center; padding: 20px; color: var(--text-secondary);">
+                        <p>Não foi possível carregar os barbeiros.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Load services and barbers on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadServices();
+            loadBarbers();
+        });
+
+        /* ===================================
+           THEME TOGGLE (COMENTADO TEMPORARIAMENTE)
+           Remover comentários quando compatibilidade for corrigida
+           =================================== */
+
+        // Theme Management
+        // const themeToggle = document.getElementById('themeToggle');
+        // const themeIcon = document.getElementById('themeIcon');
+        // const body = document.body;
+        // const headerLogo = document.getElementById('headerLogo');
+        // const heroLogo = document.getElementById('heroLogo');
+        // const footerLogo = document.getElementById('footerLogo');
+
+        // Load saved theme
+        // const savedTheme = localStorage.getItem('theme') || 'dark';
+        // applyTheme(savedTheme);
+
+        // Theme toggle
+        // themeToggle.addEventListener('click', () => {
+        //     const currentTheme = body.classList.contains('light-mode') ? 'light' : 'dark';
+        //     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        //     applyTheme(newTheme);
+        //     localStorage.setItem('theme', newTheme);
+        // });
+
+        // function applyTheme(theme) {
+        //     if (theme === 'light') {
+        //         body.classList.add('light-mode');
+        //         themeIcon.src = '/icons/sun.svg';
+        //         // Light mode = white header = white logo
+        //         headerLogo.src = '/img/logoWhite.jpeg';
+        //         heroLogo.src = '/img/logoWhite.jpeg';
+        //         footerLogo.src = '/img/logoWhite.jpeg';
+        //     } else {
+        //         body.classList.remove('light-mode');
+        //         themeIcon.src = '/icons/moon.png';
+        //         // Dark mode = black header = dark logo
+        //         headerLogo.src = '/img/logoDark.jpeg';
+        //         heroLogo.src = '/img/logoDark.jpeg';
+        //         footerLogo.src = '/img/logoDark.jpeg';
+        //     }
+        // }
+
+        // Active nav item
+        const currentPage = window.location.pathname;
+        document.querySelectorAll('.nav-item').forEach(item => {
+            if (item.getAttribute('href') === currentPage ||
+                (currentPage === '/' && item.getAttribute('href') === '/')) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
