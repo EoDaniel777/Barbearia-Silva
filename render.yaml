@@ -1,0 +1,29 @@
+services:
+  # Backend API (Go)
+  - type: web
+    name: barbearia-silva-api
+    runtime: go
+    region: oregon
+    plan: free
+    buildCommand: cd backend && go build -o bin/server cmd/api/main.go
+    startCommand: cd backend && ./bin/server
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: GIN_MODE
+        value: release
+      - key: DATABASE_PATH
+        value: ./cmd/api/data/barbearia.db
+    healthCheckPath: /health
+    autoDeploy: true
+
+  # Static Site (Frontend) - Opcional, caso queira servir separadamente
+  # - type: static
+  #   name: barbearia-silva-frontend
+  #   runtime: static
+  #   buildCommand: echo "No build needed for static files"
+  #   staticPublishPath: ./frontend
+  #   routes:
+  #     - type: rewrite
+  #       source: /*
+  #       destination: /index.html
