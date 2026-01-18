@@ -2,12 +2,9 @@ services:
   # Backend API (Go)
   - type: web
     name: barbearia-silva-api
-    runtime: go
-    region: oregon
-    plan: free
-    rootDirectory: backend
-    buildCommand: go build -tags netgo -ldflags '-s -w' -o app cmd/api/main.go
-    startCommand: ./app
+    env: go
+    buildCommand: cd backend && go build -tags netgo -ldflags '-s -w' -o app cmd/api/main.go
+    startCommand: cd backend && ./app
     envVars:
       - key: PORT
         value: 8080
@@ -16,7 +13,6 @@ services:
       - key: DATABASE_PATH
         value: ./cmd/api/data/barbearia.db
     healthCheckPath: /health
-    autoDeploy: true
 
   # Static Site (Frontend) - Opcional, caso queira servir separadamente
   # - type: static
