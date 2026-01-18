@@ -12,6 +12,8 @@ services:
         value: release
       - key: DATABASE_PATH
         value: ./cmd/api/data/barbearia.db
+      - key: GOTOOLCHAIN
+        value: go1.25.4
     healthCheckPath: /health
 
   # Static Site (Frontend) - Opcional, caso queira servir separadamente
