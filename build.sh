@@ -20,7 +20,7 @@ ${GO_BIN} version
 
 echo "==> Building application..."
 cd "$OLDPWD/backend"
-${GO_BIN} build -tags netgo -ldflags '-s -w' -o app cmd/api/main.go
+${GO_BIN} build -tags netgo -ldflags '-s -w' -o cmd/api/app cmd/api/main.go
 
 echo "==> Build completed successfully!"
 ls -lh app

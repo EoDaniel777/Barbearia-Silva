@@ -38,10 +38,9 @@
    Name: barbearia-silva-api
    Region: Oregon (US West)
    Branch: master
-   Root Directory: backend
    Runtime: Go
-   Build Command: go build -tags netgo -ldflags '-s -w' -o app cmd/api/main.go
-   Start Command: ./app
+   Build Command: chmod +x build.sh && ./build.sh
+   Start Command: cd backend/cmd/api && ./app
    ```
 
    **Por que esses comandos?**
