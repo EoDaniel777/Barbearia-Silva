@@ -23,4 +23,4 @@ cd "$OLDPWD/backend"
 ${GO_BIN} build -tags netgo -ldflags '-s -w' -o cmd/api/app cmd/api/main.go
 
 echo "==> Build completed successfully!"
-ls -lh app
+ls -lh cmd/api/app
