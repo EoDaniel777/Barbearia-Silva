@@ -224,23 +224,14 @@
             text-align: left;
         }
 
-        @media (max-width: 480px) {
-            .login-container {
-                padding: 30px 20px;
-            }
-
-            h1 {
-                font-size: 24px;
-            }
-        }
-
+        
         body.ligth-mode form{
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
         }
-
+        
         /* From Uiverse.io by Yaya12085 */
         .bt-goo {
             width: 500px;
@@ -262,46 +253,67 @@
             transition: all .6s ease;
             justify-content: center;
         }
-
+        
         .bt-goo svg {
             height: 24px;
         }
-
+        
         .bt-goo:hover {
             transform: scale(1.02);
         }
-
+        
         @media (max-width: 728px){
+            .login-container{
+                width: 400px;
+            }
+            form{
+                width: 330px;
+                margin: 0 auto;
+            }
+
+            .btn-login, .bt-goo, .btn-back, body.light-mode input, body.light-mode .btn-back{
+                width: 320px;
+            }
+        }
+        
+        @media (max-width: 480px) {
             .login-container {
                 width: 320px;
             }
-
+            
             .logo img{
                 width: 100px;
             }
-
+            
             .credentials-info{
                 width: 280px;
                 margin: 20px auto;
             }
-
+            
             form{
                 width: 320px;
             }
-
+            
             input{
                 width: 280px;
             }
-
+            
             .btn-login, .bt-goo, .btn-back, body.light-mode input, body.light-mode .btn-back{
                 width: 280px;
             }
-
+            
             .bt-goo{
                 justify-content: space-around;
             }
+            .login-container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
         }
-    </style>
+        </style>
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -386,7 +398,7 @@
         const body = document.body;
 
         // Load saved theme from localStorage (set by home page)
-        const savedTheme = localStorage.getItem('theme') || 'dark';
+        const savedTheme = localStorage.getItem('barbearia-theme') || 'dark';
         if (savedTheme === 'light') {
             body.classList.add('light-mode');
             logoImg.src = '/img/logoWhite.jpeg';
