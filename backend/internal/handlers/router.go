@@ -113,6 +113,20 @@ func SetupRouter() *gin.Engine {
 			servicos.DELETE("/:id", servicoHandler.Delete)
 		}
 
+		// Comandas (PDV - Ponto de Venda)
+		comandas := v1.Group("/comandas")
+		{
+			comandas.GET("", ListarComandas)                                // Lista todas as comandas (com filtro opcional ?status=aberta)
+			comandas.GET("/:id", ObterComanda)                              // Obter comanda específica com itens
+			comandas.POST("", CriarComanda)                                 // Criar nova comanda
+			comandas.POST("/:id/itens", AdicionarItemComanda)               // Adicionar item à comanda
+			comandas.PUT("/:id/itens/:item_id", AtualizarQuantidadeItem)    // Atualizar quantidade de item
+			comandas.DELETE("/:id/itens/:item_id", RemoverItemComanda)      // Remover item da comanda
+			comandas.PATCH("/:id/fechar", FecharComanda)                    // Fechar comanda (finalizar e registrar pagamento)
+			comandas.PATCH("/:id/cancelar", CancelarComanda)                // Cancelar comanda
+			comandas.GET("/relatorio/dia", RelatorioComandasDia)            // Relatório do dia (estatísticas)
+		}
+
 		// Auth (Authentication)
 		auth := v1.Group("/auth")
 		{
@@ -126,6 +140,14 @@ func SetupRouter() *gin.Engine {
 		{
 			notifications.GET("", notificationHandler.GetNotifications)
 			notifications.PATCH("/:id/read", notificationHandler.MarkAsRead)
+		}
+
+		// Settings (Configurações)
+		settings := v1.Group("/settings")
+		{
+			settings.POST("/logo", UploadLogo)                          // Upload de logo
+			settings.GET("/geral", GetConfiguracoesGerais)              // Obter configurações gerais
+			settings.PUT("/geral", AtualizarConfiguracoesGerais)        // Atualizar configurações gerais
 		}
 	}
 

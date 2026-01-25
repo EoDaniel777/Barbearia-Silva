@@ -146,6 +146,14 @@
                 <span>Serviços</span>
             </a>
 
+            <a href="#" class="nav-link" data-page="comandas">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 3h18v18H3z"></path>
+                    <path d="M3 9h18M9 21V9"></path>
+                </svg>
+                <span>Comandas</span>
+            </a>
+
             <a href="#" class="nav-link" data-page="galeria">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -413,6 +421,65 @@
                 </div>
                 <div class="card-body">
                     <div id="services-list" class="table-responsive">
+                        <p class="empty-message">Carregando...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comandas/PDV Page -->
+        <div id="comandas-page" class="page">
+            <div class="page-header">
+                <h1>Sistema de Comandas - PDV</h1>
+                <button class="btn-primary" onclick="abrirNovaComanda()">
+                    + Nova Comanda
+                </button>
+            </div>
+
+            <div class="content-grid">
+                <!-- Comandas Abertas -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Comandas Abertas</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="comandas-abertas-list" class="table-responsive">
+                            <p class="empty-message">Carregando...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resumo do Dia -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Resumo do Dia</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="resumo-dia" class="stats-mini-grid">
+                            <div class="stat-mini">
+                                <span class="stat-mini-label">Abertas</span>
+                                <span class="stat-mini-value" id="resumo-abertas">0</span>
+                            </div>
+                            <div class="stat-mini">
+                                <span class="stat-mini-label">Fechadas</span>
+                                <span class="stat-mini-value" id="resumo-fechadas">0</span>
+                            </div>
+                            <div class="stat-mini">
+                                <span class="stat-mini-label">Receita</span>
+                                <span class="stat-mini-value" id="resumo-receita">R$ 0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Histórico de Comandas -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Histórico de Comandas</h2>
+                </div>
+                <div class="card-body">
+                    <div id="comandas-historico-list" class="table-responsive">
                         <p class="empty-message">Carregando...</p>
                     </div>
                 </div>
@@ -707,6 +774,126 @@
         </div>
     </div>
 
+    <!-- Modal de Nova Comanda -->
+    <div class="modal-overlay" id="novaComandaModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nova Comanda</h2>
+                <button class="modal-close" id="closeNovaComandaModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="nova-comanda-form">
+                    <div class="form-group">
+                        <label for="comanda-cliente-nome">Nome do Cliente *</label>
+                        <input type="text" id="comanda-cliente-nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="comanda-barbeiro">Barbeiro *</label>
+                        <select id="comanda-barbeiro" required>
+                            <option value="">Selecione o barbeiro</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelNovaComanda">Cancelar</button>
+                <button class="btn-primary" id="saveNovaComanda">Abrir Comanda</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Gerenciar Comanda -->
+    <div class="modal-overlay" id="gerenciarComandaModal" style="display: none;">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Comanda #<span id="comanda-id-modal">--</span> - <span id="comanda-cliente-modal">--</span></h2>
+                <button class="modal-close" id="closeGerenciarComandaModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="comanda-info">
+                    <p><strong>Barbeiro:</strong> <span id="comanda-barbeiro-modal">--</span></p>
+                    <p><strong>Status:</strong> <span id="comanda-status-modal" class="status-badge">--</span></p>
+                    <p><strong>Total:</strong> <span id="comanda-total-modal">R$ 0,00</span></p>
+                </div>
+
+                <hr style="margin: 20px 0;">
+
+                <h3>Adicionar Item</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="item-tipo">Tipo</label>
+                        <select id="item-tipo">
+                            <option value="servico">Serviço</option>
+                            <option value="produto">Produto</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-servico-produto">Item</label>
+                        <select id="item-servico-produto">
+                            <option value="">Selecione</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-quantidade">Qtd</label>
+                        <input type="number" id="item-quantidade" value="1" min="1" style="width: 80px;">
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn-primary" onclick="adicionarItemComanda()" style="margin-top: 26px;">Adicionar</button>
+                    </div>
+                </div>
+
+                <hr style="margin: 20px 0;">
+
+                <h3>Itens da Comanda</h3>
+                <div id="itens-comanda-list" class="table-responsive">
+                    <p class="empty-message">Nenhum item adicionado</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="cancelarComanda()">Cancelar Comanda</button>
+                <button class="btn-primary" onclick="fecharComandaModal()">Fechar Comanda</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Fechar Comanda -->
+    <div class="modal-overlay" id="fecharComandaModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Fechar Comanda #<span id="fechar-comanda-id">--</span></h2>
+                <button class="modal-close" id="closeFecharComandaModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="comanda-resumo">
+                    <p><strong>Cliente:</strong> <span id="fechar-comanda-cliente">--</span></p>
+                    <p><strong>Total:</strong> <span id="fechar-comanda-total" style="font-size: 24px; color: var(--primary-color);">R$ 0,00</span></p>
+                </div>
+
+                <hr style="margin: 20px 0;">
+
+                <form id="fechar-comanda-form">
+                    <div class="form-group">
+                        <label for="forma-pagamento">Forma de Pagamento *</label>
+                        <select id="forma-pagamento" required>
+                            <option value="">Selecione</option>
+                            <option value="dinheiro">Dinheiro</option>
+                            <option value="pix">PIX</option>
+                            <option value="cartao">Cartão</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="observacoes-pgto">Observações</label>
+                        <textarea id="observacoes-pgto" rows="2" placeholder="Ex: Troco para R$ 100"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="document.getElementById('fecharComandaModal').classList.remove('active')">Voltar</button>
+                <button class="btn-primary" onclick="confirmarFecharComanda()">Confirmar Fechamento</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Container -->
     <div class="toast-container" id="toast-container"></div>
 
@@ -728,14 +915,18 @@
             <img src="../dashboard/assets/icons/tesoura 1.svg" width="20px" height="20px">
             <span>Serviços</span>
         </a>
-        <a href="#" class="nav-item-dash" data-page="galeria">
-            <img src="../dashboard/assets/icons/galeria.png" width="20px" height="20px">
-            <span>Galeria</span>
+        <a href="#" class="nav-item-dash" data-page="comandas">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 3h18v18H3z"></path>
+                <path d="M3 9h18M9 21V9"></path>
+            </svg>
+            <span>Comandas</span>
         </a>
     </nav>
 
     <!-- Auth Guard - DEVE ser o primeiro script a carregar -->
     <script src="/dashboard/js/auth-guard.js"></script>
     <script src="/dashboard/js/dashboard.js"></script>
+    <script src="/dashboard/js/comandas.js"></script>
 </body>
 </html>

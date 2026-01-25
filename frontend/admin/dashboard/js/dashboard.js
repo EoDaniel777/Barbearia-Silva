@@ -101,6 +101,7 @@ function navigateToPage(page) {
         'barbeiros': 'Cadastro de Barbeiros',
         'horarios': 'Gestão de Horários',
         'servicos': 'Serviços e Produtos',
+        'comandas': 'Comandas / PDV',
         'galeria': 'Galeria de Imagens'
     };
 
@@ -121,6 +122,11 @@ function navigateToPage(page) {
             break;
         case 'servicos':
             loadServicos();
+            break;
+        case 'comandas':
+            if (typeof loadComandas === 'function') {
+                loadComandas();
+            }
             break;
         case 'galeria':
             loadGaleria();
