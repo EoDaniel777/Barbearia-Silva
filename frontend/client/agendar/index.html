@@ -6,17 +6,24 @@
     <meta name="theme-color" content="#0F0F0F">
     <title>Agendar - Barbearia Silva</title>
     <link rel="stylesheet" href="/css/mobile-modern.css">
+
+    <!-- Theme Manager -->
+    <script src="/js/theme-manager.js"></script>
+    <!-- Auth Client -->
+    <script src="/js/auth-client.js"></script>
+
     <style>
         .booking-form {
-            background: var(--bg-dark-card);
-            border-radius: var(--border-radius);
-            padding: var(--spacing-xl);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            background: #2C2C2E;
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            margin-bottom: 32px;
         }
 
-        body.light-mode .booking-form {
-            background: var(--bg-light-card);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+        body.theme-white .booking-form {
+            background: #FFFFFF;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
         }
 
         .form-group {
@@ -31,7 +38,7 @@
             font-weight: 600;
         }
 
-        body.light-mode .form-group label {
+        body.theme-white .form-group label {
             color: var(--text-dark);
         }
 
@@ -47,8 +54,8 @@
             transition: var(--transition);
         }
 
-        body.light-mode .form-group input,
-        body.light-mode .form-group select {
+        body.theme-white .form-group input,
+        body.theme-white .form-group select {
             background: rgba(0, 0, 0, 0.02);
             border-color: rgba(0, 0, 0, 0.1);
             color: var(--text-dark);
@@ -70,7 +77,7 @@
             color: var(--text-light);
         }
 
-        body.light-mode .form-group select option {
+        body.theme-white .form-group select option {
             background: var(--bg-light-card);
             color: var(--text-dark);
         }
@@ -95,7 +102,7 @@
             font-weight: 600;
         }
 
-        body.light-mode .time-slot {
+        body.theme-white .time-slot {
             background: rgba(0, 0, 0, 0.02);
             border-color: rgba(0, 0, 0, 0.1);
             color: var(--text-dark);
@@ -172,9 +179,7 @@
         </nav>
 
         <div class="header-actions">
-            <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">
-                <img src="/icons/moon.png" id="themeIcon" alt="Tema">
-            </button>
+            <!-- Tema controlado apenas pela home -->
         </div>
     </header>
 
@@ -253,7 +258,7 @@
         <div class="footer-info">
             <p>📞 (61) 00000-0000</p>
             <p>📍 Morro Azul - Quadra 11 Conjunto A</p>
-            <p>📱 <a href="https://instagram.com/bradock_baber" target="_blank">@bradock_baber</a></p>
+            <p>📱 <a href="https://www.instagram.com/bradock_baber/" target="_blank" rel="noopener noreferrer">@bradock_baber</a></p>
             <p style="margin-top: 20px; font-size: 12px;">&copy; 2025 Barbearia Silva - Todos os direitos reservados</p>
         </div>
     </footer>
@@ -285,37 +290,15 @@
             window.location.href = '/login';
         }
 
-        // Theme Management
-        const themeToggle = document.getElementById('themeToggle');
-        const themeIcon = document.getElementById('themeIcon');
-        const body = document.body;
-        const headerLogo = document.getElementById('headerLogo');
-        const footerLogo = document.getElementById('footerLogo');
-
-        // Load saved theme
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        applyTheme(savedTheme);
-
-        // Theme toggle
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = body.classList.contains('light-mode') ? 'light' : 'dark';
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            applyTheme(newTheme);
-            localStorage.setItem('theme', newTheme);
-        });
-
-        function applyTheme(theme) {
-            if (theme === 'light') {
-                body.classList.add('light-mode');
-                themeIcon.src = '/icons/sun.svg';
-                headerLogo.src = '/img/logoSemFundo.png';
-                footerLogo.src = '/img/logoSemFundo.png';
-            } else {
-                body.classList.remove('light-mode');
-                themeIcon.src = '/icons/moon.png';
-                headerLogo.src = '/img/logoDark.jpeg';
-                footerLogo.src = '/img/logoDark.jpeg';
-            }
+        // Theme Manager - Sistema Global de Tema (sem checkbox, só aplica)
+        if (typeof ThemeManager !== 'undefined') {
+            ThemeManager.init({
+                headerLogoId: 'headerLogo',
+                footerLogoId: 'footerLogo'
+            });
+            console.log('[AGENDAR] Theme Manager inicializado');
+        } else {
+            console.error('[AGENDAR] Theme Manager não encontrado');
         }
 
         // Active nav item

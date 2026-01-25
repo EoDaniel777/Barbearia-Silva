@@ -6,6 +6,11 @@
     <meta name="theme-color" content="#0F0F0F">
     <title>Barbeiros - Barbearia Silva</title>
     <link rel="stylesheet" href="/css/mobile-modern.css">
+
+    <!-- Theme Manager -->
+    <script src="/js/theme-manager.js"></script>
+    <!-- Auth Client -->
+    <script src="/js/auth-client.js"></script>
 </head>
 <body>
     <!-- Modern Header -->
@@ -24,9 +29,7 @@
         </nav>
 
         <div class="header-actions">
-            <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">
-                <img src="/icons/moon.png" id="themeIcon" alt="Tema">
-            </button>
+            <!-- Tema controlado apenas pela home -->
         </div>
     </header>
 
@@ -105,37 +108,15 @@
     </nav>
 
     <script>
-        // Theme Management
-        const themeToggle = document.getElementById('themeToggle');
-        const themeIcon = document.getElementById('themeIcon');
-        const body = document.body;
-        const headerLogo = document.getElementById('headerLogo');
-        const footerLogo = document.getElementById('footerLogo');
-
-        // Load saved theme
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        applyTheme(savedTheme);
-
-        // Theme toggle
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = body.classList.contains('them-white') ? 'light' : 'dark';
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            applyTheme(newTheme);
-            localStorage.setItem('theme', newTheme);
-        });
-
-        function applyTheme(theme) {
-            if (theme === 'light') {
-                body.classList.add('them-white');
-                themeIcon.src = '/icons/sun.svg';
-                headerLogo.src = '/img/logoSemFundo.png';
-                footerLogo.src = '/img/logoSemFundo.png';
-            } else {
-                body.classList.remove('them-white');
-                themeIcon.src = '/icons/moon.png';
-                headerLogo.src = '/img/logoSemFundo.png';
-                footerLogo.src = '/img/logoSemFundo.png';
-            }
+        // Theme Manager - Sistema Global de Tema (sem checkbox, só aplica)
+        if (typeof ThemeManager !== 'undefined') {
+            ThemeManager.init({
+                headerLogoId: 'headerLogo',
+                footerLogoId: 'footerLogo'
+            });
+            console.log('[BARBEIROS] Theme Manager inicializado');
+        } else {
+            console.error('[BARBEIROS] Theme Manager não encontrado');
         }
 
         // Active nav item

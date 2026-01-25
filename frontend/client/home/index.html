@@ -7,6 +7,11 @@
     <meta name="theme-color" content="#0F0F0F">
     <title>Barbearia Silva - Cortes Modernos e Profissionais</title>
     <link rel="stylesheet" href="/css/mobile-modern.css">
+
+    <!-- Theme Manager -->
+    <script src="/js/theme-manager.js"></script>
+    <!-- Auth Client -->
+    <script src="/js/auth-client.js"></script>
 </head>
 
 <body>
@@ -26,9 +31,9 @@
         </nav>
 
         <div class="header-actions">
-            <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">
-                <img src="/icons/moon.png" id="themeIcon" alt="Tema">
-            </button>
+            <label class="theme-toggle-label">
+                <input class="theme-checkbox" type="checkbox" id="theme-toggle-checkbox" />
+            </label>
         </div>
     </header>
 
@@ -122,13 +127,14 @@
         </section>
     </div>
 
+
     <!-- Footer -->
     <footer>
         <img src="/img/logoDark.jpeg" id="footerLogo" alt="Barbearia Silva" class="footer-logo">
         <div class="footer-info">
             <p>📞 (61) 00000-0000</p>
             <p>📍 Morro Azul - Quadra 11 Conjunto A</p>
-            <p>📱 <a href="https://instagram.com/bradock_baber" target="_blank">@bradock_baber</a></p>
+            <p>📱 <a href="https://www.instagram.com/bradock_baber/" target="_blank" rel="noopener noreferrer">@bradock_baber</a></p>
             <p style="margin-top: 20px; font-size: 12px;">&copy; 2025 Barbearia Silva - Todos os direitos reservados</p>
         </div>
     </footer>
@@ -247,54 +253,20 @@
         });
 
         /* ===================================
-           THEME TOGGLE (COMENTADO TEMPORARIAMENTE)
-           Remover comentários quando compatibilidade for corrigida
+           THEME MANAGER - Sistema Global de Tema
            =================================== */
-
-        // Theme Management
-        const themeToggle = document.getElementById('themeToggle');
-        const themeIcon = document.getElementById('themeIcon');
-        const body = document.body;
-        const headerLogo = document.getElementById('headerLogo');
-        const heroLogo = document.getElementById('heroLogo');
-        const footerLogo = document.getElementById('footerLogo');
-
-        // Load saved theme
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        applyTheme(savedTheme);
-
-        // Theme toggle
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = body.classList.contains('theme-white') ? 'light' : 'dark';
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            applyTheme(newTheme);
-            localStorage.setItem('theme', newTheme);
-        });
-
-        function applyTheme(theme) {
-            if (theme === 'light') {
-                body.className = "theme-white";
-                themeIcon.src = '/icons/sun.svg';
-                // Light mode = white header = white logo
-                headerLogo.src = '/img/logoWhite.jpeg';
-                heroLogo.src = '/img/logoSemFundo.png';
-                footerLogo.src = '/img/SemFundoBlack.png';
-            } else {
-                body.classList.remove('theme-white');
-                themeIcon.src = '/icons/moon.png';
-                // Dark mode = black header = dark logo
-                headerLogo.src = '/img/logoSemFundo.png';
-                heroLogo.src = '/img/logoSemFundo.png';
-                footerLogo.src = '/img/logoSemFundo.png';
-            }
+        // Inicializar o Theme Manager quando a página carregar
+        if (typeof ThemeManager !== 'undefined') {
+            ThemeManager.init({
+                checkboxId: 'theme-toggle-checkbox',
+                headerLogoId: 'headerLogo',
+                heroLogoId: 'heroLogo',
+                footerLogoId: 'footerLogo'
+            });
+            console.log('[HOME] Theme Manager inicializado');
+        } else {
+            console.error('[HOME] Theme Manager não encontrado');
         }
-
-       // const themeToggle = document.querySelector('#themeToggle');
-       // const body = document.querySelector('body');
-
-       // theme.addEventListener('click', () => {
-       //     const currentTheme = body.classList.contains('ligth-mode') ? 'ligth' : 'dark';
-       // });
 
         // Active nav item
         const currentPage = window.location.pathname;
