@@ -2,10 +2,11 @@
 
 <div align="center">
 
-![Status](https://img.shields.io/badge/Status-Beta-blue)
+![Status](https://img.shields.io/badge/Status-Production-green)
 ![Go](https://img.shields.io/badge/Go-1.25.4-00ADD8?logo=go)
 ![License](https://img.shields.io/badge/License-MIT-blue)
-![Version](https://img.shields.io/badge/Version-3.1.0-green)
+![Version](https://img.shields.io/badge/Version-4.0.0-green)
+![Deploy](https://img.shields.io/badge/Deploy-Render-46E3B7)
 
 **Sistema Web Full-Stack para Gestão e Agendamento de Serviços em Barbearias**
 
@@ -44,13 +45,37 @@ O **System-Barbearia-AS** é uma aplicação web completa desenvolvida para otim
 Criar uma plataforma integrada que simplifique a rotina das barbearias, permitindo:
 - Agendamento online de serviços
 - Gestão de profissionais e horários
-- Programa de fidelidade automatizado
+- **Sistema completo de Comandas/PDV** (Novo!)
+- **Upload de logos personalizado** (Novo!)
+- Autenticação com Firebase (Google Login)
 - Interface responsiva e intuitiva
 - Experiência otimizada em dispositivos móveis e desktop
 
 ---
 
 ## ✨ Funcionalidades
+
+### 💰 Sistema de Comandas/PDV (NOVO!)
+- **Abertura de comandas** por barbeiro e cliente
+- **Adição de serviços e produtos** durante o atendimento
+- **Cálculo automático de totais** em tempo real
+- **Fechamento com registro de pagamento** (Dinheiro, PIX, Cartão)
+- **Relatórios diários** com estatísticas de receita
+- **Histórico completo** de todas as comandas
+- Interface intuitiva com 3 modais especializados
+
+### 🎨 Upload de Logos Personalizado (NOVO!)
+- Upload de logo Dark (tema escuro)
+- Upload de logo White (tema claro)
+- Suporte a Base64 e Multipart/Form-Data
+- Atualização instantânea em todo o site
+
+### 🔐 Autenticação Avançada
+- Login local com email e senha
+- **Login com Google via Firebase**
+- Logs detalhados para debug em produção
+- Proteção de rotas administrativas
+- CORS configurado para produção
 
 ### 📱 Design Responsivo
 - Layout adaptativo para todos os dispositivos
@@ -86,17 +111,21 @@ Criar uma plataforma integrada que simplifique a rotina das barbearias, permitin
 ## 🚀 Tecnologias
 
 ### Backend
-- **Go 1.25.4** - Linguagem de programação
-- **Gin Framework v1.11.0** - Web framework HTTP
-- **SQLite** - Banco de dados embutido
-- **go-sqlite3** - Driver SQLite para Go
+- **Go 1.25.4** - Linguagem de programação de alto desempenho
+- **Gin Framework v1.11.0** - Web framework HTTP rápido e minimalista
+- **SQLite** - Banco de dados embutido com performance otimizada
+- **modernc.org/sqlite** - Driver SQLite puro em Go (CGO-free)
+- **bcrypt** - Hash seguro de senhas
 - **Clean Architecture** - Separação de camadas (handlers, models, database)
+- **Firebase Admin SDK** - Autenticação com Google
 
 ### Frontend
 - **HTML5** - Estrutura semântica e acessível
 - **CSS3** - Estilização moderna com Flexbox e Grid
 - **JavaScript (ES6+)** - Interatividade e manipulação do DOM
+- **Firebase SDK v9** - Autenticação com Google
 - **LocalStorage API** - Persistência de dados client-side
+- **Fetch API** - Comunicação com backend REST
 
 ### Design
 - **Mobile-First** - Prioridade para dispositivos móveis
@@ -338,13 +367,26 @@ System-Barbearia-AS/
 - [x] Carregamento dinâmico de serviços
 - [x] Dashboard com métricas
 
-### 📋 Fase 4 - Melhorias Futuras (Planejado)
+### ✅ Fase 4 - Sistema de Comandas e Upload (Concluído)
+- [x] Sistema completo de comandas/PDV
+- [x] Abertura e fechamento de comandas
+- [x] Adição de serviços e produtos
+- [x] Registro de formas de pagamento
+- [x] Relatórios diários de receita
+- [x] Upload de logos personalizado
+- [x] Logs detalhados de autenticação Firebase
+- [x] CORS configurado para produção
+
+### 📋 Fase 5 - Melhorias Futuras (Planejado)
 - [ ] Notificações por email/SMS
 - [ ] PWA (Progressive Web App)
-- [ ] Pagamentos online
-- [ ] Sistema de avaliações
-- [ ] Analytics e relatórios detalhados
+- [ ] Pagamentos online integrados
+- [ ] Sistema de avaliações de clientes
+- [ ] Analytics e relatórios avançados
 - [ ] Chatbot de atendimento
+- [ ] Impressão térmica de comandas
+- [ ] Migração para PostgreSQL
+- [ ] Sistema White Label (multi-tenancy)
 
 ---
 
@@ -438,6 +480,22 @@ System-Barbearia-AS/
 - **GET** `/api/v1/notifications` - Listar notificações do usuário
 - **PATCH** `/api/v1/notifications/:id/read` - Marcar notificação como lida
 
+### Comandas/PDV (NOVO!)
+- **GET** `/api/v1/comandas` - Listar todas as comandas (filtro: ?status=aberta)
+- **GET** `/api/v1/comandas/:id` - Obter comanda específica com itens
+- **POST** `/api/v1/comandas` - Criar nova comanda
+- **POST** `/api/v1/comandas/:id/itens` - Adicionar item à comanda
+- **PUT** `/api/v1/comandas/:id/itens/:item_id` - Atualizar quantidade de item
+- **DELETE** `/api/v1/comandas/:id/itens/:item_id` - Remover item da comanda
+- **PATCH** `/api/v1/comandas/:id/fechar` - Fechar comanda e registrar pagamento
+- **PATCH** `/api/v1/comandas/:id/cancelar` - Cancelar comanda
+- **GET** `/api/v1/comandas/relatorio/dia` - Relatório do dia (estatísticas)
+
+### Configurações (NOVO!)
+- **POST** `/api/v1/settings/logo` - Upload de logo (Base64 ou Multipart)
+- **GET** `/api/v1/settings/geral` - Obter configurações gerais
+- **PUT** `/api/v1/settings/geral` - Atualizar configurações gerais
+
 ---
 
 ## 📄 Licença
@@ -468,6 +526,35 @@ Contribuições são bem-vindas! Para contribuir:
 ---
 
 ## 📝 Changelog
+
+### [4.0.0] - 2026-01-25 - Sistema de Comandas e Produção
+#### Adicionado
+- ✨ **Sistema completo de Comandas/PDV**
+  - Abertura de comandas por barbeiro
+  - Adição de serviços e produtos durante atendimento
+  - Cálculo automático de totais
+  - Fechamento com registro de pagamento (Dinheiro/PIX/Cartão)
+  - Relatórios diários com estatísticas
+  - Histórico completo de comandas
+- 🎨 **Upload de logos personalizado**
+  - Endpoint para upload de logoDark e logoWhite
+  - Suporte a Base64 e Multipart/Form-Data
+- 🔐 **Melhorias de autenticação**
+  - Logs detalhados do Firebase para debug em produção
+  - Mensagens de erro mais amigáveis
+  - Detecção de domínio não autorizado
+- 🌐 **CORS configurado para produção**
+  - Whitelist de domínios (barbearia-silva.onrender.com)
+  - Segurança aprimorada
+- 🗄️ **Novas tabelas no banco**
+  - `comandas` - Registro de comandas
+  - `itens_comanda` - Itens de cada comanda
+
+#### Melhorado
+- Interface do dashboard com nova página de Comandas
+- Navegação com ícone de comandas
+- Sistema de modais otimizado
+- Performance de queries no SQLite
 
 ### [3.1.0] - 2026-01-11
 #### Adicionado

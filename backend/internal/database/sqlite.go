@@ -132,6 +132,33 @@ func createTables() error {
 		FOREIGN KEY (barbeiro_id) REFERENCES barbeiros(id) ON DELETE CASCADE
 	);
 
+	CREATE TABLE IF NOT EXISTS comandas (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		cliente_nome TEXT NOT NULL,
+		barbeiro_id INTEGER NOT NULL,
+		data_abertura DATETIME DEFAULT CURRENT_TIMESTAMP,
+		data_fechamento DATETIME,
+		status TEXT NOT NULL DEFAULT 'aberta' CHECK(status IN ('aberta', 'fechada', 'cancelada')),
+		total REAL DEFAULT 0.0 CHECK(total >= 0),
+		forma_pagamento TEXT CHECK(forma_pagamento IN ('dinheiro', 'pix', 'cartao')),
+		observacoes_pgto TEXT,
+		criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+		FOREIGN KEY (barbeiro_id) REFERENCES barbeiros(id)
+	);
+
+	CREATE TABLE IF NOT EXISTS itens_comanda (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		comanda_id INTEGER NOT NULL,
+		tipo TEXT NOT NULL CHECK(tipo IN ('servico', 'produto')),
+		item_id INTEGER NOT NULL,
+		nome TEXT NOT NULL,
+		quantidade INTEGER NOT NULL DEFAULT 1 CHECK(quantidade > 0),
+		preco_unitario REAL NOT NULL CHECK(preco_unitario >= 0),
+		subtotal REAL NOT NULL CHECK(subtotal >= 0),
+		criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+		FOREIGN KEY (comanda_id) REFERENCES comandas(id) ON DELETE CASCADE
+	);
+
 	CREATE INDEX IF NOT EXISTS idx_horarios_barbeiro ON horarios(barbeiro_id);
 	CREATE INDEX IF NOT EXISTS idx_horarios_data ON horarios(data_hora);
 	CREATE INDEX IF NOT EXISTS idx_notificacoes_usuario ON notificacoes(usuario_id);
@@ -139,6 +166,9 @@ func createTables() error {
 	CREATE INDEX IF NOT EXISTS idx_horarios_trabalho_barbeiro ON horarios_trabalho(barbeiro_id);
 	CREATE INDEX IF NOT EXISTS idx_servicos_ativo ON servicos(ativo);
 	CREATE INDEX IF NOT EXISTS idx_barbeiros_ativo ON barbeiros(ativo);
+	CREATE INDEX IF NOT EXISTS idx_comandas_status ON comandas(status);
+	CREATE INDEX IF NOT EXISTS idx_comandas_barbeiro ON comandas(barbeiro_id);
+	CREATE INDEX IF NOT EXISTS idx_itens_comanda_comanda ON itens_comanda(comanda_id);
 	`
 
 	_, err := DB.Exec(schema)

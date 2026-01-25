@@ -477,21 +477,31 @@
         const googleLoginBtn = document.getElementById('googleLoginBtn');
 
         googleLoginBtn.addEventListener('click', async function() {
-            console.log('[GOOGLE LOGIN] Iniciando login com Google');
+            console.log('[GOOGLE LOGIN] ========== INÍCIO DO LOGIN GOOGLE ==========');
+            console.log('[GOOGLE LOGIN] Timestamp:', new Date().toISOString());
+            console.log('[GOOGLE LOGIN] URL atual:', window.location.href);
+            console.log('[GOOGLE LOGIN] Firebase Auth Domain:', firebaseConfig.authDomain);
 
             // Disable button
             googleLoginBtn.disabled = true;
             googleLoginBtn.innerHTML = '<span>Carregando...</span>';
 
             try {
+                console.log('[GOOGLE LOGIN] Criando provider do Google...');
                 const provider = new firebase.auth.GoogleAuthProvider();
                 provider.addScope('email');
                 provider.addScope('profile');
+                console.log('[GOOGLE LOGIN] Provider criado com sucesso');
 
+                console.log('[GOOGLE LOGIN] Chamando signInWithPopup...');
                 const result = await auth.signInWithPopup(provider);
-                const user = result.user;
+                console.log('[GOOGLE LOGIN] Popup retornou resultado');
 
-                console.log('[GOOGLE LOGIN] Login bem-sucedido:', user);
+                const user = result.user;
+                console.log('[GOOGLE LOGIN] ✓ Login bem-sucedido!');
+                console.log('[GOOGLE LOGIN] User ID:', user.uid);
+                console.log('[GOOGLE LOGIN] Email:', user.email);
+                console.log('[GOOGLE LOGIN] Nome:', user.displayName);
 
                 // Criar objeto de usuário para salvar no localStorage
                 const userData = {
@@ -518,22 +528,40 @@
                 }, 1000);
 
             } catch (error) {
-                console.error('[GOOGLE LOGIN] Erro:', error);
+                console.error('[GOOGLE LOGIN] ========== ERRO NO LOGIN GOOGLE ==========');
+                console.error('[GOOGLE LOGIN] Timestamp:', new Date().toISOString());
+                console.error('[GOOGLE LOGIN] Código do erro:', error.code);
+                console.error('[GOOGLE LOGIN] Mensagem do erro:', error.message);
+                console.error('[GOOGLE LOGIN] Stack trace:', error.stack);
+                console.error('[GOOGLE LOGIN] Objeto completo do erro:', JSON.stringify(error, null, 2));
+                console.error('[GOOGLE LOGIN] Auth Domain configurado:', firebaseConfig.authDomain);
+                console.error('[GOOGLE LOGIN] URL da janela:', window.location.href);
 
                 alert.className = 'alert error';
                 alert.style.display = 'block';
 
                 // Mensagens de erro mais amigáveis
                 let errorMessage = 'Erro ao fazer login com Google';
+                let technicalDetails = '';
+
                 if (error.code === 'auth/popup-closed-by-user') {
                     errorMessage = 'Login cancelado pelo usuário';
                 } else if (error.code === 'auth/popup-blocked') {
                     errorMessage = 'Pop-up bloqueado. Por favor, permita pop-ups para este site.';
                 } else if (error.code === 'auth/network-request-failed') {
                     errorMessage = 'Erro de conexão. Verifique sua internet.';
+                } else if (error.code === 'auth/unauthorized-domain') {
+                    errorMessage = 'Domínio não autorizado no Firebase. Configure o domínio no Firebase Console.';
+                    technicalDetails = `Domínio atual: ${window.location.hostname}`;
+                } else {
+                    technicalDetails = `Código: ${error.code}`;
                 }
 
-                alert.textContent = '✗ ' + errorMessage;
+                alert.innerHTML = `
+                    ✗ ${errorMessage}
+                    ${technicalDetails ? `<br><small style="font-size: 11px; opacity: 0.8;">${technicalDetails}</small>` : ''}
+                    <br><small style="font-size: 11px; opacity: 0.8;">Verifique o console do navegador (F12) para mais detalhes</small>
+                `;
 
                 googleLoginBtn.disabled = false;
                 googleLoginBtn.innerHTML = `
