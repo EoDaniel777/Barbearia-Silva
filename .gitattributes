@@ -1,0 +1,34 @@
+# GitHub Linguist configuration
+# https://github.com/github/linguist
+
+# Define Go como linguagem principal do projeto
+*.go linguist-language=Go
+
+# Marcar arquivos de documentação (não conta nas estatísticas)
+*.md linguist-documentation
+docs/* linguist-documentation
+
+# Marcar assets como vendored (não conta nas estatísticas)
+frontend/client/home/assets/** linguist-vendored
+frontend/admin/dashboard/assets/** linguist-vendored
+frontend/shared/login/assets/** linguist-vendored
+
+# Se houver node_modules ou vendor (marcar como vendored)
+node_modules/* linguist-vendored
+vendor/* linguist-vendored
+
+# Arquivos gerados (se existirem)
+*.min.js linguist-generated
+*.min.css linguist-generated
+
+# Configuração de linguagens para melhor detecção
+*.html linguist-detectable=true
+*.css linguist-detectable=true
+*.js linguist-detectable=true
+*.go linguist-detectable=true
+
+# Forçar detecção correta de tipos
+backend/**/*.go linguist-language=Go
+frontend/**/*.html linguist-language=HTML
+frontend/**/*.css linguist-language=CSS
+frontend/**/*.js linguist-language=JavaScript
