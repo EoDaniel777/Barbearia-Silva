@@ -135,6 +135,13 @@ func SetupRouter() *gin.Engine {
 			auth.GET("/me", authHandler.Me)
 		}
 
+		// Usuários (Users)
+		usuarios := v1.Group("/usuarios")
+		{
+			usuarios.GET("", authHandler.ListUsers)
+			usuarios.PUT("/:id", authHandler.UpdateProfile)
+		}
+
 		// Notificações (Notifications)
 		notifications := v1.Group("/notifications")
 		{

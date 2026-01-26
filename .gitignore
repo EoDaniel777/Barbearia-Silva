@@ -10,6 +10,7 @@
 # Diretórios de build
 /backend/cmd/api/api
 /backend/cmd/api/main
+/backend/cmd/api/server
 
 # Banco de dados local (desenvolvimento)
 *.db

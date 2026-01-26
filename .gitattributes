@@ -8,10 +8,17 @@
 *.md linguist-documentation
 docs/* linguist-documentation
 
-# Marcar assets como vendored (não conta nas estatísticas)
+# Marcar assets e imagens como vendored/generated (não conta nas estatísticas)
 frontend/client/home/assets/** linguist-vendored
 frontend/admin/dashboard/assets/** linguist-vendored
 frontend/shared/login/assets/** linguist-vendored
+*.png linguist-generated
+*.jpg linguist-generated
+*.jpeg linguist-generated
+*.gif linguist-generated
+*.svg linguist-generated
+*.ico linguist-generated
+*.webp linguist-generated
 
 # Se houver node_modules ou vendor (marcar como vendored)
 node_modules/* linguist-vendored

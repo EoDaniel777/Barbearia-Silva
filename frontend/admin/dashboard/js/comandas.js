@@ -5,6 +5,7 @@
 let comandaAtual = null;
 let barbeirosCache = [];
 let servicosCache = [];
+let usuariosCache = [];
 
 // Carregar página de comandas
 async function loadComandas() {
@@ -25,7 +26,7 @@ async function loadComandas() {
     }
 }
 
-// Carregar barbeiros e serviços
+// Carregar barbeiros, serviços e usuários
 async function carregarDadosAuxiliares() {
     try {
         // Barbeiros
@@ -35,6 +36,10 @@ async function carregarDadosAuxiliares() {
         // Serviços e produtos
         const resServicos = await fetch('/api/v1/servicos');
         servicosCache = await resServicos.json();
+
+        // Usuários
+        const resUsuarios = await fetch('/api/v1/usuarios');
+        usuariosCache = await resUsuarios.json();
     } catch (error) {
         console.error('Erro ao carregar dados auxiliares:', error);
     }
@@ -151,18 +156,98 @@ async function carregarHistoricoComandas() {
 }
 
 // Abrir modal de nova comanda
-function abrirNovaComanda() {
+async function abrirNovaComanda() {
     // Preencher select de barbeiros
-    const select = document.getElementById('comanda-barbeiro');
-    select.innerHTML = '<option value="">Selecione o barbeiro</option>';
+    const selectBarbeiro = document.getElementById('comanda-barbeiro');
+    selectBarbeiro.innerHTML = '<option value="">Selecione o barbeiro</option>';
     barbeirosCache.forEach(barb => {
         if (barb.ativo) {
-            select.innerHTML += `<option value="${barb.id}">${barb.nome}</option>`;
+            selectBarbeiro.innerHTML += `<option value="${barb.id}">${barb.nome}</option>`;
         }
     });
 
+    // Buscar agendamentos para o horário atual (próxima 1 hora)
+    const agora = new Date();
+    const horaAtual = agora.getHours();
+    const minutoAtual = agora.getMinutes();
+
+    let horariosAtuais = [];
+    try {
+        const response = await fetch('/api/v1/horarios');
+        const todosHorarios = await response.json();
+
+        // Filtrar agendamentos confirmados para hoje
+        horariosAtuais = todosHorarios.filter(h => {
+            if (h.status !== 'confirmado') return false;
+
+            const dataHorario = new Date(h.dataHora);
+            const hoje = new Date();
+
+            // Verificar se é hoje
+            if (dataHorario.toDateString() !== hoje.toDateString()) return false;
+
+            // Verificar se está dentro da próxima hora
+            const horaAgendamento = dataHorario.getHours();
+            const minutoAgendamento = dataHorario.getMinutes();
+
+            const diferencaMinutos = (horaAgendamento * 60 + minutoAgendamento) - (horaAtual * 60 + minutoAtual);
+
+            // Agendamentos de -15min até +60min
+            return diferencaMinutos >= -15 && diferencaMinutos <= 60;
+        });
+    } catch (error) {
+        console.error('Erro ao buscar agendamentos:', error);
+    }
+
+    // Preencher select de usuários
+    const selectUsuario = document.getElementById('comanda-usuario-novo');
+    selectUsuario.innerHTML = '';
+
+    // Adicionar usuários com agendamento primeiro
+    if (horariosAtuais.length > 0) {
+        selectUsuario.innerHTML += '<optgroup label="🕒 Agendados para agora">';
+        horariosAtuais.forEach(h => {
+            const usuario = usuariosCache.find(u => u.telefone === h.telefone);
+            if (usuario) {
+                const horaAgendamento = new Date(h.dataHora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                selectUsuario.innerHTML += `<option value="${usuario.id}">⭐ ${usuario.nome} (${horaAgendamento})</option>`;
+            } else {
+                // Se não encontrou usuário cadastrado, mas tem agendamento
+                const horaAgendamento = new Date(h.dataHora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                selectUsuario.innerHTML += `<option value="walk-in-${h.id}" data-nome="${h.clienteNome}">⭐ ${h.clienteNome} (${horaAgendamento})</option>`;
+            }
+        });
+        selectUsuario.innerHTML += '</optgroup>';
+    }
+
+    // Adicionar todos os outros usuários
+    if (usuariosCache.length > 0) {
+        selectUsuario.innerHTML += '<optgroup label="👥 Todos os usuários">';
+        usuariosCache.forEach(usuario => {
+            // Não duplicar se já está na lista de agendados
+            const jaListado = horariosAtuais.some(h => {
+                const u = usuariosCache.find(u => u.telefone === h.telefone);
+                return u && u.id === usuario.id;
+            });
+
+            if (!jaListado) {
+                selectUsuario.innerHTML += `<option value="${usuario.id}">${usuario.nome} - ${usuario.email}</option>`;
+            }
+        });
+        selectUsuario.innerHTML += '</optgroup>';
+    }
+
+    // Se não houver nenhum usuário, mostrar mensagem
+    if (horariosAtuais.length === 0 && usuariosCache.length === 0) {
+        selectUsuario.innerHTML = '<option value="">Nenhum usuário disponível</option>';
+    }
+
+    // Auto-selecionar o primeiro agendamento se houver
+    if (horariosAtuais.length > 0) {
+        selectUsuario.selectedIndex = 1; // Primeiro usuário (pula o optgroup)
+    }
+
     // Limpar formulário
-    document.getElementById('comanda-cliente-nome').value = '';
     document.getElementById('comanda-barbeiro').value = '';
 
     // Abrir modal
@@ -188,12 +273,31 @@ function initNovaComandaModal() {
     });
 
     saveBtn?.addEventListener('click', async () => {
-        const clienteNome = document.getElementById('comanda-cliente-nome').value;
+        const selectUsuario = document.getElementById('comanda-usuario-novo');
+        const usuarioValue = selectUsuario.value;
         const barbeiroId = document.getElementById('comanda-barbeiro').value;
 
-        if (!clienteNome || !barbeiroId) {
+        if (!usuarioValue || !barbeiroId) {
             showToast('Preencha todos os campos', 'warning');
             return;
+        }
+
+        // Obter nome do cliente
+        let clienteNome = '';
+
+        // Se for um "walk-in" (agendamento sem usuário cadastrado)
+        if (usuarioValue.startsWith('walk-in-')) {
+            const selectedOption = selectUsuario.options[selectUsuario.selectedIndex];
+            clienteNome = selectedOption.dataset.nome;
+        } else {
+            // Buscar nome do usuário selecionado
+            const usuario = usuariosCache.find(u => u.id === parseInt(usuarioValue));
+            if (usuario) {
+                clienteNome = usuario.nome;
+            } else {
+                showToast('Usuário não encontrado', 'error');
+                return;
+            }
         }
 
         try {
@@ -252,6 +356,9 @@ async function gerenciarComanda(id) {
         // Preencher select de serviços/produtos
         atualizarSelectItens();
 
+        // Preencher select de usuários
+        carregarUsuariosComanda();
+
         // Listar itens da comanda
         listarItensComanda();
 
@@ -275,6 +382,27 @@ function atualizarSelectItens() {
         .forEach(item => {
             select.innerHTML += `<option value="${item.id}" data-preco="${item.preco}" data-nome="${item.nome}">${item.nome} - R$ ${item.preco.toFixed(2)}</option>`;
         });
+}
+
+// Carregar usuários no select do modal de comanda
+function carregarUsuariosComanda() {
+    const select = document.getElementById('comanda-usuario');
+    if (!select) return;
+
+    select.innerHTML = '<option value="">Selecione o usuário (opcional)</option>';
+
+    // Adicionar todos os usuários
+    usuariosCache.forEach(usuario => {
+        select.innerHTML += `<option value="${usuario.id}">${usuario.nome} - ${usuario.email}</option>`;
+    });
+
+    // Se houver um telefone na comanda, tentar encontrar o usuário correspondente
+    if (comandaAtual && comandaAtual.telefone) {
+        const usuarioEncontrado = usuariosCache.find(u => u.telefone === comandaAtual.telefone);
+        if (usuarioEncontrado) {
+            select.value = usuarioEncontrado.id;
+        }
+    }
 }
 
 // Listener para mudança de tipo
@@ -381,7 +509,8 @@ async function adicionarItemComanda() {
 async function removerItemComanda(itemId) {
     if (!comandaAtual) return;
 
-    if (!confirm('Deseja realmente remover este item?')) return;
+    const confirmed = await showConfirm('Deseja realmente remover este item?', 'Remover Item');
+    if (!confirmed) return;
 
     try {
         const response = await fetch(`/api/v1/comandas/${comandaAtual.id}/itens/${itemId}`, {
@@ -465,7 +594,8 @@ async function confirmarFecharComanda() {
 async function cancelarComanda() {
     if (!comandaAtual) return;
 
-    if (!confirm('Deseja realmente cancelar esta comanda?')) return;
+    const confirmed = await showConfirm('Deseja realmente cancelar esta comanda?', 'Cancelar Comanda');
+    if (!confirmed) return;
 
     try {
         const response = await fetch(`/api/v1/comandas/${comandaAtual.id}/cancelar`, {

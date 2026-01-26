@@ -4,6 +4,7 @@ import (
 	"backend/internal/database"
 	"backend/internal/models"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -18,6 +19,8 @@ func NewHorarioHandler() *HorarioHandler {
 
 // List all schedules
 func (h *HorarioHandler) List(c *gin.Context) {
+	log.Printf("[HorarioHandler] Listando horários...")
+
 	rows, err := database.DB.Query(`
 		SELECT id, barbeiro_id, cliente_nome, telefone, servico_id, data_hora, status, criado_em
 		FROM horarios
@@ -25,6 +28,7 @@ func (h *HorarioHandler) List(c *gin.Context) {
 	`)
 
 	if err != nil {
+		log.Printf("[HorarioHandler] Erro ao buscar horários: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao buscar horários"})
 		return
 	}
@@ -35,22 +39,30 @@ func (h *HorarioHandler) List(c *gin.Context) {
 		var h models.Horario
 		err := rows.Scan(&h.ID, &h.BarbeiroID, &h.ClienteNome, &h.Telefone, &h.ServicoID, &h.DataHora, &h.Status, &h.CreatedAt)
 		if err != nil {
+			log.Printf("[HorarioHandler] Erro ao fazer scan de horário: %v", err)
 			continue
 		}
 		horarios = append(horarios, h)
 	}
 
+	log.Printf("[HorarioHandler] ✓ Retornando %d horários", len(horarios))
 	c.JSON(http.StatusOK, horarios)
 }
 
 // Create a new schedule
 func (h *HorarioHandler) Create(c *gin.Context) {
+	log.Printf("[HorarioHandler] Criando novo horário...")
+
 	var input models.HorarioInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
+		log.Printf("[HorarioHandler] Erro no bind JSON: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	log.Printf("[HorarioHandler] Dados recebidos: Cliente=%s, Barbeiro=%d, Serviço=%d, Data=%s",
+		input.ClienteNome, input.BarbeiroID, input.ServicoID, input.DataHora)
 
 	// Set default status if not provided
 	if input.Status == "" {
@@ -64,6 +76,7 @@ func (h *HorarioHandler) Create(c *gin.Context) {
 	`, input.BarbeiroID, input.ClienteNome, input.Telefone, input.ServicoID, input.DataHora, input.Status)
 
 	if err != nil {
+		log.Printf("[HorarioHandler] Erro ao inserir no banco: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao criar agendamento"})
 		return
 	}
@@ -71,13 +84,17 @@ func (h *HorarioHandler) Create(c *gin.Context) {
 	// Get the created horario ID
 	horarioID, err := result.LastInsertId()
 	if err != nil {
+		log.Printf("[HorarioHandler] Erro ao obter ID: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao obter ID do agendamento"})
 		return
 	}
 
+	log.Printf("[HorarioHandler] ✓ Horário criado com ID: %d", horarioID)
+
 	// Notify admin about new booking
 	notificationHandler := NewNotificationHandler()
 	if err := notificationHandler.NotifyAdmin(int(horarioID), input.ClienteNome); err != nil {
+		log.Printf("[HorarioHandler] Aviso: Falha ao enviar notificação: %v", err)
 		// Log error but don't fail the request
 		// The booking was created successfully even if notification fails
 	}
@@ -92,44 +109,61 @@ func (h *HorarioHandler) Create(c *gin.Context) {
 // Update schedule status
 func (h *HorarioHandler) UpdateStatus(c *gin.Context) {
 	id := c.Param("id")
+	log.Printf("[UpdateStatus] Recebido ID: %s", id)
+
 	var input struct {
 		Status string `json:"status" binding:"required,oneof=pendente confirmado cancelado concluido"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
+		log.Printf("[UpdateStatus] Erro no bind JSON: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Get horario info before updating to send notification
-	var clienteNome string
-	var usuarioID int
+	log.Printf("[UpdateStatus] Status recebido: %s", input.Status)
+
+	// Primeiro verificar se o horário existe
+	var clienteNome, telefone string
 	err := database.DB.QueryRow(`
-		SELECT h.cliente_nome, u.id
-		FROM horarios h
-		LEFT JOIN usuarios u ON u.telefone = h.telefone
-		WHERE h.id = ?
-	`, id).Scan(&clienteNome, &usuarioID)
+		SELECT cliente_nome, telefone
+		FROM horarios
+		WHERE id = ?
+	`, id).Scan(&clienteNome, &telefone)
 
 	if err != nil {
+		log.Printf("[UpdateStatus] Erro ao buscar horário ID %s: %v", id, err)
 		c.JSON(http.StatusNotFound, gin.H{"error": "Agendamento não encontrado"})
 		return
 	}
 
+	log.Printf("[UpdateStatus] Horário encontrado. Cliente: %s, Telefone: %s", clienteNome, telefone)
+
 	// Update status in database
-	_, err = database.DB.Exec(`
+	result, err := database.DB.Exec(`
 		UPDATE horarios
 		SET status = ?
 		WHERE id = ?
 	`, input.Status, id)
 
 	if err != nil {
+		log.Printf("[UpdateStatus] Erro ao atualizar status: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao atualizar status"})
 		return
 	}
 
+	rowsAffected, _ := result.RowsAffected()
+	log.Printf("[UpdateStatus] Status atualizado. Linhas afetadas: %d", rowsAffected)
+
+	// Buscar usuário pelo telefone para enviar notificação
+	var usuarioID int
+	err = database.DB.QueryRow(`
+		SELECT id FROM usuarios WHERE telefone = ?
+	`, telefone).Scan(&usuarioID)
+
 	// Send notification to client if user exists
-	if usuarioID > 0 {
+	if err == nil && usuarioID > 0 {
+		log.Printf("[UpdateStatus] Enviando notificação para usuário ID: %d", usuarioID)
 		notificationHandler := NewNotificationHandler()
 		var titulo, mensagem, tipo string
 
@@ -151,7 +185,11 @@ func (h *HorarioHandler) UpdateStatus(c *gin.Context) {
 		if tipo != "" {
 			notificationHandler.NotifyClient(usuarioID, tipo, titulo, mensagem, nil)
 		}
+	} else {
+		log.Printf("[UpdateStatus] Usuário não encontrado para telefone: %s", telefone)
 	}
+
+	log.Printf("[UpdateStatus] ✓ Status atualizado com sucesso para: %s", input.Status)
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Status atualizado com sucesso",

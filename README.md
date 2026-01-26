@@ -527,6 +527,19 @@ Contribuições são bem-vindas! Para contribuir:
 
 ## 📝 Changelog
 
+### [4.0.1] - 2026-01-25 - Correções Críticas
+#### Corrigido
+- 🐛 **Panic em upload de logo**: Corrigido slice bounds error quando o prefixo base64 era menor que 50 caracteres (settings.go:105)
+- 🐛 **Criação de produtos**: Removida constraint CHECK(duracao > 0) permitindo produtos com duracao=0
+- 🔄 **Migração automática**: Sistema agora migra automaticamente tabelas antigas para nova estrutura
+- 📝 **Logs detalhados**: Adicionados imports e logs faltantes em auth_handler.go, barbeiro.go e servico.go
+- ⚙️ **FileReader modernizado**: Substituído FileReader por File.arrayBuffer() para melhor compatibilidade
+
+#### Melhorado
+- Performance na leitura de arquivos base64
+- Mensagens de erro mais descritivas no console
+- Tratamento de erros em operações de banco de dados
+
 ### [4.0.0] - 2026-01-25 - Sistema de Comandas e Produção
 #### Adicionado
 - ✨ **Sistema completo de Comandas/PDV**

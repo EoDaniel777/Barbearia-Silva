@@ -3,6 +3,7 @@ package handlers
 import (
 	"backend/internal/database"
 	"backend/internal/models"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -127,9 +128,9 @@ func (h *BarbeiroHandler) Create(c *gin.Context) {
 
 	// Insert into database
 	result, err := database.DB.Exec(`
-		INSERT INTO barbeiros (nome, email, telefone, sexo, foto, especialidade, ativo)
-		VALUES (?, ?, ?, ?, ?, ?, ?)
-	`, input.Nome, input.Email, input.Telefone, input.Sexo, input.Foto, input.Especialidade, 1)
+		INSERT INTO barbeiros (nome, email, telefone, sexo, foto, especialidade, descricao, ativo)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+	`, input.Nome, input.Email, input.Telefone, input.Sexo, input.Foto, input.Especialidade, input.Descricao, 1)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao criar barbeiro"})
@@ -156,24 +157,34 @@ func (h *BarbeiroHandler) Create(c *gin.Context) {
 // @Router /api/v1/barbeiros/:id [put]
 func (h *BarbeiroHandler) Update(c *gin.Context) {
 	id := c.Param("id")
+	log.Printf("[BarbeiroHandler] Atualizando barbeiro ID: %s", id)
+
 	var input models.BarbeiroInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
+		log.Printf("[BarbeiroHandler] Erro no bind JSON: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
+	log.Printf("[BarbeiroHandler] Dados recebidos: Nome=%s, Email=%s, Foto=%d chars",
+		input.Nome, input.Email, len(input.Foto))
+
 	// Update in database
-	_, err := database.DB.Exec(`
+	result, err := database.DB.Exec(`
 		UPDATE barbeiros
-		SET nome = ?, email = ?, telefone = ?, sexo = ?, foto = ?, especialidade = ?, atualizado_em = CURRENT_TIMESTAMP
+		SET nome = ?, email = ?, telefone = ?, sexo = ?, foto = ?, especialidade = ?, descricao = ?, atualizado_em = CURRENT_TIMESTAMP
 		WHERE id = ?
-	`, input.Nome, input.Email, input.Telefone, input.Sexo, input.Foto, input.Especialidade, id)
+	`, input.Nome, input.Email, input.Telefone, input.Sexo, input.Foto, input.Especialidade, input.Descricao, id)
 
 	if err != nil {
+		log.Printf("[BarbeiroHandler] Erro ao atualizar: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao atualizar barbeiro"})
 		return
 	}
+
+	rowsAffected, _ := result.RowsAffected()
+	log.Printf("[BarbeiroHandler] ✓ Barbeiro atualizado. Linhas afetadas: %d", rowsAffected)
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Barbeiro atualizado com sucesso",

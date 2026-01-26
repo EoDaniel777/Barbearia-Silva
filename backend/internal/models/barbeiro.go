@@ -25,6 +25,7 @@ type BarbeiroInput struct {
 	Sexo          string `json:"sexo" binding:"required,oneof=Masculino Feminino"`
 	Foto          string `json:"foto"`
 	Especialidade string `json:"especialidade"`
+	Descricao     string `json:"descricao"`
 }
 
 // HorarioTrabalho representa os horários de trabalho de um barbeiro
