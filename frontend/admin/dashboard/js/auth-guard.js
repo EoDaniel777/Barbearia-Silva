@@ -84,16 +84,13 @@
             return false;
         }
 
-        // Opcional: verificar se é admin
-        // Se quiser restringir ainda mais, descomente as linhas abaixo:
-        /*
+        // Verificar se é admin - Dashboard é apenas para administradores
         if (!isAdmin()) {
             console.error('[AUTH GUARD] Acesso negado - usuário não é administrador');
-            alert('Você não tem permissão para acessar esta página.');
+            alert('Acesso restrito a administradores. Redirecionando para a página inicial.');
             window.location.href = '/';
             return false;
         }
-        */
 
         console.log('[AUTH GUARD] ✓ Acesso autorizado');
         return true;

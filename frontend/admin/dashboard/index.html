@@ -156,11 +156,10 @@
 
             <a href="#" class="nav-link" data-page="galeria">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                    <polyline points="21 15 16 10 5 21"></polyline>
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6m5.196-13.804l-4.242 4.242m0 6.364l-4.243 4.243m13.85-4.243l-4.242-4.243m0-6.364L8.804 8.318"></path>
                 </svg>
-                <span>Galeria</span>
+                <span>Configurar</span>
             </a>
         </nav>
 
@@ -313,6 +312,13 @@
                             </div>
                         </div>
 
+                        <div class="form-row">
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label for="barber-description">Descrição</label>
+                                <textarea id="barber-description" rows="3" placeholder="Breve descrição sobre o barbeiro"></textarea>
+                            </div>
+                        </div>
+
                         <div class="form-actions">
                             <button type="button" class="btn-secondary" id="clear-form">Limpar</button>
                             <button type="submit" class="btn-primary">Cadastrar Barbeiro</button>
@@ -407,6 +413,20 @@
                             <textarea id="service-description" rows="3"></textarea>
                         </div>
 
+                        <div class="form-group">
+                            <label for="service-photo">Foto do Serviço/Produto</label>
+                            <input type="file" id="service-photo" accept="image/*" hidden>
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('service-photo').click()" style="margin-bottom: 12px;">
+                                Selecionar Foto
+                            </button>
+                            <div id="service-photo-preview" style="display: none; margin-top: 12px;">
+                                <img id="service-photo-img" src="" alt="Preview" style="max-width: 200px; max-height: 150px; border-radius: 8px; object-fit: cover;">
+                                <button type="button" class="btn-secondary" id="remove-service-photo" style="margin-left: 12px; padding: 6px 12px;">
+                                    Remover
+                                </button>
+                            </div>
+                        </div>
+
                         <div class="form-actions">
                             <button type="button" class="btn-secondary" id="clear-service-form">Limpar</button>
                             <button type="submit" class="btn-primary">Cadastrar</button>
@@ -489,7 +509,97 @@
         <!-- Galeria Page -->
         <div id="galeria-page" class="page">
             <div class="page-header">
-                <h1>Adicione fotos e vídeos dos trabalhos realizados</h1>
+                <h1>Configurações e Galeria</h1>
+            </div>
+
+            <!-- Seção de Upload de Logos -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Logos da Barbearia</h2>
+                    <p style="font-size: 14px; color: #8E8E93; margin-top: 8px;">Atualize as logos que aparecem no site</p>
+                </div>
+                <div class="card-body">
+                    <div class="logos-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+                        <!-- Logo Dark (para fundo escuro) -->
+                        <div class="logo-upload-section">
+                            <div class="logo-preview-card" style="background: #000; padding: 24px; border-radius: 12px; text-align: center; margin-bottom: 16px;">
+                                <img id="logo-dark-preview" src="/img/logoDark.jpeg" alt="Logo Dark" style="max-width: 100%; max-height: 120px; object-fit: contain;">
+                            </div>
+                            <h3 style="font-size: 16px; margin-bottom: 8px; color: #FFF;">Logo (Fundo Escuro)</h3>
+                            <p style="font-size: 13px; color: #8E8E93; margin-bottom: 16px;">Usada no modo dark do site</p>
+                            <input type="file" id="logo-dark-input" accept="image/*" hidden>
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('logo-dark-input').click()" style="width: 100%;">
+                                Alterar Logo Dark
+                            </button>
+                        </div>
+
+                        <!-- Logo White (para fundo claro) -->
+                        <div class="logo-upload-section">
+                            <div class="logo-preview-card" style="background: #FFF; padding: 24px; border-radius: 12px; text-align: center; margin-bottom: 16px; border: 1px solid #E5E5EA;">
+                                <img id="logo-white-preview" src="/img/logoWhite.jpeg" alt="Logo White" style="max-width: 100%; max-height: 120px; object-fit: contain;">
+                            </div>
+                            <h3 style="font-size: 16px; margin-bottom: 8px; color: #FFF;">Logo (Fundo Claro)</h3>
+                            <p style="font-size: 13px; color: #8E8E93; margin-bottom: 16px;">Usada no modo light do site</p>
+                            <input type="file" id="logo-white-input" accept="image/*" hidden>
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('logo-white-input').click()" style="width: 100%;">
+                                Alterar Logo White
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="logo-upload-status" class="alert" style="margin-top: 20px; display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Seção de Informações da Barbearia -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Informações da Barbearia</h2>
+                    <p style="font-size: 14px; color: #8E8E93; margin-top: 8px;">Configure as informações que aparecem no site</p>
+                </div>
+                <div class="card-body">
+                    <form id="info-barbearia-form" class="form">
+                        <div class="form-group">
+                            <label for="info-nome">Nome da Barbearia</label>
+                            <input type="text" id="info-nome" placeholder="Ex: Barbearia Silva">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="info-telefone">Telefone</label>
+                                <input type="tel" id="info-telefone" placeholder="(61) 99999-9999">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="info-whatsapp">WhatsApp</label>
+                                <input type="tel" id="info-whatsapp" placeholder="5561999999999">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="info-endereco">Endereço</label>
+                            <input type="text" id="info-endereco" placeholder="Rua, Número - Bairro, Cidade - UF">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="info-instagram">Instagram</label>
+                                <input type="text" id="info-instagram" placeholder="@barbeariasilva">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="info-email">E-mail</label>
+                                <input type="email" id="info-email" placeholder="contato@barbearia.com">
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Salvar Informações</button>
+                        </div>
+                    </form>
+
+                    <div id="info-status" class="alert" style="margin-top: 20px; display: none;"></div>
+                </div>
             </div>
 
             <div class="card">
@@ -594,11 +704,82 @@
                         <label for="edit-barber-specialty">Especialidade</label>
                         <input type="text" id="edit-barber-specialty" placeholder="Ex: Cortes modernos">
                     </div>
+
+                    <div class="form-group">
+                        <label for="edit-barber-description">Descrição</label>
+                        <textarea id="edit-barber-description" rows="3" placeholder="Breve descrição sobre o barbeiro"></textarea>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" id="cancelEditBarbeiro">Cancelar</button>
                 <button class="btn-primary" id="saveEditBarbeiro">Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edição de Serviço/Produto -->
+    <div class="modal-overlay" id="editServicoModal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>Editar Serviço/Produto</h2>
+                <button class="modal-close" id="closeEditServicoModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-service-form" class="form">
+                    <input type="hidden" id="edit-service-id">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-service-name">Nome *</label>
+                            <input type="text" id="edit-service-name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edit-service-type">Tipo *</label>
+                            <select id="edit-service-type" required>
+                                <option value="">Selecione</option>
+                                <option value="servico">Serviço</option>
+                                <option value="produto">Produto</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-service-price">Preço (R$) *</label>
+                            <input type="number" id="edit-service-price" step="0.01" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edit-service-duration">Duração (min)</label>
+                            <input type="number" id="edit-service-duration" placeholder="Ex: 30">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-service-description">Descrição</label>
+                        <textarea id="edit-service-description" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-service-photo">Foto do Serviço/Produto</label>
+                        <input type="file" id="edit-service-photo" accept="image/*" hidden>
+                        <button type="button" class="btn-secondary" onclick="document.getElementById('edit-service-photo').click()" style="margin-bottom: 12px;">
+                            Selecionar Foto
+                        </button>
+                        <div id="edit-service-photo-preview" style="display: none; margin-top: 12px;">
+                            <img id="edit-service-photo-img" src="" alt="Preview" style="max-width: 200px; max-height: 150px; border-radius: 8px; object-fit: cover;">
+                            <button type="button" class="btn-secondary" id="edit-remove-service-photo" style="margin-left: 12px; padding: 6px 12px;">
+                                Remover
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelEditServico">Cancelar</button>
+                <button class="btn-primary" id="saveEditServico">Salvar Alterações</button>
             </div>
         </div>
     </div>
@@ -784,8 +965,13 @@
             <div class="modal-body">
                 <form id="nova-comanda-form">
                     <div class="form-group">
-                        <label for="comanda-cliente-nome">Nome do Cliente *</label>
-                        <input type="text" id="comanda-cliente-nome" required>
+                        <label for="comanda-usuario-novo">Cliente/Usuário *</label>
+                        <select id="comanda-usuario-novo" required>
+                            <option value="">Carregando usuários...</option>
+                        </select>
+                        <small style="color: var(--text-secondary); font-size: 0.85em; margin-top: 4px; display: block;">
+                            💡 Usuários com agendamento para agora aparecem primeiro
+                        </small>
                     </div>
                     <div class="form-group">
                         <label for="comanda-barbeiro">Barbeiro *</label>
@@ -814,6 +1000,13 @@
                     <p><strong>Barbeiro:</strong> <span id="comanda-barbeiro-modal">--</span></p>
                     <p><strong>Status:</strong> <span id="comanda-status-modal" class="status-badge">--</span></p>
                     <p><strong>Total:</strong> <span id="comanda-total-modal">R$ 0,00</span></p>
+                </div>
+
+                <div class="form-group" style="margin-top: 16px;">
+                    <label for="comanda-usuario">Usuário/Cliente</label>
+                    <select id="comanda-usuario">
+                        <option value="">Selecione o usuário (opcional)</option>
+                    </select>
                 </div>
 
                 <hr style="margin: 20px 0;">
@@ -923,6 +1116,124 @@
             <span>Comandas</span>
         </a>
     </nav>
+
+    <!-- Modal de Comanda do Agendamento -->
+    <div class="modal-overlay" id="comandaAgendamentoModal" style="display: none;">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2>💈 Comanda do Atendimento</h2>
+                <button class="modal-close" id="closeComandaAgendamentoModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Informações do Cliente -->
+                <div class="comanda-info" style="background: linear-gradient(135deg, rgba(13, 124, 164, 0.1), rgba(13, 124, 164, 0.05)); padding: 20px; border-radius: 12px; margin-bottom: 24px; border-left: 4px solid var(--primary-color);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <p style="margin: 0; font-size: 18px;"><strong>Cliente:</strong> <span id="comanda-agend-cliente" style="color: var(--primary-color);">--</span></p>
+                        <p style="margin: 0; color: var(--text-secondary);">ID: #<span id="comanda-agend-id">--</span></p>
+                    </div>
+                </div>
+
+                <!-- Serviço Agendado -->
+                <div style="background: rgba(76, 175, 80, 0.1); padding: 16px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #4CAF50;">
+                    <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #4CAF50;">✓ Serviço Agendado</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span id="comanda-agend-servico" style="font-weight: 600;">--</span>
+                        <span style="font-size: 18px; font-weight: 700; color: #4CAF50;">R$ <span id="comanda-agend-servico-preco">0.00</span></span>
+                    </div>
+                </div>
+
+                <hr style="margin: 24px 0; border: none; border-top: 2px dashed rgba(13, 124, 164, 0.2);">
+
+                <!-- Adicionar Produtos Extras -->
+                <h3 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="16"></line>
+                        <line x1="8" y1="12" x2="16" y2="12"></line>
+                    </svg>
+                    Adicionar Produtos Extras
+                </h3>
+
+                <div class="form-row" style="margin-bottom: 20px; gap: 12px;">
+                    <div class="form-group" style="flex: 2;">
+                        <label for="comanda-agend-produto">Produto</label>
+                        <select id="comanda-agend-produto">
+                            <option value="">Selecione um produto...</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 0 0 100px;">
+                        <label for="comanda-agend-qtd">Quantidade</label>
+                        <input type="number" id="comanda-agend-qtd" value="1" min="1">
+                    </div>
+                    <div class="form-group" style="flex: 0 0 auto;">
+                        <button type="button" class="btn-primary" onclick="adicionarProdutoAgendamento()" style="margin-top: 26px; padding: 10px 20px;">
+                            <span style="display: flex; align-items: center; gap: 6px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Adicionar
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lista de Produtos Extras -->
+                <div style="margin-top: 20px;">
+                    <h3 style="margin-bottom: 12px; font-size: 15px; color: var(--text-secondary);">Produtos Extras</h3>
+                    <div id="comanda-agend-itens-list">
+                        <p class="empty-message">Nenhum produto extra adicionado</p>
+                    </div>
+                </div>
+
+                <hr style="margin: 24px 0; border: none; border-top: 2px solid rgba(13, 124, 164, 0.2);">
+
+                <!-- Resumo Financeiro -->
+                <div style="background: rgba(13, 124, 164, 0.05); padding: 20px; border-radius: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px; color: var(--text-secondary);">
+                        <span>Serviço Agendado:</span>
+                        <span>R$ <span id="comanda-agend-servico-preco-resumo">0.00</span></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 16px; color: var(--text-secondary);">
+                        <span>Produtos Extras:</span>
+                        <span>R$ <span id="comanda-agend-total-produtos">0.00</span></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 16px; border-top: 2px solid rgba(13, 124, 164, 0.3);">
+                        <h3 style="margin: 0; font-size: 20px;">Total a Pagar:</h3>
+                        <h3 style="margin: 0; font-size: 28px; color: var(--primary-color);">R$ <span id="comanda-agend-total">0.00</span></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="display: flex; gap: 12px; justify-content: space-between;">
+                <button class="btn-secondary" onclick="closeComandaAgendamentoModal()">Cancelar</button>
+                <button class="btn-primary" onclick="finalizarComandaAgendamento()" style="background: #4CAF50; padding: 12px 24px; font-weight: 600;">
+                    <span style="display: flex; align-items: center; gap: 8px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Finalizar Atendimento
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação Customizado -->
+    <div class="modal-overlay" id="confirmModal" style="display: none;">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2 id="confirmModalTitle">Confirmar</h2>
+                <button class="modal-close" onclick="closeConfirmModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmModalMessage" style="font-size: 16px; line-height: 1.5;"></p>
+            </div>
+            <div class="modal-footer" style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button class="btn-secondary" onclick="closeConfirmModal()">Cancelar</button>
+                <button class="btn-primary" id="confirmModalBtn">Confirmar</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Auth Guard - DEVE ser o primeiro script a carregar -->
     <script src="/dashboard/js/auth-guard.js"></script>

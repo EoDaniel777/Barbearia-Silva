@@ -101,6 +101,15 @@
     }
 
     /**
+     * Adiciona cache busting às URLs de logos
+     */
+    function addCacheBuster(url) {
+        // Adicionar timestamp para evitar cache
+        const timestamp = new Date().getTime();
+        return `${url}?v=${timestamp}`;
+    }
+
+    /**
      * Aplica o tema na página
      */
     function applyTheme(theme) {
@@ -119,11 +128,12 @@
                 elements.checkbox.checked = true;
             }
 
-            // Atualizar logos
+            // Atualizar logos com cache busting
+            // Usa logoWhite.jpeg que é editável pelo admin
             updateLogos({
-                header: '/img/logoWhite.jpeg',
-                hero: '/img/logoSemFundo.png',
-                footer: '/img/SemFundoBlack.png'
+                header: addCacheBuster('/img/logoWhite.jpeg'),
+                hero: addCacheBuster('/img/logoWhite.jpeg'),
+                footer: addCacheBuster('/img/logoWhite.jpeg')
             });
 
         } else {
@@ -139,11 +149,12 @@
                 elements.checkbox.checked = false;
             }
 
-            // Atualizar logos
+            // Atualizar logos com cache busting
+            // Usa logoDark.jpeg que é editável pelo admin
             updateLogos({
-                header: '/img/logoSemFundo.png',
-                hero: '/img/logoSemFundo.png',
-                footer: '/img/logoSemFundo.png'
+                header: addCacheBuster('/img/logoDark.jpeg'),
+                hero: addCacheBuster('/img/logoDark.jpeg'),
+                footer: addCacheBuster('/img/logoDark.jpeg')
             });
         }
 

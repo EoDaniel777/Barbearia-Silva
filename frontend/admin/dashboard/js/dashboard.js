@@ -102,7 +102,7 @@ function navigateToPage(page) {
         'horarios': 'Gestão de Horários',
         'servicos': 'Serviços e Produtos',
         'comandas': 'Comandas / PDV',
-        'galeria': 'Galeria de Imagens'
+        'galeria': 'Configurações'
     };
 
     if (topBarTitle) {
@@ -294,7 +294,8 @@ document.getElementById('barber-form')?.addEventListener('submit', async (e) => 
         email: document.getElementById('barber-email').value,
         telefone: document.getElementById('barber-phone').value,
         sexo: document.getElementById('barber-gender').value,
-        especialidade: document.getElementById('barber-specialty').value
+        especialidade: document.getElementById('barber-specialty').value,
+        descricao: document.getElementById('barber-description').value
     };
 
     try {
@@ -338,6 +339,7 @@ async function editBarbeiro(id) {
     document.getElementById('edit-barber-phone').value = barbeiro.telefone || '';
     document.getElementById('edit-barber-gender').value = barbeiro.sexo || 'Masculino';
     document.getElementById('edit-barber-specialty').value = barbeiro.especialidade || '';
+    document.getElementById('edit-barber-description').value = barbeiro.descricao || '';
 
     // Resetar preview de foto
     const previewImg = document.getElementById('edit-preview-img');
@@ -407,7 +409,8 @@ async function loadBarbeiroHorarios(barbeiroId) {
 }
 
 async function deleteBarbeiro(id) {
-    if (!confirm('Deseja realmente excluir este barbeiro?')) return;
+    const confirmed = await showConfirm('Deseja realmente excluir este barbeiro?', 'Excluir Barbeiro');
+    if (!confirmed) return;
 
     try {
         const response = await fetch(`/api/v1/barbeiros/${id}`, {
@@ -502,6 +505,7 @@ function displayAllBookings(bookings) {
                     <th>Telefone</th>
                     <th>Data/Hora</th>
                     <th>Status</th>
+                    <th>Comanda</th>
                 </tr>
             </thead>
             <tbody>
@@ -511,6 +515,16 @@ function displayAllBookings(bookings) {
                         <td>${booking.telefone}</td>
                         <td>${formatDateTime(booking.dataHora || booking.data_hora)}</td>
                         <td><span class="status-badge ${booking.status}">${getStatusText(booking.status)}</span></td>
+                        <td class="table-actions">
+                            <button class="btn-icon" style="background: rgba(13, 124, 164, 0.1); color: #0D7CA4;"
+                                    onclick="abrirComandaAgendamento(${booking.id}, '${(booking.nomeCliente || booking.cliente_nome).replace(/'/g, "\\'")}', ${booking.barbeiro_id || 0})"
+                                    title="Adicionar produtos">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 3h18v18H3z"></path>
+                                    <path d="M3 9h18M9 21V9"></path>
+                                </svg>
+                            </button>
+                        </td>
                     </tr>
                 `).join('')}
             </tbody>
@@ -564,6 +578,7 @@ function displayServicos() {
         <table>
             <thead>
                 <tr>
+                    <th>Foto</th>
                     <th>Nome</th>
                     <th>Tipo</th>
                     <th>Preço</th>
@@ -574,6 +589,12 @@ function displayServicos() {
             <tbody>
                 ${servicos.map(service => `
                     <tr>
+                        <td>
+                            ${service.foto ?
+                                `<img src="${service.foto}" alt="${service.nome}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">` :
+                                `<div style="width: 50px; height: 50px; background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #8E8E93;">Sem foto</div>`
+                            }
+                        </td>
                         <td>${service.nome}</td>
                         <td>${service.tipo === 'servico' ? 'Serviço' : 'Produto'}</td>
                         <td>R$ ${service.preco}</td>
@@ -600,6 +621,42 @@ function displayServicos() {
 }
 
 let editingServicoId = null;
+let serviceFotoBase64 = ''; // Armazena foto em base64 (formulário de criar)
+let editServiceFotoBase64 = ''; // Armazena foto em base64 (modal de editar)
+
+// Service Photo Upload
+document.getElementById('service-photo')?.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validar tipo
+    if (!file.type.startsWith('image/')) {
+        showToast('Selecione um arquivo de imagem válido', 'error');
+        return;
+    }
+
+    // Converter para base64
+    const base64 = await fileToBase64(file);
+    serviceFotoBase64 = base64;
+
+    // Mostrar preview
+    const preview = document.getElementById('service-photo-preview');
+    const img = document.getElementById('service-photo-img');
+    if (preview && img) {
+        img.src = base64;
+        preview.style.display = 'flex';
+        preview.style.alignItems = 'center';
+        preview.style.gap = '12px';
+    }
+});
+
+// Remove Service Photo
+document.getElementById('remove-service-photo')?.addEventListener('click', () => {
+    serviceFotoBase64 = '';
+    document.getElementById('service-photo').value = '';
+    document.getElementById('service-photo-preview').style.display = 'none';
+    document.getElementById('service-photo-img').src = '';
+});
 
 // Service Form
 document.getElementById('service-form')?.addEventListener('submit', async (e) => {
@@ -610,7 +667,8 @@ document.getElementById('service-form')?.addEventListener('submit', async (e) =>
         tipo: document.getElementById('service-type').value,
         preco: parseFloat(document.getElementById('service-price').value),
         duracao: parseInt(document.getElementById('service-duration').value) || 0,
-        descricao: document.getElementById('service-description').value
+        descricao: document.getElementById('service-description').value,
+        foto: serviceFotoBase64 // Incluir foto em base64
     };
 
     try {
@@ -659,35 +717,45 @@ async function editServico(id) {
         return;
     }
 
-    // Preencher formulário com dados do serviço
-    document.getElementById('service-name').value = servico.nome;
-    document.getElementById('service-type').value = servico.tipo || 'servico';
-    document.getElementById('service-price').value = servico.preco;
-    document.getElementById('service-duration').value = servico.duracao || '';
-    document.getElementById('service-description').value = servico.descricao || '';
+    // Preencher modal com dados do serviço
+    document.getElementById('edit-service-id').value = servico.id;
+    document.getElementById('edit-service-name').value = servico.nome;
+    document.getElementById('edit-service-type').value = servico.tipo || 'servico';
+    document.getElementById('edit-service-price').value = servico.preco;
+    document.getElementById('edit-service-duration').value = servico.duracao || '';
+    document.getElementById('edit-service-description').value = servico.descricao || '';
 
-    // Definir modo de edição
-    editingServicoId = id;
-
-    // Mudar texto do botão
-    const submitBtn = document.querySelector('#service-form button[type="submit"]');
-    if (submitBtn) {
-        submitBtn.textContent = 'Atualizar Serviço/Produto';
+    // Preencher foto se existir
+    if (servico.foto) {
+        editServiceFotoBase64 = servico.foto;
+        const preview = document.getElementById('edit-service-photo-preview');
+        const img = document.getElementById('edit-service-photo-img');
+        if (preview && img) {
+            img.src = servico.foto;
+            preview.style.display = 'flex';
+            preview.style.alignItems = 'center';
+            preview.style.gap = '12px';
+        }
+    } else {
+        editServiceFotoBase64 = '';
+        const preview = document.getElementById('edit-service-photo-preview');
+        if (preview) {
+            preview.style.display = 'none';
+        }
     }
 
-    // Mudar texto do botão de limpar para "Cancelar"
-    const clearBtn = document.getElementById('clear-service-form');
-    if (clearBtn) {
-        clearBtn.textContent = 'Cancelar Edição';
-    }
-
-    // Scroll para o formulário
-    document.getElementById('service-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Abrir modal
+    document.getElementById('editServicoModal').style.display = 'flex';
 }
 
 function cancelEditServico() {
     editingServicoId = null;
+    serviceFotoBase64 = '';
     document.getElementById('service-form').reset();
+
+    // Limpar preview de foto
+    document.getElementById('service-photo-preview').style.display = 'none';
+    document.getElementById('service-photo-img').src = '';
 
     // Restaurar texto do botão
     const submitBtn = document.querySelector('#service-form button[type="submit"]');
@@ -703,7 +771,8 @@ function cancelEditServico() {
 }
 
 async function deleteServico(id) {
-    if (!confirm('Deseja realmente excluir este item?')) return;
+    const confirmed = await showConfirm('Deseja realmente excluir este item?', 'Excluir Serviço/Produto');
+    if (!confirmed) return;
 
     try {
         const response = await fetch(`/api/v1/servicos/${id}`, {
@@ -730,6 +799,298 @@ function loadGaleria() {
     // Gallery functionality - basic implementation
     const container = document.getElementById('gallery-grid');
     container.innerHTML = '<p class="empty-message">Sistema de galeria em desenvolvimento</p>';
+
+    // Inicializar upload de logos
+    initLogoUploads();
+
+    // Carregar informações da barbearia
+    carregarInformacoesBarbearia();
+
+    // Inicializar form de informações
+    initInfoBarbeariaForm();
+}
+
+// ===================================
+// INFORMAÇÕES DA BARBEARIA
+// ===================================
+
+async function carregarInformacoesBarbearia() {
+    try {
+        const response = await fetch('/api/v1/settings/geral');
+        const data = await response.json();
+
+        document.getElementById('info-nome').value = data.nome || '';
+        document.getElementById('info-telefone').value = data.telefone || '';
+        document.getElementById('info-whatsapp').value = data.whatsapp || '';
+        document.getElementById('info-endereco').value = data.endereco || '';
+        document.getElementById('info-instagram').value = data.instagram || '';
+        document.getElementById('info-email').value = data.email || '';
+    } catch (error) {
+        console.error('Erro ao carregar informações:', error);
+    }
+}
+
+function initInfoBarbeariaForm() {
+    const form = document.getElementById('info-barbearia-form');
+
+    form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const data = {
+            nome: document.getElementById('info-nome').value,
+            telefone: document.getElementById('info-telefone').value,
+            whatsapp: document.getElementById('info-whatsapp').value,
+            endereco: document.getElementById('info-endereco').value,
+            instagram: document.getElementById('info-instagram').value,
+            email: document.getElementById('info-email').value
+        };
+
+        try {
+            const response = await fetch('/api/v1/settings/geral', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                showInfoStatus('Informações salvas com sucesso!', 'success');
+                setTimeout(() => hideInfoStatus(), 3000);
+            } else {
+                throw new Error('Erro ao salvar');
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            showInfoStatus('Erro ao salvar informações', 'error');
+        }
+    });
+}
+
+function showInfoStatus(message, type) {
+    const statusEl = document.getElementById('info-status');
+    if (!statusEl) return;
+
+    statusEl.textContent = message;
+    statusEl.className = 'alert';
+
+    if (type === 'success') {
+        statusEl.classList.add('success');
+    } else if (type === 'error') {
+        statusEl.classList.add('error');
+    }
+
+    statusEl.style.display = 'block';
+}
+
+function hideInfoStatus() {
+    const statusEl = document.getElementById('info-status');
+    if (statusEl) {
+        statusEl.style.display = 'none';
+    }
+}
+
+// ===================================
+// LOGO UPLOAD FUNCTIONALITY
+// ===================================
+
+function initLogoUploads() {
+    const logoDarkInput = document.getElementById('logo-dark-input');
+    const logoWhiteInput = document.getElementById('logo-white-input');
+
+    if (logoDarkInput) {
+        logoDarkInput.addEventListener('change', (e) => handleLogoUpload(e, 'dark'));
+    }
+
+    if (logoWhiteInput) {
+        logoWhiteInput.addEventListener('change', (e) => handleLogoUpload(e, 'white'));
+    }
+}
+
+async function handleLogoUpload(event, logoType) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validar tipo de arquivo
+    if (!file.type.startsWith('image/')) {
+        showLogoStatus('Erro: Selecione um arquivo de imagem válido', 'error');
+        return;
+    }
+
+    // Validar tamanho (máximo 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+        showLogoStatus('Erro: A imagem deve ter no máximo 5MB', 'error');
+        return;
+    }
+
+    try {
+        showLogoStatus(`Enviando logo ${logoType}...`, 'info');
+
+        // Converter para base64
+        const base64 = await fileToBase64(file);
+
+        // Preparar dados para envio
+        const payload = {};
+        if (logoType === 'dark') {
+            payload.logoDark = base64;
+        } else {
+            payload.logoWhite = base64;
+        }
+
+        // Enviar para backend
+        const response = await fetch('/api/v1/settings/logo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // Atualizar preview
+            const previewId = `logo-${logoType}-preview`;
+            const preview = document.getElementById(previewId);
+            if (preview) {
+                // Não adicionar query string em base64
+                preview.src = base64;
+                // Forçar reload da imagem
+                preview.style.display = 'none';
+                setTimeout(() => preview.style.display = 'block', 10);
+            }
+
+            // Atualizar logos em toda a página
+            updateLogosOnPage(logoType, base64);
+
+            showLogoStatus(`Logo ${logoType} atualizada com sucesso!`, 'success');
+
+            // Limpar status após 3 segundos
+            setTimeout(() => {
+                hideLogoStatus();
+            }, 3000);
+        } else {
+            throw new Error(data.error || 'Erro ao fazer upload');
+        }
+    } catch (error) {
+        console.error('Erro ao fazer upload da logo:', error);
+        showLogoStatus(`Erro: ${error.message}`, 'error');
+    }
+}
+
+/**
+ * Converte arquivo para base64 usando método moderno e seguro
+ * Usa File.arrayBuffer() - API moderna sem problemas de permissão
+ */
+async function fileToBase64(file) {
+    // Validar o arquivo antes de tentar ler
+    if (!file) {
+        throw new Error('Nenhum arquivo fornecido');
+    }
+
+    if (!file.type || !file.type.startsWith('image/')) {
+        throw new Error('O arquivo deve ser uma imagem');
+    }
+
+    console.log('[fileToBase64] Processando arquivo:', file.name, 'Tamanho:', file.size);
+
+    try {
+        // Método moderno: usar arrayBuffer() - mais confiável
+        console.log('[fileToBase64] Usando File.arrayBuffer()...');
+
+        // Ler arquivo como ArrayBuffer
+        const arrayBuffer = await file.arrayBuffer();
+        console.log('[fileToBase64] ArrayBuffer lido:', arrayBuffer.byteLength, 'bytes');
+
+        // Converter ArrayBuffer para base64
+        const base64 = await arrayBufferToBase64(arrayBuffer, file.type);
+        console.log('[fileToBase64] ✓ Conversão bem-sucedida. Base64:', base64.length, 'caracteres');
+
+        return base64;
+    } catch (error) {
+        console.error('[fileToBase64] Erro:', error);
+
+        // Mensagem específica para erro de permissão
+        if (error.name === 'NotReadableError' || error.message.includes('permission')) {
+            throw new Error('Não foi possível ler o arquivo. Tente selecionar uma imagem de outra pasta (Downloads, Documentos, etc.) ou tire uma nova foto.');
+        }
+
+        throw new Error('Não foi possível processar a imagem: ' + error.message);
+    }
+}
+
+/**
+ * Converte ArrayBuffer para base64 com prefixo data URL
+ */
+function arrayBufferToBase64(buffer, mimeType) {
+    return new Promise((resolve, reject) => {
+        try {
+            // Converter ArrayBuffer para Array de bytes
+            const bytes = new Uint8Array(buffer);
+
+            // Criar string binária
+            let binary = '';
+            const chunkSize = 0x8000; // 32KB chunks para performance
+
+            for (let i = 0; i < bytes.length; i += chunkSize) {
+                const chunk = bytes.subarray(i, i + chunkSize);
+                binary += String.fromCharCode.apply(null, chunk);
+            }
+
+            // Converter para base64
+            const base64 = btoa(binary);
+
+            // Adicionar prefixo data URL
+            const dataUrl = `data:${mimeType};base64,${base64}`;
+
+            resolve(dataUrl);
+        } catch (error) {
+            reject(new Error('Erro ao converter para base64: ' + error.message));
+        }
+    });
+}
+
+function updateLogosOnPage(logoType, base64) {
+    // Atualizar todas as logos na página
+    if (logoType === 'dark') {
+        // Top bar logo
+        const topBarLogo = document.querySelector('.top-bar-logo');
+        if (topBarLogo) topBarLogo.src = base64;
+
+        // Sidebar logo
+        const sidebarLogo = document.querySelector('.sidebar-logo img');
+        if (sidebarLogo) sidebarLogo.src = base64;
+    }
+    // Note: logoWhite é usada principalmente no tema claro do site público
+}
+
+function showLogoStatus(message, type) {
+    const statusEl = document.getElementById('logo-upload-status');
+    if (!statusEl) return;
+
+    statusEl.textContent = message;
+    statusEl.className = 'alert';
+
+    if (type === 'success') {
+        statusEl.classList.add('success');
+    } else if (type === 'error') {
+        statusEl.classList.add('error');
+    } else {
+        statusEl.style.background = 'rgba(13, 124, 164, 0.2)';
+        statusEl.style.border = '1px solid rgba(13, 124, 164, 0.4)';
+        statusEl.style.color = '#0D7CA4';
+    }
+
+    statusEl.style.display = 'block';
+}
+
+function hideLogoStatus() {
+    const statusEl = document.getElementById('logo-upload-status');
+    if (statusEl) {
+        statusEl.style.display = 'none';
+    }
 }
 
 // Gallery upload
@@ -1099,7 +1460,8 @@ function initEditBarbeiroModal() {
             email: document.getElementById('edit-barber-email').value,
             telefone: document.getElementById('edit-barber-phone').value,
             sexo: document.getElementById('edit-barber-gender').value,
-            especialidade: document.getElementById('edit-barber-specialty').value
+            especialidade: document.getElementById('edit-barber-specialty').value,
+            descricao: document.getElementById('edit-barber-description').value
         };
 
         if (!formData.nome || !formData.email || !formData.sexo) {
@@ -1310,23 +1672,32 @@ function initBarbeiroPhotoUpload() {
 
     uploadArea.addEventListener('click', () => fileInput.click());
 
-    fileInput.addEventListener('change', (e) => {
+    fileInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
+
+        // Validar tamanho máximo (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            showToast('A imagem deve ter no máximo 5MB', 'error');
+            return;
+        }
 
         if (!file.type.startsWith('image/')) {
             showToast('Por favor, selecione apenas arquivos de imagem', 'error');
             return;
         }
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            currentBarbeiroPhoto = e.target.result;
-            previewImg.src = currentBarbeiroPhoto;
+        try {
+            const base64 = await fileToBase64(file);
+            currentBarbeiroPhoto = base64;
+            previewImg.src = base64;
             previewImg.style.display = 'block';
             placeholder.style.display = 'none';
-        };
-        reader.readAsDataURL(file);
+            showToast('Imagem carregada com sucesso', 'success');
+        } catch (error) {
+            console.error('[BARBEIRO] Erro ao processar imagem:', error);
+            showToast(error.message || 'Erro ao processar imagem', 'error');
+        }
     });
 }
 
@@ -1355,7 +1726,7 @@ function initPerfilPhotoUpload() {
         fileInput.click();
     });
 
-    fileInput.addEventListener('change', (e) => {
+    fileInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         console.log('[PERFIL ADMIN] Arquivo selecionado:', file);
 
@@ -1371,6 +1742,13 @@ function initPerfilPhotoUpload() {
             tamanhoMB: (file.size / 1024 / 1024).toFixed(2) + ' MB'
         });
 
+        // Validar tamanho máximo (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            console.error('[PERFIL ADMIN] Arquivo muito grande:', file.size);
+            showToast('A imagem deve ter no máximo 5MB', 'error');
+            return;
+        }
+
         if (!file.type.startsWith('image/')) {
             console.error('[PERFIL ADMIN] Arquivo não é uma imagem:', file.type);
             showToast('Por favor, selecione apenas arquivos de imagem', 'error');
@@ -1379,79 +1757,22 @@ function initPerfilPhotoUpload() {
 
         console.log('[PERFIL ADMIN] Iniciando leitura do arquivo...');
 
-        // Criar URL temporária como fallback
         try {
-            const reader = new FileReader();
+            const base64 = await fileToBase64(file);
 
-            reader.onload = (e) => {
-                try {
-                    const base64 = e.target.result;
-                    console.log('[PERFIL ADMIN] Arquivo convertido para base64');
-                    console.log('[PERFIL ADMIN] Tamanho do base64:', base64.length, 'caracteres');
-                    console.log('[PERFIL ADMIN] Preview dos primeiros 100 chars:', base64.substring(0, 100));
+            console.log('[PERFIL ADMIN] Arquivo convertido para base64');
+            console.log('[PERFIL ADMIN] Tamanho do base64:', base64.length, 'caracteres');
 
-                    currentPerfilPhoto = base64;
-                    previewImg.src = base64;
-                    previewImg.style.display = 'block';
-                    placeholder.style.display = 'none';
+            currentPerfilPhoto = base64;
+            previewImg.src = base64;
+            previewImg.style.display = 'block';
+            placeholder.style.display = 'none';
 
-                    console.log('[PERFIL ADMIN] Preview atualizado com sucesso');
-                } catch (err) {
-                    console.error('[PERFIL ADMIN] Erro ao processar base64:', err);
-                    showToast('Erro ao processar imagem', 'error');
-                }
-            };
-
-            reader.onerror = (error) => {
-                console.error('[PERFIL ADMIN] Erro ao ler arquivo:', error);
-                console.error('[PERFIL ADMIN] Detalhes do erro:', {
-                    readyState: reader.readyState,
-                    error: reader.error,
-                    errorName: reader.error?.name,
-                    errorMessage: reader.error?.message
-                });
-
-                // Tentar usar URL.createObjectURL como fallback
-                console.warn('[PERFIL ADMIN] Tentando método alternativo com URL.createObjectURL');
-                try {
-                    const objectURL = URL.createObjectURL(file);
-                    console.log('[PERFIL ADMIN] URL criada:', objectURL);
-
-                    // Criar um Image para converter para base64
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0);
-                        const base64 = canvas.toDataURL(file.type);
-
-                        console.log('[PERFIL ADMIN] Conversão alternativa bem-sucedida');
-                        currentPerfilPhoto = base64;
-                        previewImg.src = base64;
-                        previewImg.style.display = 'block';
-                        placeholder.style.display = 'none';
-
-                        URL.revokeObjectURL(objectURL);
-                        showToast('Imagem carregada com sucesso', 'success');
-                    };
-                    img.onerror = () => {
-                        console.error('[PERFIL ADMIN] Falha no método alternativo também');
-                        showToast('Não foi possível ler o arquivo. Tente outro formato de imagem.', 'error');
-                        URL.revokeObjectURL(objectURL);
-                    };
-                    img.src = objectURL;
-                } catch (fallbackError) {
-                    console.error('[PERFIL ADMIN] Erro no método alternativo:', fallbackError);
-                    showToast('Erro ao processar imagem. Tente um arquivo diferente.', 'error');
-                }
-            };
-
-            reader.readAsDataURL(file);
-        } catch (err) {
-            console.error('[PERFIL ADMIN] Erro fatal ao iniciar FileReader:', err);
-            showToast('Erro ao inicializar leitor de arquivos', 'error');
+            console.log('[PERFIL ADMIN] Preview atualizado com sucesso');
+            showToast('Imagem carregada com sucesso', 'success');
+        } catch (error) {
+            console.error('[PERFIL ADMIN] Erro ao processar imagem:', error);
+            showToast(error.message || 'Erro ao processar imagem', 'error');
         }
     });
 }
@@ -1579,24 +1900,23 @@ async function savePerfilAdmin() {
     try {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-        // TODO: Implementar endpoint de atualização de perfil
-        // const response = await fetch(`/api/v1/usuarios/${user.id}`, {
-        //     method: 'PUT',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify(formData)
-        // });
+        console.log('[PERFIL ADMIN] Enviando atualização de perfil para o servidor...');
+        const response = await fetch(`/api/v1/usuarios/${user.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
 
-        // if (!response.ok) throw new Error('Erro ao atualizar perfil');
-
-        // Atualizar localStorage (mock)
-        user.nome = nome;
-        user.email = email;
-        user.telefone = telefone;
-        if (currentPerfilPhoto) {
-            user.foto = currentPerfilPhoto;
-            console.log('[PERFIL ADMIN] Foto salva no localStorage. Tamanho:', currentPerfilPhoto.length);
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Erro ao atualizar perfil');
         }
-        localStorage.setItem('user', JSON.stringify(user));
+
+        const data = await response.json();
+        console.log('[PERFIL ADMIN] Perfil atualizado no servidor:', data);
+
+        // Atualizar localStorage com dados do servidor
+        localStorage.setItem('user', JSON.stringify(data.user));
 
         console.log('[PERFIL ADMIN] Perfil atualizado. Chamando loadUserInfo()');
         showToast('Perfil atualizado com sucesso!', 'success');
@@ -1604,7 +1924,7 @@ async function savePerfilAdmin() {
         document.getElementById('perfilAdminModal').classList.remove('active');
     } catch (error) {
         console.error('Erro ao salvar perfil:', error);
-        showToast('Erro ao atualizar perfil. Tente novamente.', 'error');
+        showToast(error.message || 'Erro ao atualizar perfil. Tente novamente.', 'error');
     }
 }
 
@@ -1612,9 +1932,521 @@ async function savePerfilAdmin() {
 // ATUALIZAR FUNÇÕES EXISTENTES COM TOAST
 // ===================================
 
+// ===================================
+// COMANDA DO AGENDAMENTO
+// ===================================
+
+let agendamentoComandaAtual = {
+    id: null,
+    clienteNome: '',
+    barbeiroId: null,
+    itens: [],
+    total: 0
+};
+
+async function abrirComandaAgendamento(agendamentoId, clienteNome, barbeiroId) {
+    try {
+        // Buscar dados completos do agendamento
+        const response = await fetch(`/api/v1/horarios`);
+        const horarios = await response.json();
+        const agendamento = horarios.find(h => h.id === agendamentoId);
+
+        if (!agendamento) {
+            showToast('Agendamento não encontrado', 'error');
+            return;
+        }
+
+        // Buscar dados do serviço (usar servicoID em camelCase)
+        const servicoResponse = await fetch(`/api/v1/servicos/${agendamento.servicoID}`);
+        if (!servicoResponse.ok) {
+            throw new Error('Serviço não encontrado');
+        }
+        const servico = await servicoResponse.json();
+
+        agendamentoComandaAtual = {
+            id: agendamentoId,
+            clienteNome: clienteNome,
+            barbeiroId: barbeiroId,
+            servico: {
+                id: servico.id,
+                nome: servico.nome,
+                preco: servico.preco
+            },
+            itens: [],
+            total: servico.preco
+        };
+
+        // Preencher informações
+        document.getElementById('comanda-agend-cliente').textContent = clienteNome;
+        document.getElementById('comanda-agend-id').textContent = agendamentoId;
+        document.getElementById('comanda-agend-servico').textContent = servico.nome;
+        document.getElementById('comanda-agend-servico-preco').textContent = servico.preco.toFixed(2);
+
+        // Carregar produtos disponíveis
+        await carregarProdutosComanda();
+
+        // Limpar lista de itens
+        atualizarListaItensAgendamento();
+
+        // Abrir modal
+        document.getElementById('comandaAgendamentoModal').style.display = 'flex';
+    } catch (error) {
+        console.error('Erro ao abrir comanda:', error);
+        showToast('Erro ao carregar dados do agendamento', 'error');
+    }
+}
+
+function closeComandaAgendamentoModal() {
+    document.getElementById('comandaAgendamentoModal').style.display = 'none';
+    agendamentoComandaAtual = { id: null, clienteNome: '', barbeiroId: null, itens: [], total: 0 };
+}
+
+async function carregarProdutosComanda() {
+    try {
+        const response = await fetch('/api/v1/servicos');
+        const servicos = await response.json();
+
+        const select = document.getElementById('comanda-agend-produto');
+        select.innerHTML = '<option value="">Selecione</option>';
+
+        servicos
+            .filter(s => s.tipo === 'produto' && s.ativo)
+            .forEach(produto => {
+                select.innerHTML += `<option value="${produto.id}" data-preco="${produto.preco}" data-nome="${produto.nome}">${produto.nome} - R$ ${produto.preco.toFixed(2)}</option>`;
+            });
+    } catch (error) {
+        console.error('Erro ao carregar produtos:', error);
+        showToast('Erro ao carregar produtos', 'error');
+    }
+}
+
+function adicionarProdutoAgendamento() {
+    const select = document.getElementById('comanda-agend-produto');
+    const qtd = parseInt(document.getElementById('comanda-agend-qtd').value);
+
+    if (!select.value) {
+        showToast('Selecione um produto', 'warning');
+        return;
+    }
+
+    const selectedOption = select.options[select.selectedIndex];
+    const produtoId = parseInt(select.value);
+    const nome = selectedOption.dataset.nome;
+    const preco = parseFloat(selectedOption.dataset.preco);
+    const subtotal = preco * qtd;
+
+    // Verificar se já existe
+    const existente = agendamentoComandaAtual.itens.find(i => i.id === produtoId);
+    if (existente) {
+        existente.quantidade += qtd;
+        existente.subtotal = existente.quantidade * existente.preco;
+    } else {
+        agendamentoComandaAtual.itens.push({
+            id: produtoId,
+            nome: nome,
+            preco: preco,
+            quantidade: qtd,
+            subtotal: subtotal
+        });
+    }
+
+    // Recalcular total (serviço + produtos)
+    const totalProdutos = agendamentoComandaAtual.itens.reduce((sum, item) => sum + item.subtotal, 0);
+    agendamentoComandaAtual.total = agendamentoComandaAtual.servico.preco + totalProdutos;
+
+    // Atualizar lista
+    atualizarListaItensAgendamento();
+
+    // Resetar form
+    select.value = '';
+    document.getElementById('comanda-agend-qtd').value = 1;
+
+    showToast('Produto adicionado!', 'success');
+}
+
+function removerItemAgendamento(index) {
+    agendamentoComandaAtual.itens.splice(index, 1);
+    const totalProdutos = agendamentoComandaAtual.itens.reduce((sum, item) => sum + item.subtotal, 0);
+    agendamentoComandaAtual.total = agendamentoComandaAtual.servico.preco + totalProdutos;
+    atualizarListaItensAgendamento();
+}
+
+function atualizarListaItensAgendamento() {
+    const container = document.getElementById('comanda-agend-itens-list');
+    const totalEl = document.getElementById('comanda-agend-total');
+    const totalProdutosEl = document.getElementById('comanda-agend-total-produtos');
+    const servicoPrecoResumoEl = document.getElementById('comanda-agend-servico-preco-resumo');
+
+    const totalProdutos = agendamentoComandaAtual.itens.reduce((sum, item) => sum + item.subtotal, 0);
+
+    // Atualizar totais no resumo financeiro
+    if (totalProdutosEl) {
+        totalProdutosEl.textContent = totalProdutos.toFixed(2);
+    }
+    if (servicoPrecoResumoEl) {
+        servicoPrecoResumoEl.textContent = agendamentoComandaAtual.servico.preco.toFixed(2);
+    }
+    totalEl.textContent = agendamentoComandaAtual.total.toFixed(2);
+
+    // Renderizar lista de produtos
+    if (agendamentoComandaAtual.itens.length === 0) {
+        container.innerHTML = '<p class="empty-message">Nenhum produto extra adicionado</p>';
+        return;
+    }
+
+    container.innerHTML = `
+        <table style="width: 100%; font-size: 14px; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 2px solid rgba(13, 124, 164, 0.2);">
+                    <th style="text-align: left; padding: 8px;">Produto</th>
+                    <th style="text-align: center; padding: 8px;">Qtd</th>
+                    <th style="text-align: right; padding: 8px;">Subtotal</th>
+                    <th style="text-align: center; padding: 8px;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${agendamentoComandaAtual.itens.map((item, index) => `
+                    <tr style="border-bottom: 1px solid rgba(13, 124, 164, 0.1);">
+                        <td style="padding: 12px 8px;">${item.nome}</td>
+                        <td style="text-align: center; padding: 12px 8px;">${item.quantidade}</td>
+                        <td style="text-align: right; padding: 12px 8px; font-weight: 600;">R$ ${item.subtotal.toFixed(2)}</td>
+                        <td style="text-align: center; padding: 12px 8px;">
+                            <button class="btn-icon delete" onclick="removerItemAgendamento(${index})" style="padding: 6px;" title="Remover produto">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
+async function finalizarComandaAgendamento() {
+    try {
+        // Solicitar forma de pagamento
+        const formaPagamento = await showFormaPagamentoModal();
+        if (!formaPagamento) return; // Usuário cancelou
+
+        // Criar comanda no backend
+        const comandaData = {
+            cliente_nome: agendamentoComandaAtual.clienteNome,
+            barbeiro_id: agendamentoComandaAtual.barbeiroId
+        };
+
+        const createResponse = await fetch('/api/v1/comandas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(comandaData)
+        });
+
+        if (!createResponse.ok) {
+            throw new Error('Erro ao criar comanda');
+        }
+
+        const { id: comandaId } = await createResponse.json();
+
+        // Adicionar serviço agendado como primeiro item
+        const servicoItem = {
+            tipo: 'servico',
+            item_id: agendamentoComandaAtual.servico.id,
+            nome: agendamentoComandaAtual.servico.nome,
+            quantidade: 1,
+            preco_unitario: agendamentoComandaAtual.servico.preco
+        };
+
+        await fetch(`/api/v1/comandas/${comandaId}/itens`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(servicoItem)
+        });
+
+        // Adicionar produtos extras
+        for (const item of agendamentoComandaAtual.itens) {
+            const produtoItem = {
+                tipo: 'produto',
+                item_id: item.id,
+                nome: item.nome,
+                quantidade: item.quantidade,
+                preco_unitario: item.preco
+            };
+
+            await fetch(`/api/v1/comandas/${comandaId}/itens`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(produtoItem)
+            });
+        }
+
+        // Fechar comanda
+        const fecharData = {
+            forma_pagamento: formaPagamento.metodo,
+            observacoes_pgto: formaPagamento.observacoes || ''
+        };
+
+        const fecharResponse = await fetch(`/api/v1/comandas/${comandaId}/fechar`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(fecharData)
+        });
+
+        if (!fecharResponse.ok) {
+            throw new Error('Erro ao fechar comanda');
+        }
+
+        // Atualizar status do agendamento para "concluído"
+        await fetch(`/api/v1/horarios/${agendamentoComandaAtual.id}/status`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'concluido' })
+        });
+
+        showToast('Atendimento finalizado com sucesso! 💈', 'success');
+        closeComandaAgendamentoModal();
+        loadHorarios(); // Recarregar lista de horários
+
+    } catch (error) {
+        console.error('Erro ao finalizar comanda:', error);
+        showToast('Erro ao finalizar atendimento', 'error');
+    }
+}
+
+async function showFormaPagamentoModal() {
+    return new Promise((resolve) => {
+        const html = `
+            <div class="modal-overlay" id="tempFormaPagModal" style="display: flex;">
+                <div class="modal-content" style="max-width: 400px;">
+                    <div class="modal-header">
+                        <h2>Forma de Pagamento</h2>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Método de Pagamento *</label>
+                            <select id="temp-forma-pag" required>
+                                <option value="">Selecione...</option>
+                                <option value="dinheiro">💵 Dinheiro</option>
+                                <option value="pix">📱 PIX</option>
+                                <option value="cartao">💳 Cartão</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Observações</label>
+                            <textarea id="temp-obs-pag" rows="2" placeholder="Ex: Troco para R$ 100"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="display: flex; gap: 12px; justify-content: flex-end;">
+                        <button class="btn-secondary" id="temp-cancel-pag">Cancelar</button>
+                        <button class="btn-primary" id="temp-confirm-pag">Confirmar</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', html);
+
+        const modal = document.getElementById('tempFormaPagModal');
+        const selectEl = document.getElementById('temp-forma-pag');
+        const obsEl = document.getElementById('temp-obs-pag');
+
+        document.getElementById('temp-confirm-pag').addEventListener('click', () => {
+            if (!selectEl.value) {
+                showToast('Selecione a forma de pagamento', 'warning');
+                return;
+            }
+            modal.remove();
+            resolve({
+                metodo: selectEl.value,
+                observacoes: obsEl.value
+            });
+        });
+
+        document.getElementById('temp-cancel-pag').addEventListener('click', () => {
+            modal.remove();
+            resolve(null);
+        });
+    });
+}
+
+// ===================================
+// SISTEMA DE CONFIRMAÇÃO CUSTOMIZADO
+// ===================================
+
+let confirmCallback = null;
+
+function showConfirm(message, title = 'Confirmar') {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('confirmModal');
+        const modalTitle = document.getElementById('confirmModalTitle');
+        const modalMessage = document.getElementById('confirmModalMessage');
+        const confirmBtn = document.getElementById('confirmModalBtn');
+
+        if (!modal) {
+            console.error('Modal de confirmação não encontrado');
+            resolve(false);
+            return;
+        }
+
+        modalTitle.textContent = title;
+        modalMessage.textContent = message;
+        modal.style.display = 'flex';
+
+        // Remover listeners anteriores
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+        // Adicionar novo listener
+        newConfirmBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+            resolve(true);
+        });
+
+        // Callback global para fechar
+        confirmCallback = () => {
+            modal.style.display = 'none';
+            resolve(false);
+        };
+    });
+}
+
+function closeConfirmModal() {
+    const modal = document.getElementById('confirmModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    if (confirmCallback) {
+        confirmCallback();
+        confirmCallback = null;
+    }
+}
+
+// ===================================
+// MODAL DE EDIÇÃO DE SERVIÇO
+// ===================================
+
+function initEditServicoModal() {
+    const modal = document.getElementById('editServicoModal');
+    const closeBtn = document.getElementById('closeEditServicoModal');
+    const cancelBtn = document.getElementById('cancelEditServico');
+    const saveBtn = document.getElementById('saveEditServico');
+
+    // Fechar modal
+    const closeModal = () => {
+        modal.style.display = 'none';
+        editServiceFotoBase64 = '';
+    };
+
+    closeBtn?.addEventListener('click', closeModal);
+    cancelBtn?.addEventListener('click', closeModal);
+
+    // Fechar ao clicar fora
+    modal?.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Upload de foto
+    const photoInput = document.getElementById('edit-service-photo');
+    const removePhotoBtn = document.getElementById('edit-remove-service-photo');
+
+    photoInput?.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+            showToast('Selecione um arquivo de imagem válido', 'error');
+            return;
+        }
+
+        const base64 = await fileToBase64(file);
+        editServiceFotoBase64 = base64;
+
+        const preview = document.getElementById('edit-service-photo-preview');
+        const img = document.getElementById('edit-service-photo-img');
+        if (preview && img) {
+            img.src = base64;
+            preview.style.display = 'flex';
+            preview.style.alignItems = 'center';
+            preview.style.gap = '12px';
+        }
+    });
+
+    removePhotoBtn?.addEventListener('click', () => {
+        editServiceFotoBase64 = '';
+        document.getElementById('edit-service-photo').value = '';
+        document.getElementById('edit-service-photo-preview').style.display = 'none';
+        document.getElementById('edit-service-photo-img').src = '';
+    });
+
+    // Salvar alterações
+    saveBtn?.addEventListener('click', async () => {
+        const id = document.getElementById('edit-service-id').value;
+        const formData = {
+            nome: document.getElementById('edit-service-name').value,
+            tipo: document.getElementById('edit-service-type').value,
+            preco: parseFloat(document.getElementById('edit-service-price').value),
+            duracao: parseInt(document.getElementById('edit-service-duration').value) || 0,
+            descricao: document.getElementById('edit-service-description').value,
+            foto: editServiceFotoBase64
+        };
+
+        try {
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Salvando...';
+
+            const response = await fetch(`/api/v1/servicos/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                showToast('Serviço/Produto atualizado com sucesso!', 'success');
+                closeModal();
+                loadServicos();
+            } else {
+                showToast('Erro ao salvar', 'error');
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            showToast('Erro ao salvar', 'error');
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Salvar Alterações';
+        }
+    });
+}
+
 // Chamar as novas funções de inicialização
 document.addEventListener('DOMContentLoaded', () => {
     initBarbeiroPhotoUpload();
     initPerfilPhotoUpload();
     initPerfilAdminModal();
+    initEditServicoModal();
+    initComandaAgendamentoModal();
 });
+
+// ===================================
+// MODAL DE COMANDA DO AGENDAMENTO
+// ===================================
+
+function initComandaAgendamentoModal() {
+    const closeBtn = document.getElementById('closeComandaAgendamentoModal');
+    const modal = document.getElementById('comandaAgendamentoModal');
+
+    if (closeBtn && modal) {
+        closeBtn.addEventListener('click', () => {
+            closeComandaAgendamentoModal();
+        });
+
+        // Fechar ao clicar fora do modal
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeComandaAgendamentoModal();
+            }
+        });
+    }
+}

@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	_ "modernc.org/sqlite"
 	"golang.org/x/crypto/bcrypt"
@@ -52,6 +53,11 @@ func InitSQLite() error {
 
 	// Inserir dados iniciais (barbeiros e servicos)
 	if err := insertDefaultData(); err != nil {
+		return err
+	}
+
+	// Inserir configurações padrão
+	if err := insertDefaultConfig(); err != nil {
 		return err
 	}
 
@@ -115,7 +121,7 @@ func createTables() error {
 		nome TEXT NOT NULL,
 		descricao TEXT,
 		preco REAL NOT NULL CHECK(preco >= 0),
-		duracao INTEGER NOT NULL CHECK(duracao > 0),
+		duracao INTEGER NOT NULL CHECK(duracao >= 0),
 		ativo INTEGER DEFAULT 1,
 		criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
 		atualizado_em DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -157,6 +163,18 @@ func createTables() error {
 		subtotal REAL NOT NULL CHECK(subtotal >= 0),
 		criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
 		FOREIGN KEY (comanda_id) REFERENCES comandas(id) ON DELETE CASCADE
+	);
+
+	CREATE TABLE IF NOT EXISTS configuracoes (
+		id INTEGER PRIMARY KEY CHECK(id = 1),
+		nome TEXT,
+		telefone TEXT,
+		whatsapp TEXT,
+		endereco TEXT,
+		instagram TEXT,
+		email TEXT,
+		criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+		atualizado_em DATETIME DEFAULT CURRENT_TIMESTAMP
 	);
 
 	CREATE INDEX IF NOT EXISTS idx_horarios_barbeiro ON horarios(barbeiro_id);
@@ -208,6 +226,85 @@ func runMigrations() error {
 	`)
 	if err != nil && err.Error() != "duplicate column name: atualizado_em" {
 		// Coluna já existe, ignorar
+	}
+
+	// Adicionar coluna foto à tabela servicos para imagens de serviços/produtos
+	_, err = DB.Exec(`
+		ALTER TABLE servicos ADD COLUMN foto TEXT
+	`)
+	if err != nil && err.Error() != "duplicate column name: foto" {
+		// Coluna já existe, ignorar
+	}
+
+	// Adicionar coluna foto à tabela usuarios para foto de perfil
+	_, err = DB.Exec(`
+		ALTER TABLE usuarios ADD COLUMN foto TEXT
+	`)
+	if err != nil && err.Error() != "duplicate column name: foto" {
+		// Coluna já existe, ignorar
+	}
+
+	// Migração: Corrigir CHECK constraint de duracao em servicos (permitir duracao >= 0 para produtos)
+	// Verificar se a tabela precisa ser recriada
+	var checkConstraint string
+	err = DB.QueryRow(`
+		SELECT sql FROM sqlite_master
+		WHERE type='table' AND name='servicos'
+	`).Scan(&checkConstraint)
+
+	if err == nil && strings.Contains(checkConstraint, "CHECK(duracao > 0)") {
+		log.Println("⚙ Migrando tabela servicos para permitir duracao >= 0...")
+
+		// Criar tabela temporária com nova estrutura
+		_, err = DB.Exec(`
+			CREATE TABLE servicos_new (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				nome TEXT NOT NULL,
+				tipo TEXT DEFAULT 'servico' CHECK(tipo IN ('servico', 'produto')),
+				descricao TEXT,
+				preco REAL NOT NULL CHECK(preco >= 0),
+				duracao INTEGER NOT NULL CHECK(duracao >= 0),
+				foto TEXT,
+				ativo INTEGER DEFAULT 1,
+				criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+				atualizado_em DATETIME DEFAULT CURRENT_TIMESTAMP
+			)
+		`)
+		if err != nil {
+			log.Printf("⚠ Erro ao criar tabela temporária servicos_new: %v", err)
+		} else {
+			// Copiar dados da tabela antiga
+			_, err = DB.Exec(`
+				INSERT INTO servicos_new (id, nome, tipo, descricao, preco, duracao, foto, ativo, criado_em, atualizado_em)
+				SELECT id, nome, tipo, descricao, preco, duracao, foto, ativo, criado_em, atualizado_em
+				FROM servicos
+			`)
+			if err != nil {
+				log.Printf("⚠ Erro ao copiar dados: %v", err)
+				// Se falhar, tentar sem as colunas que podem não existir
+				_, err = DB.Exec(`
+					INSERT INTO servicos_new (id, nome, descricao, preco, duracao, ativo, criado_em, atualizado_em)
+					SELECT id, nome, descricao, preco, duracao, ativo, criado_em, atualizado_em
+					FROM servicos
+				`)
+				if err != nil {
+					log.Printf("⚠ Erro ao copiar dados (segunda tentativa): %v", err)
+					DB.Exec("DROP TABLE servicos_new")
+				} else {
+					// Sucesso - substituir tabela antiga
+					DB.Exec("DROP TABLE servicos")
+					DB.Exec("ALTER TABLE servicos_new RENAME TO servicos")
+					DB.Exec("CREATE INDEX IF NOT EXISTS idx_servicos_ativo ON servicos(ativo)")
+					log.Println("✓ Tabela servicos migrada com sucesso")
+				}
+			} else {
+				// Sucesso - substituir tabela antiga
+				DB.Exec("DROP TABLE servicos")
+				DB.Exec("ALTER TABLE servicos_new RENAME TO servicos")
+				DB.Exec("CREATE INDEX IF NOT EXISTS idx_servicos_ativo ON servicos(ativo)")
+				log.Println("✓ Tabela servicos migrada com sucesso")
+			}
+		}
 	}
 
 	log.Println("✓ Migrações executadas com sucesso")
@@ -344,6 +441,34 @@ func insertDefaultData() error {
 		log.Println("✓ Horários de trabalho criados: Seg-Sex 9h-18h, Sáb 9h-14h")
 	}
 
+	return nil
+}
+
+// insertDefaultConfig insere configurações padrão da barbearia
+func insertDefaultConfig() error {
+	// Verificar se já existe configuração
+	var count int
+	err := DB.QueryRow("SELECT COUNT(*) FROM configuracoes").Scan(&count)
+	if err != nil {
+		return err
+	}
+
+	if count > 0 {
+		log.Println("✓ Configurações já existem")
+		return nil
+	}
+
+	// Inserir configuração padrão
+	_, err = DB.Exec(`
+		INSERT INTO configuracoes (id, nome, telefone, whatsapp, endereco, instagram, email)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
+	`, 1, "Barbearia Silva", "(61) 99999-9999", "5561999999999", "Brasília - DF", "@barbeariasilva", "contato@barbeariasilva.com")
+
+	if err != nil {
+		return err
+	}
+
+	log.Println("✓ Configurações padrão criadas")
 	return nil
 }
 

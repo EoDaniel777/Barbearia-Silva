@@ -11,6 +11,7 @@ type User struct {
 	Email     string    `json:"email" db:"email"`
 	Senha     string    `json:"-" db:"senha"` // Não expor senha no JSON
 	Telefone  string    `json:"telefone" db:"telefone"`
+	Foto      string    `json:"foto,omitempty" db:"foto"`
 	Tipo      string    `json:"tipo" db:"tipo"` // "cliente" ou "admin"
 	CriadoEm  time.Time `json:"criadoEm" db:"criado_em"`
 	AtualizadoEm time.Time `json:"atualizadoEm" db:"atualizado_em"`

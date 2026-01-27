@@ -4,12 +4,11 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/yourusername/barbearia/internal/database"
-	"github.com/yourusername/barbearia/internal/models"
+	"backend/internal/database"
+	"backend/internal/models"
 )
 
 // ListarComandas retorna todas as comandas
@@ -164,16 +163,22 @@ func ObterComanda(c *gin.Context) {
 
 // CriarComanda cria uma nova comanda
 func CriarComanda(c *gin.Context) {
+	log.Printf("[CriarComanda] Criando nova comanda...")
+
 	var input models.ComandaInput
 	if err := c.ShouldBindJSON(&input); err != nil {
+		log.Printf("[CriarComanda] Erro no bind JSON: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	log.Printf("[CriarComanda] Dados recebidos: Cliente=%s, Barbeiro=%d", input.ClienteNome, input.BarbeiroID)
 
 	// Verificar se o barbeiro existe
 	var barbeiroExists int
 	err := database.DB.QueryRow("SELECT COUNT(*) FROM barbeiros WHERE id = ? AND ativo = 1", input.BarbeiroID).Scan(&barbeiroExists)
 	if err != nil || barbeiroExists == 0 {
+		log.Printf("[CriarComanda] Barbeiro não encontrado: %d", input.BarbeiroID)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Barbeiro não encontrado ou inativo"})
 		return
 	}
@@ -185,12 +190,13 @@ func CriarComanda(c *gin.Context) {
 	`, input.ClienteNome, input.BarbeiroID)
 
 	if err != nil {
-		log.Printf("Erro ao criar comanda: %v", err)
+		log.Printf("[CriarComanda] Erro ao inserir no banco: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao criar comanda"})
 		return
 	}
 
 	id, _ := result.LastInsertId()
+	log.Printf("[CriarComanda] ✓ Comanda criada com ID: %d", id)
 
 	c.JSON(http.StatusCreated, gin.H{
 		"id":      id,
