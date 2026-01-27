@@ -1945,26 +1945,55 @@ let agendamentoComandaAtual = {
 };
 
 async function abrirComandaAgendamento(agendamentoId, clienteNome, barbeiroId) {
-    agendamentoComandaAtual = {
-        id: agendamentoId,
-        clienteNome: clienteNome,
-        barbeiroId: barbeiroId,
-        itens: [],
-        total: 0
-    };
+    try {
+        // Buscar dados completos do agendamento
+        const response = await fetch(`/api/v1/horarios`);
+        const horarios = await response.json();
+        const agendamento = horarios.find(h => h.id === agendamentoId);
 
-    // Preencher informações
-    document.getElementById('comanda-agend-cliente').textContent = clienteNome;
-    document.getElementById('comanda-agend-id').textContent = agendamentoId;
+        if (!agendamento) {
+            showToast('Agendamento não encontrado', 'error');
+            return;
+        }
 
-    // Carregar produtos disponíveis
-    await carregarProdutosComanda();
+        // Buscar dados do serviço (usar servicoID em camelCase)
+        const servicoResponse = await fetch(`/api/v1/servicos/${agendamento.servicoID}`);
+        if (!servicoResponse.ok) {
+            throw new Error('Serviço não encontrado');
+        }
+        const servico = await servicoResponse.json();
 
-    // Limpar lista de itens
-    atualizarListaItensAgendamento();
+        agendamentoComandaAtual = {
+            id: agendamentoId,
+            clienteNome: clienteNome,
+            barbeiroId: barbeiroId,
+            servico: {
+                id: servico.id,
+                nome: servico.nome,
+                preco: servico.preco
+            },
+            itens: [],
+            total: servico.preco
+        };
 
-    // Abrir modal
-    document.getElementById('comandaAgendamentoModal').style.display = 'flex';
+        // Preencher informações
+        document.getElementById('comanda-agend-cliente').textContent = clienteNome;
+        document.getElementById('comanda-agend-id').textContent = agendamentoId;
+        document.getElementById('comanda-agend-servico').textContent = servico.nome;
+        document.getElementById('comanda-agend-servico-preco').textContent = servico.preco.toFixed(2);
+
+        // Carregar produtos disponíveis
+        await carregarProdutosComanda();
+
+        // Limpar lista de itens
+        atualizarListaItensAgendamento();
+
+        // Abrir modal
+        document.getElementById('comandaAgendamentoModal').style.display = 'flex';
+    } catch (error) {
+        console.error('Erro ao abrir comanda:', error);
+        showToast('Erro ao carregar dados do agendamento', 'error');
+    }
 }
 
 function closeComandaAgendamentoModal() {
@@ -2021,8 +2050,9 @@ function adicionarProdutoAgendamento() {
         });
     }
 
-    // Recalcular total
-    agendamentoComandaAtual.total = agendamentoComandaAtual.itens.reduce((sum, item) => sum + item.subtotal, 0);
+    // Recalcular total (serviço + produtos)
+    const totalProdutos = agendamentoComandaAtual.itens.reduce((sum, item) => sum + item.subtotal, 0);
+    agendamentoComandaAtual.total = agendamentoComandaAtual.servico.preco + totalProdutos;
 
     // Atualizar lista
     atualizarListaItensAgendamento();
@@ -2036,38 +2066,52 @@ function adicionarProdutoAgendamento() {
 
 function removerItemAgendamento(index) {
     agendamentoComandaAtual.itens.splice(index, 1);
-    agendamentoComandaAtual.total = agendamentoComandaAtual.itens.reduce((sum, item) => sum + item.subtotal, 0);
+    const totalProdutos = agendamentoComandaAtual.itens.reduce((sum, item) => sum + item.subtotal, 0);
+    agendamentoComandaAtual.total = agendamentoComandaAtual.servico.preco + totalProdutos;
     atualizarListaItensAgendamento();
 }
 
 function atualizarListaItensAgendamento() {
     const container = document.getElementById('comanda-agend-itens-list');
     const totalEl = document.getElementById('comanda-agend-total');
+    const totalProdutosEl = document.getElementById('comanda-agend-total-produtos');
+    const servicoPrecoResumoEl = document.getElementById('comanda-agend-servico-preco-resumo');
 
+    const totalProdutos = agendamentoComandaAtual.itens.reduce((sum, item) => sum + item.subtotal, 0);
+
+    // Atualizar totais no resumo financeiro
+    if (totalProdutosEl) {
+        totalProdutosEl.textContent = totalProdutos.toFixed(2);
+    }
+    if (servicoPrecoResumoEl) {
+        servicoPrecoResumoEl.textContent = agendamentoComandaAtual.servico.preco.toFixed(2);
+    }
+    totalEl.textContent = agendamentoComandaAtual.total.toFixed(2);
+
+    // Renderizar lista de produtos
     if (agendamentoComandaAtual.itens.length === 0) {
-        container.innerHTML = '<p class="empty-message">Nenhum item adicionado</p>';
-        totalEl.textContent = '0.00';
+        container.innerHTML = '<p class="empty-message">Nenhum produto extra adicionado</p>';
         return;
     }
 
     container.innerHTML = `
-        <table style="width: 100%; font-size: 14px;">
+        <table style="width: 100%; font-size: 14px; border-collapse: collapse;">
             <thead>
-                <tr>
-                    <th style="text-align: left;">Produto</th>
-                    <th style="text-align: center;">Qtd</th>
-                    <th style="text-align: right;">Subtotal</th>
-                    <th style="text-align: center;">Ações</th>
+                <tr style="border-bottom: 2px solid rgba(13, 124, 164, 0.2);">
+                    <th style="text-align: left; padding: 8px;">Produto</th>
+                    <th style="text-align: center; padding: 8px;">Qtd</th>
+                    <th style="text-align: right; padding: 8px;">Subtotal</th>
+                    <th style="text-align: center; padding: 8px;">Ações</th>
                 </tr>
             </thead>
             <tbody>
                 ${agendamentoComandaAtual.itens.map((item, index) => `
-                    <tr>
-                        <td>${item.nome}</td>
-                        <td style="text-align: center;">${item.quantidade}</td>
-                        <td style="text-align: right;">R$ ${item.subtotal.toFixed(2)}</td>
-                        <td style="text-align: center;">
-                            <button class="btn-icon delete" onclick="removerItemAgendamento(${index})" style="padding: 4px;">
+                    <tr style="border-bottom: 1px solid rgba(13, 124, 164, 0.1);">
+                        <td style="padding: 12px 8px;">${item.nome}</td>
+                        <td style="text-align: center; padding: 12px 8px;">${item.quantidade}</td>
+                        <td style="text-align: right; padding: 12px 8px; font-weight: 600;">R$ ${item.subtotal.toFixed(2)}</td>
+                        <td style="text-align: center; padding: 12px 8px;">
+                            <button class="btn-icon delete" onclick="removerItemAgendamento(${index})" style="padding: 6px;" title="Remover produto">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="3 6 5 6 21 6"></polyline>
                                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -2079,8 +2123,151 @@ function atualizarListaItensAgendamento() {
             </tbody>
         </table>
     `;
+}
 
-    totalEl.textContent = agendamentoComandaAtual.total.toFixed(2);
+async function finalizarComandaAgendamento() {
+    try {
+        // Solicitar forma de pagamento
+        const formaPagamento = await showFormaPagamentoModal();
+        if (!formaPagamento) return; // Usuário cancelou
+
+        // Criar comanda no backend
+        const comandaData = {
+            cliente_nome: agendamentoComandaAtual.clienteNome,
+            barbeiro_id: agendamentoComandaAtual.barbeiroId
+        };
+
+        const createResponse = await fetch('/api/v1/comandas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(comandaData)
+        });
+
+        if (!createResponse.ok) {
+            throw new Error('Erro ao criar comanda');
+        }
+
+        const { id: comandaId } = await createResponse.json();
+
+        // Adicionar serviço agendado como primeiro item
+        const servicoItem = {
+            tipo: 'servico',
+            item_id: agendamentoComandaAtual.servico.id,
+            nome: agendamentoComandaAtual.servico.nome,
+            quantidade: 1,
+            preco_unitario: agendamentoComandaAtual.servico.preco
+        };
+
+        await fetch(`/api/v1/comandas/${comandaId}/itens`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(servicoItem)
+        });
+
+        // Adicionar produtos extras
+        for (const item of agendamentoComandaAtual.itens) {
+            const produtoItem = {
+                tipo: 'produto',
+                item_id: item.id,
+                nome: item.nome,
+                quantidade: item.quantidade,
+                preco_unitario: item.preco
+            };
+
+            await fetch(`/api/v1/comandas/${comandaId}/itens`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(produtoItem)
+            });
+        }
+
+        // Fechar comanda
+        const fecharData = {
+            forma_pagamento: formaPagamento.metodo,
+            observacoes_pgto: formaPagamento.observacoes || ''
+        };
+
+        const fecharResponse = await fetch(`/api/v1/comandas/${comandaId}/fechar`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(fecharData)
+        });
+
+        if (!fecharResponse.ok) {
+            throw new Error('Erro ao fechar comanda');
+        }
+
+        // Atualizar status do agendamento para "concluído"
+        await fetch(`/api/v1/horarios/${agendamentoComandaAtual.id}/status`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'concluido' })
+        });
+
+        showToast('Atendimento finalizado com sucesso! 💈', 'success');
+        closeComandaAgendamentoModal();
+        loadHorarios(); // Recarregar lista de horários
+
+    } catch (error) {
+        console.error('Erro ao finalizar comanda:', error);
+        showToast('Erro ao finalizar atendimento', 'error');
+    }
+}
+
+async function showFormaPagamentoModal() {
+    return new Promise((resolve) => {
+        const html = `
+            <div class="modal-overlay" id="tempFormaPagModal" style="display: flex;">
+                <div class="modal-content" style="max-width: 400px;">
+                    <div class="modal-header">
+                        <h2>Forma de Pagamento</h2>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Método de Pagamento *</label>
+                            <select id="temp-forma-pag" required>
+                                <option value="">Selecione...</option>
+                                <option value="dinheiro">💵 Dinheiro</option>
+                                <option value="pix">📱 PIX</option>
+                                <option value="cartao">💳 Cartão</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Observações</label>
+                            <textarea id="temp-obs-pag" rows="2" placeholder="Ex: Troco para R$ 100"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="display: flex; gap: 12px; justify-content: flex-end;">
+                        <button class="btn-secondary" id="temp-cancel-pag">Cancelar</button>
+                        <button class="btn-primary" id="temp-confirm-pag">Confirmar</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', html);
+
+        const modal = document.getElementById('tempFormaPagModal');
+        const selectEl = document.getElementById('temp-forma-pag');
+        const obsEl = document.getElementById('temp-obs-pag');
+
+        document.getElementById('temp-confirm-pag').addEventListener('click', () => {
+            if (!selectEl.value) {
+                showToast('Selecione a forma de pagamento', 'warning');
+                return;
+            }
+            modal.remove();
+            resolve({
+                metodo: selectEl.value,
+                observacoes: obsEl.value
+            });
+        });
+
+        document.getElementById('temp-cancel-pag').addEventListener('click', () => {
+            modal.remove();
+            resolve(null);
+        });
+    });
 }
 
 // ===================================

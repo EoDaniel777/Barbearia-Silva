@@ -79,6 +79,9 @@
             existingDropdown.remove();
         }
 
+        // Verificar se é admin
+        const isAdmin = user && (user.tipo === 'admin' || user.role === 'admin' || user.admin === true);
+
         const profileHtml = `
             <div class="profile-dropdown">
                 <button class="profile-btn" id="client-profile-btn" aria-label="Perfil">
@@ -96,14 +99,33 @@
                         <small>${user ? user.email : ''}</small>
                     </div>
                     <hr>
-                    <a href="/dashboard" class="profile-menu-item">
+                    ${isAdmin ? `
+                        <a href="/dashboard" class="profile-menu-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                            Dashboard
+                        </a>
+                    ` : `
+                        <a href="#" class="profile-menu-item" id="client-profile-edit-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            Meu Perfil
+                        </a>
+                    `}
+                    <a href="/agendar" class="profile-menu-item">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="3" width="7" height="7"></rect>
-                            <rect x="14" y="3" width="7" height="7"></rect>
-                            <rect x="14" y="14" width="7" height="7"></rect>
-                            <rect x="3" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
                         </svg>
-                        Dashboard
+                        Agendar Horário
                     </a>
                     <hr>
                     <a href="#" class="profile-menu-item" id="client-logout-btn">
@@ -168,6 +190,7 @@
         const profileBtn = document.getElementById('client-profile-btn');
         const profileMenu = document.getElementById('client-profile-menu');
         const logoutBtn = document.getElementById('client-logout-btn');
+        const profileEditBtn = document.getElementById('client-profile-edit-btn');
 
         if (!profileBtn || !profileMenu) {
             console.error('[AUTH CLIENT] Botão ou menu de perfil não encontrado');
@@ -187,6 +210,15 @@
             }
         });
 
+        // Editar perfil (apenas para clientes)
+        if (profileEditBtn) {
+            profileEditBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                profileMenu.classList.remove('active');
+                openProfileModal();
+            });
+        }
+
         // Logout
         if (logoutBtn) {
             logoutBtn.addEventListener('click', (e) => {
@@ -196,6 +228,17 @@
                 }
             });
         }
+    }
+
+    /**
+     * Abre modal de edição de perfil (para clientes)
+     */
+    function openProfileModal() {
+        const user = getUser();
+        if (!user) return;
+
+        alert('Modal de edição de perfil em desenvolvimento!\n\nEm breve você poderá editar:\n- Nome\n- Email\n- Telefone\n- Foto\n- Senha');
+        // TODO: Implementar modal completo de edição de perfil
     }
 
     /**

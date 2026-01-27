@@ -17,6 +17,11 @@ func NewServicoHandler() *ServicoHandler {
 
 // List all services
 func (h *ServicoHandler) List(c *gin.Context) {
+	// Adicionar headers para prevenir cache do navegador
+	c.Header("Cache-Control", "no-cache, no-store, must-revalidate")
+	c.Header("Pragma", "no-cache")
+	c.Header("Expires", "0")
+
 	rows, err := database.DB.Query(`
 		SELECT id, nome, tipo, descricao, preco, duracao, foto, ativo, criado_em, atualizado_em
 		FROM servicos

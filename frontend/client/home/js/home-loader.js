@@ -24,7 +24,9 @@
         try {
             console.log('[HOME LOADER] Carregando serviços...');
 
-            const response = await fetch('/api/v1/servicos');
+            // Adicionar timestamp para evitar cache
+            const timestamp = new Date().getTime();
+            const response = await fetch(`/api/v1/servicos?_t=${timestamp}`);
             if (!response.ok) throw new Error('Erro ao carregar serviços');
 
             const servicos = await response.json();

@@ -1119,45 +1119,101 @@
 
     <!-- Modal de Comanda do Agendamento -->
     <div class="modal-overlay" id="comandaAgendamentoModal" style="display: none;">
-        <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-content" style="max-width: 700px;">
             <div class="modal-header">
-                <h2>Comanda do Agendamento</h2>
+                <h2>💈 Comanda do Atendimento</h2>
                 <button class="modal-close" id="closeComandaAgendamentoModal">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="comanda-info" style="background: rgba(13, 124, 164, 0.1); padding: 16px; border-radius: 12px; margin-bottom: 20px;">
-                    <p><strong>Cliente:</strong> <span id="comanda-agend-cliente">--</span></p>
-                    <p><strong>Agendamento ID:</strong> #<span id="comanda-agend-id">--</span></p>
+                <!-- Informações do Cliente -->
+                <div class="comanda-info" style="background: linear-gradient(135deg, rgba(13, 124, 164, 0.1), rgba(13, 124, 164, 0.05)); padding: 20px; border-radius: 12px; margin-bottom: 24px; border-left: 4px solid var(--primary-color);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <p style="margin: 0; font-size: 18px;"><strong>Cliente:</strong> <span id="comanda-agend-cliente" style="color: var(--primary-color);">--</span></p>
+                        <p style="margin: 0; color: var(--text-secondary);">ID: #<span id="comanda-agend-id">--</span></p>
+                    </div>
                 </div>
 
-                <h3 style="margin-bottom: 16px;">Adicionar Produtos</h3>
+                <!-- Serviço Agendado -->
+                <div style="background: rgba(76, 175, 80, 0.1); padding: 16px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #4CAF50;">
+                    <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #4CAF50;">✓ Serviço Agendado</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span id="comanda-agend-servico" style="font-weight: 600;">--</span>
+                        <span style="font-size: 18px; font-weight: 700; color: #4CAF50;">R$ <span id="comanda-agend-servico-preco">0.00</span></span>
+                    </div>
+                </div>
 
-                <div class="form-row" style="margin-bottom: 20px;">
-                    <div class="form-group">
+                <hr style="margin: 24px 0; border: none; border-top: 2px dashed rgba(13, 124, 164, 0.2);">
+
+                <!-- Adicionar Produtos Extras -->
+                <h3 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="16"></line>
+                        <line x1="8" y1="12" x2="16" y2="12"></line>
+                    </svg>
+                    Adicionar Produtos Extras
+                </h3>
+
+                <div class="form-row" style="margin-bottom: 20px; gap: 12px;">
+                    <div class="form-group" style="flex: 2;">
                         <label for="comanda-agend-produto">Produto</label>
                         <select id="comanda-agend-produto">
-                            <option value="">Selecione</option>
+                            <option value="">Selecione um produto...</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="comanda-agend-qtd">Qtd</label>
-                        <input type="number" id="comanda-agend-qtd" value="1" min="1" style="width: 80px;">
+                    <div class="form-group" style="flex: 0 0 100px;">
+                        <label for="comanda-agend-qtd">Quantidade</label>
+                        <input type="number" id="comanda-agend-qtd" value="1" min="1">
                     </div>
-                    <div class="form-group">
-                        <button type="button" class="btn-primary" onclick="adicionarProdutoAgendamento()" style="margin-top: 26px;">Adicionar</button>
+                    <div class="form-group" style="flex: 0 0 auto;">
+                        <button type="button" class="btn-primary" onclick="adicionarProdutoAgendamento()" style="margin-top: 26px; padding: 10px 20px;">
+                            <span style="display: flex; align-items: center; gap: 6px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Adicionar
+                            </span>
+                        </button>
                     </div>
                 </div>
 
-                <hr style="margin: 20px 0;">
-
-                <h3>Itens Adicionados</h3>
-                <div id="comanda-agend-itens-list">
-                    <p class="empty-message">Nenhum item adicionado</p>
+                <!-- Lista de Produtos Extras -->
+                <div style="margin-top: 20px;">
+                    <h3 style="margin-bottom: 12px; font-size: 15px; color: var(--text-secondary);">Produtos Extras</h3>
+                    <div id="comanda-agend-itens-list">
+                        <p class="empty-message">Nenhum produto extra adicionado</p>
+                    </div>
                 </div>
 
-                <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid rgba(255,255,255,0.1);">
-                    <h3 style="text-align: right; color: var(--primary-color);">Total: R$ <span id="comanda-agend-total">0.00</span></h3>
+                <hr style="margin: 24px 0; border: none; border-top: 2px solid rgba(13, 124, 164, 0.2);">
+
+                <!-- Resumo Financeiro -->
+                <div style="background: rgba(13, 124, 164, 0.05); padding: 20px; border-radius: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px; color: var(--text-secondary);">
+                        <span>Serviço Agendado:</span>
+                        <span>R$ <span id="comanda-agend-servico-preco-resumo">0.00</span></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 16px; color: var(--text-secondary);">
+                        <span>Produtos Extras:</span>
+                        <span>R$ <span id="comanda-agend-total-produtos">0.00</span></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 16px; border-top: 2px solid rgba(13, 124, 164, 0.3);">
+                        <h3 style="margin: 0; font-size: 20px;">Total a Pagar:</h3>
+                        <h3 style="margin: 0; font-size: 28px; color: var(--primary-color);">R$ <span id="comanda-agend-total">0.00</span></h3>
+                    </div>
                 </div>
+            </div>
+            <div class="modal-footer" style="display: flex; gap: 12px; justify-content: space-between;">
+                <button class="btn-secondary" onclick="closeComandaAgendamentoModal()">Cancelar</button>
+                <button class="btn-primary" onclick="finalizarComandaAgendamento()" style="background: #4CAF50; padding: 12px 24px; font-weight: 600;">
+                    <span style="display: flex; align-items: center; gap: 8px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Finalizar Atendimento
+                    </span>
+                </button>
             </div>
         </div>
     </div>

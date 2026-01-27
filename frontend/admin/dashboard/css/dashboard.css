@@ -122,14 +122,14 @@ body.light-mode {
     display: block;
     font-size: 16px;
     font-weight: 600;
-    color: var(--text-primary);
+    color: #FFFFFF;
     margin-bottom: 4px;
 }
 
 .sidebar-profile-info small {
     display: block;
     font-size: 13px;
-    color: var(--text-secondary);
+    color: rgba(255, 255, 255, 0.7);
 }
 
 /* Logo movida para o footer */

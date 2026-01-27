@@ -205,16 +205,16 @@ async function abrirNovaComanda() {
 
     // Adicionar usuários com agendamento primeiro
     if (horariosAtuais.length > 0) {
-        selectUsuario.innerHTML += '<optgroup label="🕒 Agendados para agora">';
+        selectUsuario.innerHTML += '<optgroup label="💈 Em Atendimento / Agendados">';
         horariosAtuais.forEach(h => {
             const usuario = usuariosCache.find(u => u.telefone === h.telefone);
             if (usuario) {
                 const horaAgendamento = new Date(h.dataHora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                selectUsuario.innerHTML += `<option value="${usuario.id}">⭐ ${usuario.nome} (${horaAgendamento})</option>`;
+                selectUsuario.innerHTML += `<option value="agendado-${h.id}" data-usuario-id="${usuario.id}">⭐ ${usuario.nome} (${horaAgendamento})</option>`;
             } else {
                 // Se não encontrou usuário cadastrado, mas tem agendamento
                 const horaAgendamento = new Date(h.dataHora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                selectUsuario.innerHTML += `<option value="walk-in-${h.id}" data-nome="${h.clienteNome}">⭐ ${h.clienteNome} (${horaAgendamento})</option>`;
+                selectUsuario.innerHTML += `<option value="walk-in-${h.id}" data-nome="${h.nomeCliente}">⭐ ${h.nomeCliente} (${horaAgendamento})</option>`;
             }
         });
         selectUsuario.innerHTML += '</optgroup>';
@@ -282,21 +282,46 @@ function initNovaComandaModal() {
             return;
         }
 
-        // Obter nome do cliente
+        // Obter nome do cliente e verificar se tem agendamento
         let clienteNome = '';
+        let agendamentoId = null;
+        let servicoAgendado = null;
+        const selectedOption = selectUsuario.options[selectUsuario.selectedIndex];
 
         // Se for um "walk-in" (agendamento sem usuário cadastrado)
         if (usuarioValue.startsWith('walk-in-')) {
-            const selectedOption = selectUsuario.options[selectUsuario.selectedIndex];
             clienteNome = selectedOption.dataset.nome;
+            agendamentoId = parseInt(usuarioValue.replace('walk-in-', ''));
+        } else if (usuarioValue.startsWith('agendado-')) {
+            // Usuário cadastrado com agendamento
+            agendamentoId = parseInt(usuarioValue.replace('agendado-', ''));
+            const usuarioId = parseInt(selectedOption.dataset.usuarioId);
+            const usuario = usuariosCache.find(u => u.id === usuarioId);
+            clienteNome = usuario ? usuario.nome : selectedOption.text.split(' (')[0].replace('⭐ ', '');
         } else {
-            // Buscar nome do usuário selecionado
+            // Buscar nome do usuário selecionado (sem agendamento)
             const usuario = usuariosCache.find(u => u.id === parseInt(usuarioValue));
             if (usuario) {
                 clienteNome = usuario.nome;
             } else {
                 showToast('Usuário não encontrado', 'error');
                 return;
+            }
+        }
+
+        // Se tem agendamento, buscar o serviço
+        if (agendamentoId) {
+            try {
+                const resHorarios = await fetch('/api/v1/horarios');
+                const horarios = await resHorarios.json();
+                const agendamento = horarios.find(h => h.id === agendamentoId);
+
+                if (agendamento && agendamento.servicoID) {
+                    const resServico = await fetch(`/api/v1/servicos/${agendamento.servicoID}`);
+                    servicoAgendado = await resServico.json();
+                }
+            } catch (error) {
+                console.error('Erro ao buscar serviço agendado:', error);
             }
         }
 
@@ -308,19 +333,38 @@ function initNovaComandaModal() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    clienteNome: clienteNome,
-                    barbeiroId: parseInt(barbeiroId)
+                    cliente_nome: clienteNome,
+                    barbeiro_id: parseInt(barbeiroId)
                 })
             });
 
             if (response.ok) {
                 const result = await response.json();
-                showToast('Comanda aberta com sucesso!', 'success');
+                const comandaId = result.id;
+
+                // Se tem serviço agendado, adicionar automaticamente
+                if (servicoAgendado) {
+                    await fetch(`/api/v1/comandas/${comandaId}/itens`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            tipo: 'servico',
+                            item_id: servicoAgendado.id,
+                            nome: servicoAgendado.nome,
+                            quantidade: 1,
+                            preco_unitario: servicoAgendado.preco
+                        })
+                    });
+                    showToast(`Comanda aberta com ${servicoAgendado.nome} incluído! 💈`, 'success');
+                } else {
+                    showToast('Comanda aberta com sucesso!', 'success');
+                }
+
                 closeModal();
                 loadComandas();
 
                 // Abrir automaticamente a comanda para gerenciamento
-                setTimeout(() => gerenciarComanda(result.id), 500);
+                setTimeout(() => gerenciarComanda(comandaId), 500);
             } else {
                 const error = await response.json();
                 showToast(error.error || 'Erro ao abrir comanda', 'error');
