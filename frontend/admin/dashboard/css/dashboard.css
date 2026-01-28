@@ -399,6 +399,8 @@ body.light-mode {
 
 .card-body {
     padding: 24px;
+    line-height: 2.0;
+    font-weight: 600;
 }
 
 .empty-message {
@@ -538,8 +540,15 @@ tr:last-child td {
 }
 
 .table-actions {
-    display: flex;
+    width: 220px;
     gap: 8px;
+}
+
+.div-table-actions{
+    width: 180px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 27px
 }
 
 .btn-icon {
