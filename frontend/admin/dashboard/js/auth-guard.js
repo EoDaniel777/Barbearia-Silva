@@ -12,6 +12,53 @@
     console.log('[AUTH GUARD] Inicializando verificação de autenticação...');
 
     /**
+     * Exibe uma notificação toast simples
+     */
+    function showToast(message, type = 'info') {
+        // Adicionar animações CSS se ainda não existirem
+        if (!document.getElementById('toast-animations')) {
+            const style = document.createElement('style');
+            style.id = 'toast-animations';
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(400px); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(400px); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'error' ? '#ef4444' : type === 'warning' ? '#f59e0b' : '#10b981'};
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 10000;
+            font-size: 14px;
+            max-width: 350px;
+            animation: slideIn 0.3s ease-out;
+        `;
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.animation = 'slideOut 0.3s ease-out';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    /**
      * Verifica se o usuário está autenticado
      */
     function isAuthenticated() {
@@ -87,8 +134,10 @@
         // Verificar se é admin - Dashboard é apenas para administradores
         if (!isAdmin()) {
             console.error('[AUTH GUARD] Acesso negado - usuário não é administrador');
-            alert('Acesso restrito a administradores. Redirecionando para a página inicial.');
-            window.location.href = '/';
+            showToast('Acesso restrito a administradores. Redirecionando...', 'error');
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1500);
             return false;
         }
 

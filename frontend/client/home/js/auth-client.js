@@ -9,6 +9,53 @@
     console.log('[AUTH CLIENT] Inicializando...');
 
     /**
+     * Exibe uma notificação toast simples
+     */
+    function showToast(message, type = 'info') {
+        // Adicionar animações CSS se ainda não existirem
+        if (!document.getElementById('toast-animations')) {
+            const style = document.createElement('style');
+            style.id = 'toast-animations';
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(400px); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(400px); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'error' ? '#ef4444' : type === 'warning' ? '#f59e0b' : type === 'success' ? '#10b981' : '#3b82f6'};
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 10000;
+            font-size: 14px;
+            max-width: 350px;
+            animation: slideIn 0.3s ease-out;
+        `;
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.animation = 'slideOut 0.3s ease-out';
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
+
+    /**
      * Verifica se o usuário está autenticado
      */
     function isAuthenticated() {
@@ -237,7 +284,7 @@
         const user = getUser();
         if (!user) return;
 
-        alert('Modal de edição de perfil em desenvolvimento!\n\nEm breve você poderá editar:\n- Nome\n- Email\n- Telefone\n- Foto\n- Senha');
+        showToast('Modal de edição de perfil em desenvolvimento! Em breve você poderá editar: Nome, Email, Telefone, Foto e Senha.', 'info');
         // TODO: Implementar modal completo de edição de perfil
     }
 
