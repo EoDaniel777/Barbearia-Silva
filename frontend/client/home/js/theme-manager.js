@@ -131,9 +131,9 @@
             // Atualizar logos com cache busting
             // Usa logoWhite.jpeg que é editável pelo admin
             updateLogos({
-                header: addCacheBuster('/img/logoWhite.jpeg'),
+                header: addCacheBuster('/img/SemFundoBlack.png'),
                 hero: addCacheBuster('/img/logoWhite.jpeg'),
-                footer: addCacheBuster('/img/logoWhite.jpeg')
+                footer: addCacheBuster('/img/SemFundoBlack.png')
             });
 
         } else {
@@ -152,9 +152,9 @@
             // Atualizar logos com cache busting
             // Usa logoDark.jpeg que é editável pelo admin
             updateLogos({
-                header: addCacheBuster('/img/logoDark.jpeg'),
-                hero: addCacheBuster('/img/logoDark.jpeg'),
-                footer: addCacheBuster('/img/logoDark.jpeg')
+                header: addCacheBuster('/img/logoSemFundo.png'),
+                hero: addCacheBuster('/img/logoSemFundo.png'),
+                footer: addCacheBuster('/img/logoSemFundo.png')
             });
         }
 
