@@ -957,33 +957,60 @@
 
     <!-- Modal de Nova Comanda -->
     <div class="modal-overlay" id="novaComandaModal" style="display: none;">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
-                <h2>Nova Comanda</h2>
+                <h2>➕ Nova Comanda</h2>
                 <button class="modal-close" id="closeNovaComandaModal">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="nova-comanda-form">
-                    <div class="form-group">
-                        <label for="comanda-usuario-novo">Cliente/Usuário *</label>
-                        <select id="comanda-usuario-novo" required>
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="comanda-usuario-novo" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            Cliente/Usuário *
+                        </label>
+                        <select id="comanda-usuario-novo" required style="padding: 12px; font-size: 15px;">
                             <option value="">Carregando usuários...</option>
                         </select>
-                        <small style="color: var(--text-secondary); font-size: 0.85em; margin-top: 4px; display: block;">
-                            💡 Usuários com agendamento para agora aparecem primeiro
-                        </small>
+                        <div style="background: rgba(13, 124, 164, 0.1); padding: 12px; border-radius: 8px; margin-top: 12px; border-left: 3px solid var(--primary-color);">
+                            <small style="color: var(--text-secondary); font-size: 0.9em; display: flex; align-items: center; gap: 6px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M12 16v-4"></path>
+                                    <path d="M12 8h.01"></path>
+                                </svg>
+                                Usuários com agendamento para agora aparecem primeiro
+                            </small>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label for="comanda-barbeiro">Barbeiro *</label>
-                        <select id="comanda-barbeiro" required>
-                            <option value="">Selecione o barbeiro</option>
+                        <label for="comanda-barbeiro" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                            </svg>
+                            Barbeiro *
+                        </label>
+                        <select id="comanda-barbeiro" required style="padding: 12px; font-size: 15px;">
+                            <option value="">Selecione o barbeiro...</option>
                         </select>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="display: flex; gap: 12px; justify-content: flex-end;">
                 <button class="btn-secondary" id="cancelNovaComanda">Cancelar</button>
-                <button class="btn-primary" id="saveNovaComanda">Abrir Comanda</button>
+                <button class="btn-primary" id="saveNovaComanda" style="background: #4CAF50; padding: 12px 24px; font-weight: 600;">
+                    <span style="display: flex; align-items: center; gap: 8px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                            <polyline points="7 3 7 8 15 8"></polyline>
+                        </svg>
+                        Abrir Comanda
+                    </span>
+                </button>
             </div>
         </div>
     </div>
@@ -992,97 +1019,161 @@
     <div class="modal-overlay" id="gerenciarComandaModal" style="display: none;">
         <div class="modal-content modal-large">
             <div class="modal-header">
-                <h2>Comanda #<span id="comanda-id-modal">--</span> - <span id="comanda-cliente-modal">--</span></h2>
+                <h2>💳 Comanda #<span id="comanda-id-modal">--</span></h2>
                 <button class="modal-close" id="closeGerenciarComandaModal">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="comanda-info">
-                    <p><strong>Barbeiro:</strong> <span id="comanda-barbeiro-modal">--</span></p>
-                    <p><strong>Status:</strong> <span id="comanda-status-modal" class="status-badge">--</span></p>
-                    <p><strong>Total:</strong> <span id="comanda-total-modal">R$ 0,00</span></p>
+                <!-- Informações da Comanda -->
+                <div style="background: linear-gradient(135deg, rgba(13, 124, 164, 0.1), rgba(13, 124, 164, 0.05)); padding: 20px; border-radius: 12px; margin-bottom: 24px; border-left: 4px solid var(--primary-color);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <p style="margin: 0; font-size: 18px;"><strong>Cliente:</strong> <span id="comanda-cliente-modal" style="color: var(--primary-color);">--</span></p>
+                        <span id="comanda-status-modal" class="status-badge" style="padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600;">--</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <p style="margin: 0;"><strong>Barbeiro:</strong> <span id="comanda-barbeiro-modal">--</span></p>
+                        <p style="margin: 0; font-size: 20px; font-weight: 700; color: var(--primary-color);">Total: <span id="comanda-total-modal">R$ 0,00</span></p>
+                    </div>
                 </div>
 
-                <div class="form-group" style="margin-top: 16px;">
-                    <label for="comanda-usuario">Usuário/Cliente</label>
-                    <select id="comanda-usuario">
-                        <option value="">Selecione o usuário (opcional)</option>
+                <div class="form-group" style="margin-bottom: 24px;">
+                    <label for="comanda-usuario">Vincular a um Cliente (opcional)</label>
+                    <select id="comanda-usuario" style="padding: 12px;">
+                        <option value="">Selecione o usuário...</option>
                     </select>
                 </div>
 
-                <hr style="margin: 20px 0;">
+                <hr style="margin: 24px 0; border: none; border-top: 2px dashed rgba(13, 124, 164, 0.2);">
 
-                <h3>Adicionar Item</h3>
-                <div class="form-row">
-                    <div class="form-group">
+                <!-- Adicionar Item -->
+                <h3 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="16"></line>
+                        <line x1="8" y1="12" x2="16" y2="12"></line>
+                    </svg>
+                    Adicionar Item
+                </h3>
+                <div class="form-row" style="gap: 12px; margin-bottom: 20px;">
+                    <div class="form-group" style="flex: 0 0 130px;">
                         <label for="item-tipo">Tipo</label>
                         <select id="item-tipo">
                             <option value="servico">Serviço</option>
                             <option value="produto">Produto</option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="flex: 2;">
                         <label for="item-servico-produto">Item</label>
                         <select id="item-servico-produto">
-                            <option value="">Selecione</option>
+                            <option value="">Selecione...</option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="flex: 0 0 100px;">
                         <label for="item-quantidade">Qtd</label>
-                        <input type="number" id="item-quantidade" value="1" min="1" style="width: 80px;">
+                        <input type="number" id="item-quantidade" value="1" min="1">
                     </div>
-                    <div class="form-group">
-                        <button type="button" class="btn-primary" onclick="adicionarItemComanda()" style="margin-top: 26px;">Adicionar</button>
+                    <div class="form-group" style="flex: 0 0 auto;">
+                        <button type="button" class="btn-primary" onclick="adicionarItemComanda()" style="margin-top: 26px; padding: 10px 20px;">
+                            <span style="display: flex; align-items: center; gap: 6px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Adicionar
+                            </span>
+                        </button>
                     </div>
                 </div>
 
-                <hr style="margin: 20px 0;">
+                <hr style="margin: 24px 0; border: none; border-top: 2px dashed rgba(13, 124, 164, 0.2);">
 
-                <h3>Itens da Comanda</h3>
+                <!-- Lista de Itens -->
+                <h3 style="margin-bottom: 12px; font-size: 15px; color: var(--text-secondary);">Itens da Comanda</h3>
                 <div id="itens-comanda-list" class="table-responsive">
                     <p class="empty-message">Nenhum item adicionado</p>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" onclick="cancelarComanda()">Cancelar Comanda</button>
-                <button class="btn-primary" onclick="fecharComandaModal()">Fechar Comanda</button>
+            <div class="modal-footer" style="display: flex; gap: 12px; justify-content: space-between;">
+                <button class="btn-secondary" onclick="cancelarComanda()" style="background: #ef4444;">
+                    <span style="display: flex; align-items: center; gap: 6px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                        Cancelar Comanda
+                    </span>
+                </button>
+                <button class="btn-primary" onclick="fecharComandaModal()" style="background: #4CAF50; padding: 12px 24px; font-weight: 600;">
+                    <span style="display: flex; align-items: center; gap: 8px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Fechar Comanda
+                    </span>
+                </button>
             </div>
         </div>
     </div>
 
     <!-- Modal de Fechar Comanda -->
     <div class="modal-overlay" id="fecharComandaModal" style="display: none;">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
-                <h2>Fechar Comanda #<span id="fechar-comanda-id">--</span></h2>
+                <h2>💰 Fechar Comanda #<span id="fechar-comanda-id">--</span></h2>
                 <button class="modal-close" id="closeFecharComandaModal">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="comanda-resumo">
-                    <p><strong>Cliente:</strong> <span id="fechar-comanda-cliente">--</span></p>
-                    <p><strong>Total:</strong> <span id="fechar-comanda-total" style="font-size: 24px; color: var(--primary-color);">R$ 0,00</span></p>
+                <!-- Resumo da Comanda -->
+                <div style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.05)); padding: 20px; border-radius: 12px; margin-bottom: 24px; border-left: 4px solid #4CAF50;">
+                    <p style="margin: 0 0 12px 0; font-size: 16px;"><strong>Cliente:</strong> <span id="fechar-comanda-cliente" style="color: var(--primary-color);">--</span></p>
+                    <div style="text-align: center; padding-top: 16px; border-top: 2px dashed rgba(76, 175, 80, 0.3);">
+                        <p style="margin: 0 0 8px 0; font-size: 14px; color: var(--text-secondary); font-weight: 600;">TOTAL A RECEBER</p>
+                        <p style="margin: 0; font-size: 36px; font-weight: 700; color: #4CAF50;"><span id="fechar-comanda-total">R$ 0,00</span></p>
+                    </div>
                 </div>
 
-                <hr style="margin: 20px 0;">
+                <hr style="margin: 24px 0; border: none; border-top: 2px dashed rgba(13, 124, 164, 0.2);">
 
+                <!-- Formulário de Pagamento -->
                 <form id="fechar-comanda-form">
-                    <div class="form-group">
-                        <label for="forma-pagamento">Forma de Pagamento *</label>
-                        <select id="forma-pagamento" required>
-                            <option value="">Selecione</option>
-                            <option value="dinheiro">Dinheiro</option>
-                            <option value="pix">PIX</option>
-                            <option value="cartao">Cartão</option>
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label for="forma-pagamento" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                <line x1="1" y1="10" x2="23" y2="10"></line>
+                            </svg>
+                            Forma de Pagamento *
+                        </label>
+                        <select id="forma-pagamento" required style="padding: 12px; font-size: 15px;">
+                            <option value="">Selecione...</option>
+                            <option value="dinheiro">💵 Dinheiro</option>
+                            <option value="pix">📱 PIX</option>
+                            <option value="cartao">💳 Cartão</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="observacoes-pgto">Observações</label>
-                        <textarea id="observacoes-pgto" rows="2" placeholder="Ex: Troco para R$ 100"></textarea>
+                        <label for="observacoes-pgto" style="margin-bottom: 8px;">Observações</label>
+                        <textarea id="observacoes-pgto" rows="3" placeholder="Ex: Troco para R$ 100, Cliente pediu nota fiscal..." style="padding: 12px; font-size: 14px;"></textarea>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" onclick="document.getElementById('fecharComandaModal').classList.remove('active')">Voltar</button>
-                <button class="btn-primary" onclick="confirmarFecharComanda()">Confirmar Fechamento</button>
+            <div class="modal-footer" style="display: flex; gap: 12px; justify-content: space-between;">
+                <button class="btn-secondary" onclick="document.getElementById('fecharComandaModal').classList.remove('active')">
+                    <span style="display: flex; align-items: center; gap: 6px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        Voltar
+                    </span>
+                </button>
+                <button class="btn-primary" onclick="confirmarFecharComanda()" style="background: #4CAF50; padding: 12px 24px; font-weight: 600;">
+                    <span style="display: flex; align-items: center; gap: 8px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Confirmar Fechamento
+                    </span>
+                </button>
             </div>
         </div>
     </div>

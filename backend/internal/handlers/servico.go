@@ -68,20 +68,26 @@ func (h *ServicoHandler) Get(c *gin.Context) {
 	id := c.Param("id")
 
 	var s models.Servico
-	var descricao, foto *string
+	var tipo, descricao, foto *string
 
 	err := database.DB.QueryRow(`
 		SELECT id, nome, tipo, descricao, preco, duracao, foto, ativo, criado_em, atualizado_em
 		FROM servicos
-		WHERE id = ?
-	`, id).Scan(&s.ID, &s.Nome, &s.Tipo, &descricao, &s.Preco, &s.Duracao, &foto, &s.Ativo, &s.CreatedAt, &s.UpdatedAt)
+		WHERE id = ? AND ativo = 1
+	`, id).Scan(&s.ID, &s.Nome, &tipo, &descricao, &s.Preco, &s.Duracao, &foto, &s.Ativo, &s.CreatedAt, &s.UpdatedAt)
 
 	if err != nil {
+		log.Printf("[ServicoHandler] Erro ao buscar serviço ID %s: %v", id, err)
 		c.JSON(http.StatusNotFound, gin.H{"error": "Serviço não encontrado"})
 		return
 	}
 
 	// Handle nullable fields
+	if tipo != nil {
+		s.Tipo = *tipo
+	} else {
+		s.Tipo = "servico" // default
+	}
 	if descricao != nil {
 		s.Descricao = *descricao
 	}
