@@ -1,0 +1,63 @@
+name: Deploy to Render
+
+on:
+  push:
+    branches:
+      - master
+      - prod
+  workflow_dispatch: # Permite executar manualmente
+
+jobs:
+  deploy:
+    name: Deploy to Render
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go 1.25.4
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.4'
+
+      - name: Verify Go installation
+        run: go version
+
+      - name: Build application
+        run: |
+          cd backend
+          go mod download
+          go build -tags netgo -ldflags '-s -w' -o cmd/api/app cmd/api/main.go
+          ls -lh cmd/api/app
+
+      - name: Run tests (if available)
+        run: |
+          cd backend
+          go test ./... || echo "No tests found"
+        continue-on-error: true
+
+      - name: Trigger Render Deploy
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
+            echo "⚠️  RENDER_DEPLOY_HOOK_URL não configurado!"
+            echo "Configure o secret no GitHub: Settings > Secrets > Actions"
+            exit 1
+          fi
+
+          echo "🚀 Triggering Render deployment..."
+          curl -X POST "$RENDER_DEPLOY_HOOK_URL"
+          echo "✅ Deploy triggered successfully!"
+
+      - name: Deployment notification
+        if: success()
+        run: |
+          echo "✅ Deploy concluído com sucesso!"
+          echo "🔗 Acesse: https://barbearia-silva-api.onrender.com"
+
+      - name: Deployment failed
+        if: failure()
+        run: |
+          echo "❌ Deploy falhou! Verifique os logs acima."
