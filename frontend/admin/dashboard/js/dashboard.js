@@ -1959,31 +1959,46 @@ async function abrirComandaAgendamento(agendamentoId, clienteNome, barbeiroId) {
             return;
         }
 
-        // Buscar dados do serviço (usar servicoID em camelCase)
-        const servicoResponse = await fetch(`/api/v1/servicos/${agendamento.servicoID}`);
-        if (!servicoResponse.ok) {
-            throw new Error('Serviço não encontrado');
+        // Tentar buscar dados do serviço (pode não existir mais)
+        let servico = null;
+        if (agendamento.servicoID) {
+            try {
+                const servicoResponse = await fetch(`/api/v1/servicos/${agendamento.servicoID}`);
+                if (servicoResponse.ok) {
+                    servico = await servicoResponse.json();
+                } else {
+                    console.warn(`Serviço ID ${agendamento.servicoID} não encontrado (pode ter sido deletado)`);
+                    showToast('Serviço do agendamento não encontrado. Você pode adicionar itens manualmente.', 'warning');
+                }
+            } catch (err) {
+                console.error('Erro ao buscar serviço:', err);
+            }
         }
-        const servico = await servicoResponse.json();
 
         agendamentoComandaAtual = {
             id: agendamentoId,
             clienteNome: clienteNome,
             barbeiroId: barbeiroId,
-            servico: {
+            servico: servico ? {
                 id: servico.id,
                 nome: servico.nome,
                 preco: servico.preco
-            },
+            } : null,
             itens: [],
-            total: servico.preco
+            total: servico ? servico.preco : 0
         };
 
         // Preencher informações
         document.getElementById('comanda-agend-cliente').textContent = clienteNome;
         document.getElementById('comanda-agend-id').textContent = agendamentoId;
-        document.getElementById('comanda-agend-servico').textContent = servico.nome;
-        document.getElementById('comanda-agend-servico-preco').textContent = servico.preco.toFixed(2);
+
+        if (servico) {
+            document.getElementById('comanda-agend-servico').textContent = servico.nome;
+            document.getElementById('comanda-agend-servico-preco').textContent = servico.preco.toFixed(2);
+        } else {
+            document.getElementById('comanda-agend-servico').textContent = 'Serviço não disponível';
+            document.getElementById('comanda-agend-servico-preco').textContent = '0.00';
+        }
 
         // Carregar produtos disponíveis
         await carregarProdutosComanda();
@@ -2136,8 +2151,8 @@ async function finalizarComandaAgendamento() {
 
         // Criar comanda no backend
         const comandaData = {
-            cliente_nome: agendamentoComandaAtual.clienteNome,
-            barbeiro_id: agendamentoComandaAtual.barbeiroId
+            clienteNome: agendamentoComandaAtual.clienteNome,
+            barbeiroId: agendamentoComandaAtual.barbeiroId
         };
 
         const createResponse = await fetch('/api/v1/comandas', {
@@ -2152,29 +2167,31 @@ async function finalizarComandaAgendamento() {
 
         const { id: comandaId } = await createResponse.json();
 
-        // Adicionar serviço agendado como primeiro item
-        const servicoItem = {
-            tipo: 'servico',
-            item_id: agendamentoComandaAtual.servico.id,
-            nome: agendamentoComandaAtual.servico.nome,
-            quantidade: 1,
-            preco_unitario: agendamentoComandaAtual.servico.preco
-        };
+        // Adicionar serviço agendado como primeiro item (se existir)
+        if (agendamentoComandaAtual.servico) {
+            const servicoItem = {
+                tipo: 'servico',
+                itemId: agendamentoComandaAtual.servico.id,
+                nome: agendamentoComandaAtual.servico.nome,
+                quantidade: 1,
+                precoUnitario: agendamentoComandaAtual.servico.preco
+            };
 
-        await fetch(`/api/v1/comandas/${comandaId}/itens`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(servicoItem)
-        });
+            await fetch(`/api/v1/comandas/${comandaId}/itens`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(servicoItem)
+            });
+        }
 
         // Adicionar produtos extras
         for (const item of agendamentoComandaAtual.itens) {
             const produtoItem = {
                 tipo: 'produto',
-                item_id: item.id,
+                itemId: item.id,
                 nome: item.nome,
                 quantidade: item.quantidade,
-                preco_unitario: item.preco
+                precoUnitario: item.preco
             };
 
             await fetch(`/api/v1/comandas/${comandaId}/itens`, {
@@ -2186,8 +2203,8 @@ async function finalizarComandaAgendamento() {
 
         // Fechar comanda
         const fecharData = {
-            forma_pagamento: formaPagamento.metodo,
-            observacoes_pgto: formaPagamento.observacoes || ''
+            formaPagamento: formaPagamento.metodo,
+            observacoesPgto: formaPagamento.observacoes || ''
         };
 
         const fecharResponse = await fetch(`/api/v1/comandas/${comandaId}/fechar`, {

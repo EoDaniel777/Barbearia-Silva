@@ -333,8 +333,8 @@ function initNovaComandaModal() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    cliente_nome: clienteNome,
-                    barbeiro_id: parseInt(barbeiroId)
+                    clienteNome: clienteNome,
+                    barbeiroId: parseInt(barbeiroId)
                 })
             });
 
@@ -349,10 +349,10 @@ function initNovaComandaModal() {
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             tipo: 'servico',
-                            item_id: servicoAgendado.id,
+                            itemId: servicoAgendado.id,
                             nome: servicoAgendado.nome,
                             quantidade: 1,
-                            preco_unitario: servicoAgendado.preco
+                            precoUnitario: servicoAgendado.preco
                         })
                     });
                     showToast(`Comanda aberta com ${servicoAgendado.nome} incluído! 💈`, 'success');
