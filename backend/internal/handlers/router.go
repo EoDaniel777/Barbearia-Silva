@@ -108,6 +108,7 @@ func SetupRouter() *gin.Engine {
 		servicos := v1.Group("/servicos")
 		{
 			servicos.GET("", servicoHandler.List)
+			servicos.GET("/:id", servicoHandler.Get)
 			servicos.POST("", servicoHandler.Create)
 			servicos.PUT("/:id", servicoHandler.Update)
 			servicos.DELETE("/:id", servicoHandler.Delete)

@@ -1956,7 +1956,18 @@ async function abrirComandaAgendamento(agendamentoId, clienteNome, barbeiroId) {
             return;
         }
 
-        // Tentar buscar dados do serviço (pode não existir mais)
+        // Validar status do agendamento
+        if (agendamento.status === 'cancelado') {
+            showToast('Agendamento cancelado. Não é possível abrir comanda.', 'error');
+            return;
+        }
+
+        if (agendamento.status === 'concluido') {
+            showToast('Agendamento já foi concluído. Use a aba "Comandas" para gerenciar comandas.', 'info');
+            return;
+        }
+
+        // Buscar dados do serviço - OBRIGATÓRIO para abrir comanda
         let servico = null;
         if (agendamento.servicoID) {
             try {
@@ -1964,38 +1975,39 @@ async function abrirComandaAgendamento(agendamentoId, clienteNome, barbeiroId) {
                 if (servicoResponse.ok) {
                     servico = await servicoResponse.json();
                 } else {
-                    console.warn(`Serviço ID ${agendamento.servicoID} não encontrado (pode ter sido deletado)`);
-                    showToast('Serviço do agendamento não encontrado. Você pode adicionar itens manualmente.', 'warning');
+                    console.warn(`Serviço ID ${agendamento.servicoID} não encontrado (deletado ou inativo)`);
+                    showToast('Serviço do agendamento não está mais disponível. Use a aba "Comandas" para criar uma nova comanda.', 'warning');
+                    return; // NÃO abre modal se serviço não existe
                 }
             } catch (err) {
                 console.error('Erro ao buscar serviço:', err);
+                showToast('Erro ao buscar serviço. Tente novamente.', 'error');
+                return;
             }
+        } else {
+            showToast('Agendamento sem serviço vinculado. Use a aba "Comandas" para criar uma nova comanda.', 'warning');
+            return;
         }
 
+        // Se chegou aqui, agendamento é válido e serviço existe
         agendamentoComandaAtual = {
             id: agendamentoId,
             clienteNome: clienteNome,
             barbeiroId: barbeiroId,
-            servico: servico ? {
+            servico: {
                 id: servico.id,
                 nome: servico.nome,
                 preco: servico.preco
-            } : null,
+            },
             itens: [],
-            total: servico ? servico.preco : 0
+            total: servico.preco
         };
 
         // Preencher informações
         document.getElementById('comanda-agend-cliente').textContent = clienteNome;
         document.getElementById('comanda-agend-id').textContent = agendamentoId;
-
-        if (servico) {
-            document.getElementById('comanda-agend-servico').textContent = servico.nome;
-            document.getElementById('comanda-agend-servico-preco').textContent = servico.preco.toFixed(2);
-        } else {
-            document.getElementById('comanda-agend-servico').textContent = 'Serviço não disponível';
-            document.getElementById('comanda-agend-servico-preco').textContent = '0.00';
-        }
+        document.getElementById('comanda-agend-servico').textContent = servico.nome;
+        document.getElementById('comanda-agend-servico-preco').textContent = servico.preco.toFixed(2);
 
         // Carregar produtos disponíveis
         await carregarProdutosComanda();
@@ -2067,7 +2079,8 @@ function adicionarProdutoAgendamento() {
 
     // Recalcular total (serviço + produtos)
     const totalProdutos = agendamentoComandaAtual.itens.reduce((sum, item) => sum + item.subtotal, 0);
-    agendamentoComandaAtual.total = agendamentoComandaAtual.servico.preco + totalProdutos;
+    const servicoPreco = agendamentoComandaAtual.servico ? agendamentoComandaAtual.servico.preco : 0;
+    agendamentoComandaAtual.total = servicoPreco + totalProdutos;
 
     // Atualizar lista
     atualizarListaItensAgendamento();
@@ -2082,7 +2095,8 @@ function adicionarProdutoAgendamento() {
 function removerItemAgendamento(index) {
     agendamentoComandaAtual.itens.splice(index, 1);
     const totalProdutos = agendamentoComandaAtual.itens.reduce((sum, item) => sum + item.subtotal, 0);
-    agendamentoComandaAtual.total = agendamentoComandaAtual.servico.preco + totalProdutos;
+    const servicoPreco = agendamentoComandaAtual.servico ? agendamentoComandaAtual.servico.preco : 0;
+    agendamentoComandaAtual.total = servicoPreco + totalProdutos;
     atualizarListaItensAgendamento();
 }
 
@@ -2099,7 +2113,8 @@ function atualizarListaItensAgendamento() {
         totalProdutosEl.textContent = totalProdutos.toFixed(2);
     }
     if (servicoPrecoResumoEl) {
-        servicoPrecoResumoEl.textContent = agendamentoComandaAtual.servico.preco.toFixed(2);
+        const servicoPreco = agendamentoComandaAtual.servico ? agendamentoComandaAtual.servico.preco : 0;
+        servicoPrecoResumoEl.textContent = servicoPreco.toFixed(2);
     }
     totalEl.textContent = agendamentoComandaAtual.total.toFixed(2);
 

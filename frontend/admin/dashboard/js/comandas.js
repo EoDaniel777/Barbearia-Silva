@@ -670,12 +670,14 @@ function initComandasModals() {
     closeGerenciarBtn?.addEventListener('click', () => {
         gerenciarModal.classList.remove('active');
         comandaAtual = null;
+        loadComandas(); // Atualizar lista ao fechar
     });
 
     gerenciarModal?.addEventListener('click', (e) => {
         if (e.target === gerenciarModal) {
             gerenciarModal.classList.remove('active');
             comandaAtual = null;
+            loadComandas(); // Atualizar lista ao fechar
         }
     });
 
