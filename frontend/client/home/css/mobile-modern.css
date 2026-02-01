@@ -7,17 +7,35 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Secular+One&display=swap');
 :root {
-    --primary-color: #0D7CA4;
-    --primary-dark: #0a6282;
-    --bg-dark: #090a0c;
+    /* === CORES PADRÃO (podem ser sobrescritas pela personalização) === */
+    --cor-primaria: #0D7CA4;
+    --cor-secundaria: #0a6282;
+    --cor-destaque: #D4AF37;
+    --cor-header: #090a0c;
+    --cor-texto: #1C1C1E;
+    --cor-texto-claro: #FFFFFF;
+
+    /* === CORES LEGADAS (manter compatibilidade) === */
+    --primary-color: var(--cor-primaria);
+    --primary-dark: var(--cor-secundaria);
+    --primary: var(--cor-primaria);
+    --secondary: var(--cor-secundaria);
+    --accent: var(--cor-destaque);
+
+    /* === CORES DE FUNDO === */
+    --bg-dark: var(--cor-header);
     --bg-dark-secondary: #090a0c;
     --bg-dark-card: #2C2C2E;
     --bg-light: #FFFFFF;
     --bg-light-secondary: #F5F5F7;
     --bg-light-card: #FFFFFF;
-    --text-light: #FFFFFF;
-    --text-dark: #090a0c;
+
+    /* === CORES DE TEXTO === */
+    --text-light: var(--cor-texto-claro);
+    --text-dark: var(--cor-texto);
     --text-gray: #8E8E93;
+
+    /* === LAYOUT === */
     --border-radius: 20px;
     --border-radius-sm: 12px;
     --spacing-xs: 8px;

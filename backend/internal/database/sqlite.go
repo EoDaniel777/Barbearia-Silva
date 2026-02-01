@@ -61,6 +61,11 @@ func InitSQLite() error {
 		return err
 	}
 
+	// Inserir personalização padrão
+	if err := insertDefaultPersonalizacao(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -173,6 +178,87 @@ func createTables() error {
 		endereco TEXT,
 		instagram TEXT,
 		email TEXT,
+		criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+		atualizado_em DATETIME DEFAULT CURRENT_TIMESTAMP
+	);
+
+	CREATE TABLE IF NOT EXISTS personalizacao (
+		id INTEGER PRIMARY KEY CHECK(id = 1),
+		-- Esquema de Cores
+		cor_primaria TEXT DEFAULT '#0D7CA4',
+		cor_secundaria TEXT DEFAULT '#0a6282',
+		cor_destaque TEXT DEFAULT '#D4AF37',
+		cor_header TEXT DEFAULT '#090A0C',
+		cor_texto TEXT DEFAULT '#1C1C1E',
+		cor_texto_claro TEXT DEFAULT '#FFFFFF',
+		-- Tipografia
+		fonte_familia TEXT DEFAULT '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif',
+		fonte_tamanho TEXT DEFAULT '16px',
+		-- Logos
+		logo_escuro TEXT DEFAULT '',
+		logo_claro TEXT DEFAULT '',
+		favicon TEXT DEFAULT '',
+		-- Banner/Hero
+		banner_imagem TEXT DEFAULT '',
+		banner_titulo TEXT DEFAULT 'Barbearia Silva',
+		banner_subtitulo TEXT DEFAULT 'Estilo e Qualidade',
+		banner_altura TEXT DEFAULT 'medio',
+		-- Redes Sociais
+		whatsapp TEXT DEFAULT '',
+		whatsapp_msg TEXT DEFAULT 'Olá! Gostaria de agendar um horário.',
+		whatsapp_float INTEGER DEFAULT 1,
+		instagram TEXT DEFAULT '',
+		facebook TEXT DEFAULT '',
+		tiktok TEXT DEFAULT '',
+		youtube TEXT DEFAULT '',
+		google_maps TEXT DEFAULT '',
+		email TEXT DEFAULT '',
+		telefone TEXT DEFAULT '',
+		endereco_fisico TEXT DEFAULT '',
+		-- Horário de Funcionamento
+		horario_seg_sex TEXT DEFAULT '09:00 - 18:00',
+		horario_sabado TEXT DEFAULT '09:00 - 13:00',
+		horario_domingo_fer TEXT DEFAULT 'Fechado',
+		exibir_horario_home INTEGER DEFAULT 1,
+		exibir_redes_sociais INTEGER DEFAULT 1,
+		-- Textos Personalizados
+		titulo_site TEXT DEFAULT 'Barbearia Silva - Cortes Modernos',
+		descricao_seo TEXT DEFAULT 'Barbearia profissional com cortes modernos e clássicos',
+		palavras_chave TEXT DEFAULT 'barbearia, corte masculino, barba, barbeiro',
+		titulo_home TEXT DEFAULT 'Barbearia Silva',
+		texto_sobre TEXT DEFAULT '',
+		slogan TEXT DEFAULT 'Estilo e Tradição',
+		mensagem_rodape TEXT DEFAULT '',
+		texto_botao_agendar TEXT DEFAULT 'Agendar Horário',
+		-- Configurações de Agendamento
+		intervalo_horarios INTEGER DEFAULT 30,
+		antecedencia_minima INTEGER DEFAULT 2,
+		antecedencia_maxima INTEGER DEFAULT 30,
+		permitir_fora_horario INTEGER DEFAULT 0,
+		confirmacao_auto INTEGER DEFAULT 0,
+		-- Política de Cancelamento
+		tempo_minimo_cancelar INTEGER DEFAULT 24,
+		mensagem_cancelamento TEXT DEFAULT 'Cancelamentos devem ser feitos com pelo menos 24h de antecedência.',
+		penalidade_cancelamento TEXT DEFAULT '',
+		-- Programa de Fidelidade
+		fidelidade_ativo INTEGER DEFAULT 1,
+		fidelidade_qtd_cortes INTEGER DEFAULT 10,
+		fidelidade_tipo_brinde TEXT DEFAULT 'corte',
+		fidelidade_valor_brinde TEXT DEFAULT 'R$ 35,00',
+		fidelidade_validade_dias INTEGER DEFAULT 0,
+		fidelidade_resetar_troca INTEGER DEFAULT 0,
+		-- Tema
+		tema_default TEXT DEFAULT 'escuro',
+		permitir_troca_tema INTEGER DEFAULT 1,
+		-- Outros
+		promocoes_ativas INTEGER DEFAULT 0,
+		exibir_galeria INTEGER DEFAULT 0,
+		notif_email_ativo INTEGER DEFAULT 0,
+		notif_email_destino TEXT DEFAULT '',
+		notif_novo_agendamento INTEGER DEFAULT 1,
+		notif_cancelamento INTEGER DEFAULT 1,
+		notif_horario_proximo INTEGER DEFAULT 1,
+		-- Timestamps
 		criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
 		atualizado_em DATETIME DEFAULT CURRENT_TIMESTAMP
 	);
@@ -305,6 +391,33 @@ func runMigrations() error {
 				log.Println("✓ Tabela servicos migrada com sucesso")
 			}
 		}
+	}
+
+	// Migração: Atualizar campos NULL para strings vazias na tabela personalizacao
+	_, err = DB.Exec(`
+		UPDATE personalizacao SET
+			logo_escuro = COALESCE(logo_escuro, ''),
+			logo_claro = COALESCE(logo_claro, ''),
+			favicon = COALESCE(favicon, ''),
+			banner_imagem = COALESCE(banner_imagem, ''),
+			whatsapp = COALESCE(whatsapp, ''),
+			instagram = COALESCE(instagram, ''),
+			facebook = COALESCE(facebook, ''),
+			tiktok = COALESCE(tiktok, ''),
+			youtube = COALESCE(youtube, ''),
+			google_maps = COALESCE(google_maps, ''),
+			email = COALESCE(email, ''),
+			telefone = COALESCE(telefone, ''),
+			endereco_fisico = COALESCE(endereco_fisico, ''),
+			texto_sobre = COALESCE(texto_sobre, ''),
+			mensagem_rodape = COALESCE(mensagem_rodape, ''),
+			penalidade_cancelamento = COALESCE(penalidade_cancelamento, ''),
+			notif_email_destino = COALESCE(notif_email_destino, '')
+		WHERE id = 1
+	`)
+	// Ignorar erro se não houver registros
+	if err != nil && err.Error() != "no such table: personalizacao" {
+		log.Printf("⚠ Aviso ao atualizar personalizacao: %v", err)
 	}
 
 	log.Println("✓ Migrações executadas com sucesso")
@@ -469,6 +582,33 @@ func insertDefaultConfig() error {
 	}
 
 	log.Println("✓ Configurações padrão criadas")
+	return nil
+}
+
+// insertDefaultPersonalizacao insere personalização padrão
+func insertDefaultPersonalizacao() error {
+	// Verificar se já existe
+	var count int
+	err := DB.QueryRow("SELECT COUNT(*) FROM personalizacao").Scan(&count)
+	if err != nil {
+		return err
+	}
+
+	if count > 0 {
+		log.Println("✓ Personalização já existe")
+		return nil
+	}
+
+	// Inserir personalização padrão
+	_, err = DB.Exec(`
+		INSERT INTO personalizacao (id) VALUES (1)
+	`)
+
+	if err != nil {
+		return err
+	}
+
+	log.Println("✓ Personalização padrão criada")
 	return nil
 }
 

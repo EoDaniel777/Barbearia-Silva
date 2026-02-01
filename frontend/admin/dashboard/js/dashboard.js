@@ -129,7 +129,11 @@ function navigateToPage(page) {
             }
             break;
         case 'galeria':
-            loadGaleria();
+            // Chamar funções de configuração (logo e informações)
+            initLogoUploads();
+            carregarInformacoesBarbearia();
+            initInfoBarbeariaForm();
+            initFontConfig();
             break;
     }
 }
@@ -259,24 +263,26 @@ function displayBarbeiros() {
                         <td>${barber.telefone || '-'}</td>
                         <td>${barber.especialidade || '-'}</td>
                         <td class="table-actions">
-                            <button class="btn-icon edit" onclick="editBarbeiro(${barber.id})" title="Editar dados">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                </svg>
-                            </button>
-                            <button class="btn-icon schedule" onclick="gerenciarHorarios(${barber.id})" title="Gerenciar horários" style="background: var(--success-color);">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <polyline points="12 6 12 12 16 14"></polyline>
-                                </svg>
-                            </button>
-                            <button class="btn-icon delete" onclick="deleteBarbeiro(${barber.id})" title="Excluir">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="3 6 5 6 21 6"></polyline>
-                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                </svg>
-                            </button>
+                            <div class="div-table-actions">
+                                <button class="btn-icon edit" onclick="editBarbeiro(${barber.id})" title="Editar dados">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                    </svg>
+                                </button>
+                                <button class="btn-icon schedule" onclick="gerenciarHorarios(${barber.id})" title="Gerenciar horários" style="background: var(--success-color);">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                </button>
+                                <button class="btn-icon delete" onclick="deleteBarbeiro(${barber.id})" title="Excluir">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 `).join('')}
@@ -288,6 +294,22 @@ function displayBarbeiros() {
 // Barber Form
 document.getElementById('barber-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    // Verificar limite de barbeiros (máximo 2 no plano atual)
+    try {
+        const checkResponse = await fetch('/api/v1/barbeiros');
+        if (checkResponse.ok) {
+            const barbeiros = await checkResponse.json();
+            const barbeirosAtivos = barbeiros.filter(b => b.ativo);
+
+            if (barbeirosAtivos.length >= 2) {
+                showToast('⚠️ Limite atingido! Você pode cadastrar no máximo 2 barbeiros no plano atual. Faça upgrade para adicionar mais profissionais.', 'warning');
+                return; // Não permite cadastrar
+            }
+        }
+    } catch (error) {
+        console.error('Erro ao verificar limite de barbeiros:', error);
+    }
 
     const formData = {
         nome: document.getElementById('barber-name').value,
@@ -795,23 +817,11 @@ async function deleteServico(id) {
 }
 
 // ===================================
-// GALERIA PAGE
+// CONFIGURAÇÕES / GALERIA PAGE
 // ===================================
-
-function loadGaleria() {
-    // Gallery functionality - basic implementation
-    const container = document.getElementById('gallery-grid');
-    container.innerHTML = '<p class="empty-message">Sistema de galeria em desenvolvimento</p>';
-
-    // Inicializar upload de logos
-    initLogoUploads();
-
-    // Carregar informações da barbearia
-    carregarInformacoesBarbearia();
-
-    // Inicializar form de informações
-    initInfoBarbeariaForm();
-}
+// Nota: A função loadGaleria foi removida porque o HTML da galeria foi removido.
+// As funções de upload de logos e informações da barbearia agora são chamadas
+// diretamente no navigateToPage quando a página 'galeria' é acessada.
 
 // ===================================
 // INFORMAÇÕES DA BARBEARIA
@@ -824,7 +834,6 @@ async function carregarInformacoesBarbearia() {
 
         document.getElementById('info-nome').value = data.nome || '';
         document.getElementById('info-telefone').value = data.telefone || '';
-        document.getElementById('info-whatsapp').value = data.whatsapp || '';
         document.getElementById('info-endereco').value = data.endereco || '';
         document.getElementById('info-instagram').value = data.instagram || '';
         document.getElementById('info-email').value = data.email || '';
@@ -842,7 +851,6 @@ function initInfoBarbeariaForm() {
         const data = {
             nome: document.getElementById('info-nome').value,
             telefone: document.getElementById('info-telefone').value,
-            whatsapp: document.getElementById('info-whatsapp').value,
             endereco: document.getElementById('info-endereco').value,
             instagram: document.getElementById('info-instagram').value,
             email: document.getElementById('info-email').value
@@ -893,6 +901,122 @@ function hideInfoStatus() {
         statusEl.style.display = 'none';
     }
 }
+
+// ===================================
+// CONFIGURAÇÃO DE FONTES
+// ===================================
+
+function initFontConfig() {
+    const form = document.getElementById('font-config-form');
+    const fontFamilySelect = document.getElementById('font-family-select');
+    const fontSizeSelect = document.getElementById('font-size-select');
+    const fontPreview = document.getElementById('font-preview');
+    const resetBtn = document.getElementById('reset-font-btn');
+
+    // Carregar configurações salvas
+    const savedFont = localStorage.getItem('customFont');
+    const savedSize = localStorage.getItem('customFontSize');
+
+    if (savedFont) {
+        fontFamilySelect.value = savedFont;
+    }
+    if (savedSize) {
+        fontSizeSelect.value = savedSize;
+    }
+
+    // Atualizar preview quando mudar seleção
+    function updatePreview() {
+        const selectedFont = fontFamilySelect.value;
+        const selectedSize = fontSizeSelect.value;
+
+        fontPreview.style.fontFamily = selectedFont;
+        fontPreview.style.fontSize = selectedSize;
+    }
+
+    fontFamilySelect?.addEventListener('change', updatePreview);
+    fontSizeSelect?.addEventListener('change', updatePreview);
+
+    // Aplicar configuração inicial ao preview
+    updatePreview();
+
+    // Aplicar fonte ao sistema
+    form?.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const selectedFont = fontFamilySelect.value;
+        const selectedSize = fontSizeSelect.value;
+
+        // Salvar no localStorage
+        localStorage.setItem('customFont', selectedFont);
+        localStorage.setItem('customFontSize', selectedSize);
+
+        // Aplicar no documento
+        document.documentElement.style.setProperty('--custom-font-family', selectedFont);
+        document.documentElement.style.setProperty('--custom-font-size', selectedSize);
+        document.body.style.fontFamily = selectedFont;
+        document.body.style.fontSize = selectedSize;
+
+        showFontStatus('Fonte aplicada com sucesso! Recarregue a página para ver as mudanças em todo o sistema.', 'success');
+        setTimeout(() => hideFontStatus(), 5000);
+    });
+
+    // Restaurar padrão
+    resetBtn?.addEventListener('click', () => {
+        localStorage.removeItem('customFont');
+        localStorage.removeItem('customFontSize');
+
+        fontFamilySelect.value = "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif";
+        fontSizeSelect.value = "16px";
+
+        document.documentElement.style.removeProperty('--custom-font-family');
+        document.documentElement.style.removeProperty('--custom-font-size');
+        document.body.style.fontFamily = '';
+        document.body.style.fontSize = '';
+
+        updatePreview();
+
+        showFontStatus('Fonte restaurada para o padrão do sistema.', 'success');
+        setTimeout(() => hideFontStatus(), 3000);
+    });
+}
+
+function showFontStatus(message, type) {
+    const statusEl = document.getElementById('font-status');
+    if (!statusEl) return;
+
+    statusEl.textContent = message;
+    statusEl.className = 'alert';
+
+    if (type === 'success') {
+        statusEl.classList.add('success');
+    } else if (type === 'error') {
+        statusEl.classList.add('error');
+    }
+
+    statusEl.style.display = 'block';
+}
+
+function hideFontStatus() {
+    const statusEl = document.getElementById('font-status');
+    if (statusEl) {
+        statusEl.style.display = 'none';
+    }
+}
+
+// Aplicar fonte customizada ao carregar a página
+document.addEventListener('DOMContentLoaded', () => {
+    const savedFont = localStorage.getItem('customFont');
+    const savedSize = localStorage.getItem('customFontSize');
+
+    if (savedFont) {
+        document.documentElement.style.setProperty('--custom-font-family', savedFont);
+        document.body.style.fontFamily = savedFont;
+    }
+    if (savedSize) {
+        document.documentElement.style.setProperty('--custom-font-size', savedSize);
+        document.body.style.fontSize = savedSize;
+    }
+});
 
 // ===================================
 // LOGO UPLOAD FUNCTIONALITY
@@ -2462,6 +2586,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initPerfilAdminModal();
     initEditServicoModal();
     initComandaAgendamentoModal();
+    initPersonalizacaoTabs();
+    initPersonalizacao();
+    initBannerImageUpload();
 });
 
 // ===================================
@@ -2484,4 +2611,397 @@ function initComandaAgendamentoModal() {
             }
         });
     }
+}
+
+// ===================================
+// PERSONALIZAÇÃO DO SISTEMA
+// ===================================
+
+/**
+ * Inicializa as tabs de personalização
+ */
+function initPersonalizacaoTabs() {
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetTab = btn.dataset.tab;
+
+            // Remove active de todos os botões e conteúdos
+            tabButtons.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => {
+                c.style.display = 'none';
+                c.classList.remove('active');
+            });
+
+            // Ativa o botão e conteúdo selecionado
+            btn.classList.add('active');
+            const targetContent = document.querySelector(`.tab-content[data-tab="${targetTab}"]`);
+            if (targetContent) {
+                targetContent.style.display = 'block';
+                targetContent.classList.add('active');
+            }
+        });
+    });
+}
+
+/**
+ * Inicializa o sistema de personalização
+ */
+async function initPersonalizacao() {
+    console.log('[PERSONALIZAÇÃO] Inicializando...');
+
+    // Carregar configurações atuais
+    await loadPersonalizacao();
+
+    // Form submit
+    const form = document.getElementById('personalizacao-form');
+    if (form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await savePersonalizacao();
+        });
+    }
+
+    // Botão de reset
+    const resetBtn = document.getElementById('reset-personalizacao-btn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', async () => {
+            if (confirm('Tem certeza que deseja restaurar todas as configurações para o padrão? Esta ação não pode ser desfeita.')) {
+                await resetPersonalizacao();
+            }
+        });
+    }
+
+    console.log('[PERSONALIZAÇÃO] ✓ Inicializado');
+}
+
+/**
+ * Carrega as configurações de personalização do backend
+ */
+async function loadPersonalizacao() {
+    try {
+        console.log('[PERSONALIZAÇÃO] Carregando configurações...');
+
+        const response = await fetch('/api/v1/personalizacao');
+        if (!response.ok) {
+            throw new Error('Erro ao carregar configurações');
+        }
+
+        const data = await response.json();
+        console.log('[PERSONALIZAÇÃO] Configurações carregadas:', data);
+
+        // Preencher campos do formulário
+        populatePersonalizacaoForm(data);
+
+        console.log('[PERSONALIZAÇÃO] ✓ Formulário preenchido');
+    } catch (error) {
+        console.error('[PERSONALIZAÇÃO] Erro ao carregar:', error);
+        showPersonalizacaoStatus('Erro ao carregar configurações', 'error');
+    }
+}
+
+/**
+ * Preenche o formulário com os dados de personalização
+ */
+function populatePersonalizacaoForm(data) {
+    // Cores
+    setFieldValue('cor-primaria', data.cor_primaria);
+    setFieldValue('cor-secundaria', data.cor_secundaria);
+    setFieldValue('cor-destaque', data.cor_destaque);
+    setFieldValue('cor-header', data.cor_header);
+
+    // Redes Sociais
+    setFieldValue('instagram', data.instagram);
+    setFieldValue('facebook', data.facebook);
+    setFieldValue('tiktok', data.tiktok);
+    setFieldValue('youtube', data.youtube);
+    setCheckboxValue('exibir-redes-sociais', data.exibir_redes_sociais);
+
+    // Fidelidade
+    setCheckboxValue('fidelidade-ativo', data.fidelidade_ativo);
+    setFieldValue('fidelidade-qtd', data.fidelidade_qtd_cortes);
+    setFieldValue('fidelidade-tipo', data.fidelidade_tipo_brinde);
+    setFieldValue('fidelidade-valor', data.fidelidade_valor_brinde);
+    setFieldValue('fidelidade-validade', data.fidelidade_validade_dias);
+    setCheckboxValue('fidelidade-resetar', data.fidelidade_resetar_troca);
+
+    // Textos
+    setFieldValue('titulo-site', data.titulo_site);
+    setFieldValue('slogan', data.slogan);
+    setFieldValue('texto-botao-agendar', data.texto_botao_agendar);
+    setFieldValue('mensagem-rodape', data.mensagem_rodape);
+    setFieldValue('descricao-seo', data.descricao_seo);
+
+    // Banner
+    setFieldValue('banner-titulo', data.banner_titulo);
+    setFieldValue('banner-subtitulo', data.banner_subtitulo);
+    setFieldValue('banner-altura', data.banner_altura);
+
+    // Banner Image
+    if (data.banner_imagem && data.banner_imagem.length > 0) {
+        bannerImageBase64 = data.banner_imagem;
+        const previewImg = document.getElementById('banner-preview-img');
+        const placeholder = document.getElementById('banner-upload-placeholder');
+        const removeBtn = document.getElementById('banner-remove-image');
+
+        if (previewImg && placeholder) {
+            previewImg.src = data.banner_imagem;
+            previewImg.style.display = 'block';
+            placeholder.style.display = 'none';
+
+            if (removeBtn) {
+                removeBtn.style.display = 'inline-block';
+            }
+        }
+    }
+}
+
+/**
+ * Define valor em um campo do formulário
+ */
+function setFieldValue(id, value) {
+    const field = document.getElementById(id);
+    if (field && value !== null && value !== undefined) {
+        field.value = value;
+    }
+}
+
+/**
+ * Define valor em um checkbox
+ */
+function setCheckboxValue(id, value) {
+    const checkbox = document.getElementById(id);
+    if (checkbox) {
+        checkbox.checked = Boolean(value);
+    }
+}
+
+/**
+ * Salva as configurações de personalização
+ */
+async function savePersonalizacao() {
+    try {
+        console.log('[PERSONALIZAÇÃO] Salvando configurações...');
+
+        const formData = {};
+
+        // Coletar dados do formulário
+        const form = document.getElementById('personalizacao-form');
+        const inputs = form.querySelectorAll('input, select, textarea');
+
+        inputs.forEach(input => {
+            const name = input.name;
+            if (!name) return;
+
+            if (input.type === 'checkbox') {
+                formData[name] = input.checked;
+            } else if (input.type === 'number') {
+                formData[name] = parseInt(input.value) || 0;
+            } else if (input.type === 'file') {
+                // Pular inputs de arquivo, serão tratados separadamente
+                return;
+            } else {
+                formData[name] = input.value;
+            }
+        });
+
+        // Adicionar imagem de banner se houver
+        if (bannerImageBase64 && bannerImageBase64.length > 0) {
+            formData.banner_imagem = bannerImageBase64;
+        }
+
+        console.log('[PERSONALIZAÇÃO] Dados a enviar:', formData);
+
+        const response = await fetch('/api/v1/personalizacao', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao salvar configurações');
+        }
+
+        const result = await response.json();
+        console.log('[PERSONALIZAÇÃO] ✓ Salvo com sucesso:', result);
+
+        showPersonalizacaoStatus('✓ Configurações salvas com sucesso!', 'success');
+        showToast('Personalização atualizada!', 'success');
+
+        // Recarregar configurações
+        setTimeout(() => loadPersonalizacao(), 1000);
+
+    } catch (error) {
+        console.error('[PERSONALIZAÇÃO] Erro ao salvar:', error);
+        showPersonalizacaoStatus('✗ Erro ao salvar configurações', 'error');
+        showToast('Erro ao salvar personalização', 'error');
+    }
+}
+
+/**
+ * Restaura as configurações padrão
+ */
+async function resetPersonalizacao() {
+    try {
+        console.log('[PERSONALIZAÇÃO] Restaurando configurações padrão...');
+
+        const response = await fetch('/api/v1/personalizacao/reset', {
+            method: 'DELETE'
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao resetar configurações');
+        }
+
+        const result = await response.json();
+        console.log('[PERSONALIZAÇÃO] ✓ Restaurado:', result);
+
+        showPersonalizacaoStatus('✓ Configurações restauradas para o padrão!', 'success');
+        showToast('Configurações restauradas!', 'success');
+
+        // Recarregar configurações
+        setTimeout(() => loadPersonalizacao(), 1000);
+
+    } catch (error) {
+        console.error('[PERSONALIZAÇÃO] Erro ao resetar:', error);
+        showPersonalizacaoStatus('✗ Erro ao restaurar configurações', 'error');
+        showToast('Erro ao restaurar configurações', 'error');
+    }
+}
+
+/**
+ * Exibe mensagem de status na seção de personalização
+ */
+function showPersonalizacaoStatus(message, type = 'info') {
+    const statusDiv = document.getElementById('personalizacao-status');
+    if (!statusDiv) return;
+
+    statusDiv.className = `alert ${type}`;
+    statusDiv.textContent = message;
+    statusDiv.style.display = 'block';
+
+    setTimeout(() => {
+        statusDiv.style.display = 'none';
+    }, 5000);
+}
+
+// ===================================
+// UPLOAD DE IMAGEM DE BANNER
+// ===================================
+
+let bannerImageBase64 = '';
+
+/**
+ * Inicializa o upload de imagem de banner
+ */
+function initBannerImageUpload() {
+    const uploadArea = document.getElementById('banner-upload-area');
+    const fileInput = document.getElementById('banner-image-input');
+    const previewImg = document.getElementById('banner-preview-img');
+    const placeholder = document.getElementById('banner-upload-placeholder');
+    const removeBtn = document.getElementById('banner-remove-image');
+
+    if (!uploadArea || !fileInput || !previewImg || !placeholder) {
+        console.log('[BANNER IMAGE] Elementos não encontrados');
+        return;
+    }
+
+    console.log('[BANNER IMAGE] Inicializando upload de imagem');
+
+    // Click para selecionar arquivo
+    uploadArea.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    // Drag and drop
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = 'var(--primary-color)';
+        uploadArea.style.background = 'rgba(13, 124, 164, 0.05)';
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.style.borderColor = '#E5E5EA';
+        uploadArea.style.background = '#F9FAFB';
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = '#E5E5EA';
+        uploadArea.style.background = '#F9FAFB';
+
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            processarImagemBanner(file);
+        }
+    });
+
+    // Seleção de arquivo
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            processarImagemBanner(file);
+        }
+    });
+
+    // Remover imagem
+    if (removeBtn) {
+        removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            bannerImageBase64 = '';
+            previewImg.style.display = 'none';
+            previewImg.src = '';
+            placeholder.style.display = 'block';
+            removeBtn.style.display = 'none';
+            fileInput.value = '';
+            console.log('[BANNER IMAGE] Imagem removida');
+        });
+    }
+
+    console.log('[BANNER IMAGE] ✓ Upload inicializado');
+}
+
+/**
+ * Processa a imagem de banner selecionada
+ */
+function processarImagemBanner(file) {
+    console.log('[BANNER IMAGE] Processando imagem:', file.name, file.size);
+
+    // Validar tamanho (máx 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+        showToast('Imagem muito grande! Máximo 2MB', 'error');
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+        bannerImageBase64 = e.target.result;
+
+        const previewImg = document.getElementById('banner-preview-img');
+        const placeholder = document.getElementById('banner-upload-placeholder');
+        const removeBtn = document.getElementById('banner-remove-image');
+
+        if (previewImg && placeholder) {
+            previewImg.src = bannerImageBase64;
+            previewImg.style.display = 'block';
+            placeholder.style.display = 'none';
+
+            if (removeBtn) {
+                removeBtn.style.display = 'inline-block';
+            }
+        }
+
+        console.log('[BANNER IMAGE] ✓ Imagem processada, tamanho:', bannerImageBase64.length);
+        showToast('Imagem carregada! Clique em Salvar para aplicar', 'success');
+    };
+
+    reader.onerror = () => {
+        console.error('[BANNER IMAGE] Erro ao ler arquivo');
+        showToast('Erro ao carregar imagem', 'error');
+    };
+
+    reader.readAsDataURL(file);
 }
