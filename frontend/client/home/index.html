@@ -8,6 +8,9 @@
     <title>Barbearia Silva - Cortes Modernos e Profissionais</title>
     <link rel="stylesheet" href="/css/mobile-modern.css">
 
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <!-- Theme Manager -->
     <script src="/js/theme-manager.js"></script>
     <!-- Auth Client -->
@@ -134,10 +137,13 @@
     <footer>
         <img src="/img/logoDark.jpeg?v=1" id="footerLogo" alt="Barbearia Silva" class="footer-logo">
         <div class="footer-info">
-            <p>📞 (61) 00000-0000</p>
-            <p>📍 Morro Azul - Quadra 11 Conjunto A</p>
-            <p>📱 <a href="https://www.instagram.com/bradock_baber/" target="_blank" rel="noopener noreferrer">@bradock_baber</a></p>
-            <p style="margin-top: 20px; font-size: 12px;">&copy; 2025 Barbearia Silva - Todos os direitos reservados</p>
+            <p>📞 <span id="footer-telefone">(61) 00000-0000</span></p>
+            <p>📍 <span id="footer-endereco">Morro Azul - Quadra 11 Conjunto A</span></p>
+
+            <!-- Redes Sociais (substituindo @bradock_baber) -->
+            <div class="social-media" style="margin: 21px 0 16px 0;"></div>
+
+            <p style="margin-top: 20px; font-size: 12px;" id="footer-copyright">&copy; 2026 Barbearia Silva - Todos os direitos reservados</p>
         </div>
     </footer>
 
@@ -162,98 +168,6 @@
     </nav>
 
     <script>
-        // Load Services from API
-        async function loadServices() {
-            const container = document.getElementById('services-container');
-
-            try {
-                const response = await fetch('/api/v1/servicos');
-
-                if (!response.ok) {
-                    throw new Error('Erro ao carregar serviços');
-                }
-
-                const servicos = await response.json();
-
-                // Map service names to images
-                const imageMap = {
-                    'Corte': '/img/meta.jpg',
-                    'Barba': '/img/barba.png',
-                    'Kids': '/img/kids.jpg',
-                    'Corte + Barba': '/img/meta.jpg'
-                };
-
-                // Generate cards HTML
-                container.innerHTML = servicos.map(servico => `
-                    <div class="modern-card">
-                        <img src="${imageMap[servico.nome] || '/img/meta.jpg'}" alt="${servico.nome}" class="card-image">
-                        <div class="card-content">
-                            <h3 class="card-title">${servico.nome}</h3>
-                            <p class="card-description">${servico.descricao || 'Serviço de qualidade'}</p>
-                            <div class="card-footer">
-                                <span class="card-price">R$ ${servico.preco.toFixed(2).replace('.', ',')}</span>
-                                <span class="card-duration">⏱️ ${servico.duracao} min</span>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-
-            } catch (error) {
-                console.error('Erro ao carregar serviços:', error);
-                container.innerHTML = `
-                    <div class="error-message" style="text-align: center; padding: 40px; color: var(--text-secondary);">
-                        <p>Não foi possível carregar os serviços.</p>
-                        <p style="font-size: 14px; margin-top: 10px;">Por favor, tente novamente mais tarde.</p>
-                    </div>
-                `;
-            }
-        }
-
-        // Load Barbers from API
-        async function loadBarbers() {
-            const container = document.getElementById('barbers-grid');
-
-            try {
-                const response = await fetch('/api/v1/barbeiros');
-
-                if (!response.ok) {
-                    throw new Error('Erro ao carregar barbeiros');
-                }
-
-                const barbeiros = await response.json();
-
-                if (barbeiros.length === 0) {
-                    container.innerHTML = '<p style="text-align: center; color: #888;">Nenhum barbeiro cadastrado.</p>';
-                    return;
-                }
-
-                // Generate barber cards HTML
-                container.innerHTML = barbeiros.map(barbeiro => `
-                    <div class="barber-card">
-                        <div class="barber-photo">
-                            <img src="${barbeiro.foto || '/img/alissonFt.png'}" alt="${barbeiro.nome}">
-                        </div>
-                        <h3 class="barber-name">${barbeiro.nome}</h3>
-                        <p class="barber-role">${barbeiro.especialidade || 'Barbeiro Profissional'}</p>
-                    </div>
-                `).join('');
-
-            } catch (error) {
-                console.error('Erro ao carregar barbeiros:', error);
-                container.innerHTML = `
-                    <div class="error-message" style="text-align: center; padding: 20px; color: var(--text-secondary);">
-                        <p>Não foi possível carregar os barbeiros.</p>
-                    </div>
-                `;
-            }
-        }
-
-        // Load services and barbers on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadServices();
-            loadBarbers();
-        });
-
         /* ===================================
            THEME MANAGER - Sistema Global de Tema
            =================================== */
@@ -281,6 +195,9 @@
             }
         });
     </script>
+
+    <!-- Carregador de Personalização -->
+    <script src="/shared/js/personalizacao-loader.js?v=2"></script>
 </body>
 
 </html>

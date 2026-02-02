@@ -7,6 +7,9 @@
     <title>Serviços - Barbearia Silva</title>
     <link rel="stylesheet" href="/css/mobile-modern.css">
 
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <!-- Theme Manager -->
     <script src="/js/theme-manager.js"></script>
     <!-- Auth Client -->
@@ -44,81 +47,10 @@
 
         <!-- Services Section -->
         <section class="section">
-            <div class="cards-container">
-                <!-- Service Card 1 -->
-                <div class="modern-card">
-                    <img src="/img/meta.jpg" alt="Corte" class="card-image">
-                    <div class="card-content">
-                        <h3 class="card-title">Corte Masculino</h3>
-                        <p class="card-description">Corte profissional com técnicas modernas. Inclui lavagem, corte e finalização</p>
-                        <div class="card-footer">
-                            <span class="card-price">R$ 35</span>
-                            <span class="card-duration">⏱️ 30 min</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Service Card 2 -->
-                <div class="modern-card">
-                    <img src="/img/barba.png" alt="Barba" class="card-image">
-                    <div class="card-content">
-                        <h3 class="card-title">Barba</h3>
-                        <p class="card-description">Design e acabamento com navalha. Inclui toalha quente e hidratação</p>
-                        <div class="card-footer">
-                            <span class="card-price">R$ 35</span>
-                            <span class="card-duration">⏱️ 30 min</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Service Card 3 -->
-                <div class="modern-card">
-                    <img src="/img/kids.jpg" alt="Kids" class="card-image">
-                    <div class="card-content">
-                        <h3 class="card-title">Corte Kids</h3>
-                        <p class="card-description">Corte especial para crianças em ambiente acolhedor</p>
-                        <div class="card-footer">
-                            <span class="card-price">R$ 35</span>
-                            <span class="card-duration">⏱️ 30 min</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Service Card 4 -->
-                <div class="modern-card">
-                    <img src="/img/meta.jpg" alt="Corte + Barba" class="card-image">
-                    <div class="card-content">
-                        <h3 class="card-title">Corte + Barba</h3>
-                        <p class="card-description">Combo completo com desconto especial</p>
-                        <div class="card-footer">
-                            <span class="card-price">R$ 60</span>
-                            <span class="card-duration">⏱️ 50 min</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Service Card 5 -->
-                <div class="modern-card">
-                    <div class="card-content">
-                        <h3 class="card-title">Sobrancelha</h3>
-                        <p class="card-description">Design e limpeza de sobrancelhas masculinas</p>
-                        <div class="card-footer">
-                            <span class="card-price">R$ 15</span>
-                            <span class="card-duration">⏱️ 15 min</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Service Card 6 -->
-                <div class="modern-card">
-                    <div class="card-content">
-                        <h3 class="card-title">Pigmentação de Barba</h3>
-                        <p class="card-description">Cobertura de fios brancos e uniformização da cor</p>
-                        <div class="card-footer">
-                            <span class="card-price">R$ 50</span>
-                            <span class="card-duration">⏱️ 45 min</span>
-                        </div>
-                    </div>
+            <div class="cards-container" id="services-container">
+                <!-- Cards serão carregados dinamicamente do banco -->
+                <div style="text-align: center; padding: 40px; color: #8E8E93;">
+                    <p>Carregando serviços...</p>
                 </div>
             </div>
         </section>
@@ -134,10 +66,13 @@
     <footer>
         <img src="/img/logoDark.jpeg" id="footerLogo" alt="Barbearia Silva" class="footer-logo">
         <div class="footer-info">
-            <p>📞 (61) 00000-0000</p>
-            <p>📍 Morro Azul - Quadra 11 Conjunto A</p>
-            <p>📱 <a href="https://www.instagram.com/bradock_baber/" target="_blank" rel="noopener noreferrer">@bradock_baber</a></p>
-            <p style="margin-top: 20px; font-size: 12px;">&copy; 2025 Barbearia Silva - Todos os direitos reservados</p>
+            <p>📞 <span id="footer-telefone">(61) 00000-0000</span></p>
+            <p>📍 <span id="footer-endereco">Morro Azul - Quadra 11 Conjunto A</span></p>
+
+            <!-- Redes Sociais (carregadas dinamicamente) -->
+            <div class="social-media" style="margin: 21px 0 16px 0;"></div>
+
+            <p style="margin-top: 20px; font-size: 12px;" id="footer-copyright">&copy; 2026 Barbearia Silva - Todos os direitos reservados</p>
         </div>
     </footer>
 
@@ -161,6 +96,9 @@
         </a>
     </nav>
 
+    <!-- Personalization Loader -->
+    <script src="/shared/js/personalizacao-loader.js?v=2"></script>
+
     <script>
         // Theme Manager - Sistema Global de Tema (sem checkbox, só aplica)
         if (typeof ThemeManager !== 'undefined') {
@@ -182,6 +120,76 @@
                 item.classList.remove('active');
             }
         });
+
+        // ===================================
+        // CARREGAR SERVIÇOS DO BANCO
+        // ===================================
+        async function loadServicos() {
+            console.log('[SERVIÇOS] Carregando serviços do banco...');
+
+            const container = document.getElementById('services-container');
+            if (!container) {
+                console.error('[SERVIÇOS] Container não encontrado');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/v1/servicos');
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar serviços');
+                }
+
+                const servicos = await response.json();
+                console.log(`[SERVIÇOS] ${servicos.length} serviços carregados:`, servicos);
+
+                // Filtrar apenas serviços ativos do tipo 'servico' (não produtos)
+                const servicosAtivos = servicos.filter(s => s.ativo && s.tipo === 'servico');
+
+                if (servicosAtivos.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #8E8E93;">
+                            <p>Nenhum serviço disponível no momento.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Renderizar cards
+                container.innerHTML = servicosAtivos.map(servico => `
+                    <div class="modern-card">
+                        ${servico.foto ? `<img src="${servico.foto}" alt="${servico.nome}" class="card-image">` : ''}
+                        <div class="card-content">
+                            <h3 class="card-title">${servico.nome}</h3>
+                            <p class="card-description">${servico.descricao || 'Serviço de qualidade profissional'}</p>
+                            <div class="card-footer">
+                                <span class="card-price">R$ ${servico.preco.toFixed(2).replace('.', ',')}</span>
+                                ${servico.duracao > 0 ? `<span class="card-duration">⏱️ ${servico.duracao} min</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                console.log('[SERVIÇOS] ✓ Cards renderizados');
+
+            } catch (error) {
+                console.error('[SERVIÇOS] Erro ao carregar:', error);
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #FF6B6B;">
+                        <p>Erro ao carregar serviços. Tente novamente mais tarde.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Carregar serviços quando página carregar
+        // Aguardar um pouco para garantir que as cores personalizadas sejam aplicadas primeiro
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(loadServicos, 100);
+            });
+        } else {
+            setTimeout(loadServicos, 100);
+        }
     </script>
 </body>
 </html>

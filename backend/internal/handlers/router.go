@@ -21,6 +21,7 @@ func SetupRouter() *gin.Engine {
 	horarioHandler := NewHorarioHandler()
 	authHandler := NewAuthHandler()
 	notificationHandler := NewNotificationHandler()
+	personalizacaoHandler := NewPersonalizacaoHandler()
 
 	// Serve static files from frontend directories
 	// Path is relative to backend/cmd/api (where go run is executed)
@@ -52,6 +53,9 @@ func SetupRouter() *gin.Engine {
 	router.Static("/login/css", "../../../frontend/shared/login/css")
 	router.Static("/login/js", "../../../frontend/shared/login/js")
 	router.Static("/login/assets", "../../../frontend/shared/login/assets")
+
+	// Shared JavaScript modules (fidelidade, etc)
+	router.Static("/shared/js", "../../../frontend/shared/js")
 
 	// Favicon route
 	router.GET("/favicon.ico", func(c *gin.Context) {
@@ -148,6 +152,14 @@ func SetupRouter() *gin.Engine {
 		{
 			notifications.GET("", notificationHandler.GetNotifications)
 			notifications.PATCH("/:id/read", notificationHandler.MarkAsRead)
+		}
+
+		// Personalização (Customization)
+		personalizacao := v1.Group("/personalizacao")
+		{
+			personalizacao.GET("", personalizacaoHandler.GetPersonalizacao)           // Obter todas as configurações
+			personalizacao.PUT("", personalizacaoHandler.UpdatePersonalizacao)        // Atualizar configurações
+			personalizacao.DELETE("/reset", personalizacaoHandler.ResetPersonalizacao) // Restaurar padrões
 		}
 
 		// Settings (Configurações)

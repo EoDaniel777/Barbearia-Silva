@@ -90,19 +90,34 @@
      * Renderiza o header com base no estado de autenticação
      */
     function renderHeader() {
+        console.log('[AUTH CLIENT] 🔍 Iniciando renderHeader()');
+
         const headerNav = document.querySelector('.header-nav');
         const headerActions = document.querySelector('.header-actions');
 
+        console.log('[AUTH CLIENT] Elementos do header:', {
+            headerNav: !!headerNav,
+            headerActions: !!headerActions
+        });
+
         if (!headerNav || !headerActions) {
-            console.error('[AUTH CLIENT] Elementos do header não encontrados');
+            console.error('[AUTH CLIENT] ❌ Elementos do header não encontrados');
             return;
         }
 
-        if (isAuthenticated()) {
-            console.log('[AUTH CLIENT] Usuário autenticado, renderizando botão de perfil');
+        const authenticated = isAuthenticated();
+        const user = getUser();
+
+        console.log('[AUTH CLIENT] Estado de autenticação:', {
+            isAuthenticated: authenticated,
+            user: user ? { id: user.id, nome: user.nome, tipo: user.tipo } : null
+        });
+
+        if (authenticated) {
+            console.log('[AUTH CLIENT] ✅ Usuário autenticado, renderizando botão de perfil');
             renderAuthenticatedHeader(headerNav, headerActions);
         } else {
-            console.log('[AUTH CLIENT] Usuário não autenticado, renderizando botão de login');
+            console.log('[AUTH CLIENT] 🔓 Usuário não autenticado, renderizando botão de login');
             renderGuestHeader(headerNav, headerActions);
         }
     }
@@ -111,11 +126,15 @@
      * Renderiza header para usuário autenticado
      */
     function renderAuthenticatedHeader(headerNav, headerActions) {
+        console.log('[AUTH CLIENT] 🎨 Renderizando header autenticado...');
         const user = getUser();
+
+        console.log('[AUTH CLIENT] Dados do usuário:', user);
 
         // Remover botão de login do nav
         const loginBtn = headerNav.querySelector('.btn-login');
         if (loginBtn) {
+            console.log('[AUTH CLIENT] Removendo botão de login');
             loginBtn.remove();
         }
 
@@ -123,11 +142,13 @@
         // Primeiro, remover qualquer profile-dropdown existente
         const existingDropdown = headerActions.querySelector('.profile-dropdown');
         if (existingDropdown) {
+            console.log('[AUTH CLIENT] Removendo dropdown existente');
             existingDropdown.remove();
         }
 
         // Verificar se é admin
         const isAdmin = user && (user.tipo === 'admin' || user.role === 'admin' || user.admin === true);
+        console.log('[AUTH CLIENT] Tipo de usuário:', isAdmin ? 'ADMIN' : 'CLIENTE');
 
         const profileHtml = `
             <div class="profile-dropdown">
@@ -164,16 +185,16 @@
                             </svg>
                             Meu Perfil
                         </a>
+                        <a href="/agendar" class="profile-menu-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            Agendar Horário
+                        </a>
                     `}
-                    <a href="/agendar" class="profile-menu-item">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                            <line x1="16" y1="2" x2="16" y2="6"></line>
-                            <line x1="8" y1="2" x2="8" y2="6"></line>
-                            <line x1="3" y1="10" x2="21" y2="10"></line>
-                        </svg>
-                        Agendar Horário
-                    </a>
                     <hr>
                     <a href="#" class="profile-menu-item" id="client-logout-btn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

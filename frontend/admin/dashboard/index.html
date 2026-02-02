@@ -155,10 +155,20 @@
             </a>
 
             <a href="#" class="nav-link" data-page="galeria">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    >
                     <circle cx="12" cy="12" r="3"></circle>
-                    <path d="M12 1v6m0 6v6m5.196-13.804l-4.242 4.242m0 6.364l-4.243 4.243m13.85-4.243l-4.242-4.243m0-6.364L8.804 8.318"></path>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.09a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                 </svg>
+
                 <span>Configurar</span>
             </a>
         </nav>
@@ -570,10 +580,6 @@
                                 <input type="tel" id="info-telefone" placeholder="(61) 99999-9999">
                             </div>
 
-                            <div class="form-group">
-                                <label for="info-whatsapp">WhatsApp</label>
-                                <input type="tel" id="info-whatsapp" placeholder="5561999999999">
-                            </div>
                         </div>
 
                         <div class="form-group">
@@ -602,49 +608,292 @@
                 </div>
             </div>
 
+            <!-- Seção de Configuração de Fontes -->
             <div class="card">
                 <div class="card-header">
-                    <h2>Adicionar Mídia</h2>
+                    <h2>Fonte do Sistema</h2>
+                    <p style="font-size: 14px; color: #8E8E93; margin-top: 8px;">Personalize a tipografia do site e dashboard</p>
                 </div>
                 <div class="card-body">
-                    <form id="gallery-form" class="form">
-                        <div class="form-group">
-                            <label for="gallery-title">Título</label>
-                            <input type="text" id="gallery-title" placeholder="Ex: Corte Moderno">
+                    <form id="font-config-form" class="form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="font-family-select">Família da Fonte</label>
+                                <select id="font-family-select">
+                                    <option value="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif">Sistema Padrão (Sans-serif)</option>
+                                    <option value="'Inter', -apple-system, sans-serif">Inter</option>
+                                    <option value="'Poppins', sans-serif">Poppins</option>
+                                    <option value="'Montserrat', sans-serif">Montserrat</option>
+                                    <option value="'Roboto', sans-serif">Roboto</option>
+                                    <option value="'Open Sans', sans-serif">Open Sans</option>
+                                    <option value="'Lato', sans-serif">Lato</option>
+                                    <option value="Georgia, 'Times New Roman', serif">Georgia (Serif)</option>
+                                    <option value="'Merriweather', serif">Merriweather</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="font-size-select">Tamanho Base</label>
+                                <select id="font-size-select">
+                                    <option value="14px">Pequeno (14px)</option>
+                                    <option value="16px" selected>Médio (16px)</option>
+                                    <option value="18px">Grande (18px)</option>
+                                    <option value="20px">Muito Grande (20px)</option>
+                                </select>
+                            </div>
                         </div>
 
-                        <div class="form-group">
-                            <label>Upload de Imagem/Vídeo</label>
-                            <div class="upload-area" id="upload-area">
-                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                    <polyline points="17 8 12 3 7 8"></polyline>
-                                    <line x1="12" y1="3" x2="12" y2="15"></line>
-                                </svg>
-                                <p>Clique ou arraste arquivos aqui</p>
-                                <p class="small">Imagens (JPG, PNG) ou Vídeos (MP4)</p>
-                                <input type="file" id="gallery-file" accept="image/*,video/*" hidden>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Pré-visualização</label>
+                            <div id="font-preview" style="
+                                padding: 24px;
+                                background: #F5F5F7;
+                                border-radius: 12px;
+                                border: 1px solid #E5E5EA;
+                                margin-top: 8px;
+                            ">
+                                <h3 style="margin: 0 0 12px 0; font-size: 24px;">Barbearia Silva</h3>
+                                <p style="margin: 0; line-height: 1.6;">
+                                    Este é um exemplo de como o texto aparecerá no sistema com a fonte selecionada.
+                                    A tipografia é um elemento importante da identidade visual.
+                                </p>
                             </div>
-                            <div id="preview-area" class="preview-area"></div>
                         </div>
 
                         <div class="form-actions">
-                            <button type="submit" class="btn-primary">Adicionar à Galeria</button>
+                            <button type="button" class="btn-secondary" id="reset-font-btn">Restaurar Padrão</button>
+                            <button type="submit" class="btn-primary">Aplicar Fonte</button>
                         </div>
                     </form>
+
+                    <div id="font-status" class="alert" style="margin-top: 20px; display: none;"></div>
                 </div>
             </div>
 
+            <!-- Seção de Personalização Completa -->
             <div class="card">
                 <div class="card-header">
-                    <h2>Galeria</h2>
+                    <h2>🎨 Personalização do Sistema</h2>
+                    <p style="font-size: 14px; color: #8E8E93; margin-top: 8px;">Configure a identidade visual e funcionalidades do seu sistema</p>
                 </div>
                 <div class="card-body">
-                    <div id="gallery-grid" class="gallery-grid">
-                        <p class="empty-message">Nenhuma mídia adicionada ainda</p>
+                    <!-- Tabs de Navegação -->
+                    <div class="personalizacao-tabs" style="
+                        display: flex;
+                        gap: 8px;
+                        margin-bottom: 24px;
+                        border-bottom: 2px solid #E5E5EA;
+                        overflow-x: auto;
+                    ">
+                        <button class="tab-btn active" data-tab="cores">Cores</button>
+                        <button class="tab-btn" data-tab="redes">Redes Sociais</button>
+                        <button class="tab-btn" data-tab="fidelidade">Fidelidade</button>
+                        <button class="tab-btn" data-tab="textos">Textos</button>
+                        <button class="tab-btn" data-tab="banner">Banner</button>
                     </div>
+
+                    <form id="personalizacao-form">
+                        <!-- Tab: Cores -->
+                        <div class="tab-content active" data-tab="cores">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="cor-primaria">Cor Primária</label>
+                                    <input type="color" id="cor-primaria" name="cor_primaria" value="#0D7CA4">
+                                    <small style="color: #8E8E93;">Cor principal do sistema</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="cor-secundaria">Cor Secundária</label>
+                                    <input type="color" id="cor-secundaria" name="cor_secundaria" value="#0a6282">
+                                    <small style="color: #8E8E93;">Cor secundária e hover</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="cor-destaque">Cor de Destaque</label>
+                                    <input type="color" id="cor-destaque" name="cor_destaque" value="#FF6B6B">
+                                    <small style="color: #8E8E93;">Para alertas e CTAs</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="cor-header">Cor do Cabeçalho</label>
+                                    <input type="color" id="cor-header" name="cor_header" value="#1C1C1E">
+                                    <small style="color: #8E8E93;">Cor de fundo do header</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab: Redes Sociais -->
+                        <div class="tab-content" data-tab="redes" style="display: none;">
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="instagram">Instagram</label>
+                                    <input type="text" id="instagram" name="instagram" placeholder="@barbeariasilva">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="facebook">Facebook</label>
+                                    <input type="url" id="facebook" name="facebook" placeholder="https://facebook.com/barbeariasilva">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="tiktok">TikTok</label>
+                                    <input type="text" id="tiktok" name="tiktok" placeholder="@barbeariasilva">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="youtube">YouTube</label>
+                                    <input type="url" id="youtube" name="youtube" placeholder="https://youtube.com/@barbeariasilva">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="exibir-redes-sociais" name="exibir_redes_sociais" checked>
+                                    <span>Exibir ícones de redes sociais na home</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Tab: Fidelidade -->
+                        <div class="tab-content" data-tab="fidelidade" style="display: none;">
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="fidelidade-ativo" name="fidelidade_ativo" checked>
+                                    <span>Ativar programa de fidelidade</span>
+                                </label>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="fidelidade-qtd">Quantidade de Cortes</label>
+                                    <input type="number" id="fidelidade-qtd" name="fidelidade_qtd_cortes" value="10" min="5" max="20">
+                                    <small style="color: #8E8E93;">Cortes necessários para ganhar brinde</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="fidelidade-tipo">Tipo de Brinde</label>
+                                    <select id="fidelidade-tipo" name="fidelidade_tipo_brinde">
+                                        <option value="corte">Corte Grátis</option>
+                                        <option value="barba">Barba Grátis</option>
+                                        <option value="desconto">Desconto em %</option>
+                                        <option value="valor">Desconto em R$</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="fidelidade-valor">Valor do Brinde</label>
+                                    <input type="text" id="fidelidade-valor" name="fidelidade_valor_brinde" placeholder="R$ 35,00 ou 50%">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="fidelidade-validade">Validade (dias)</label>
+                                    <input type="number" id="fidelidade-validade" name="fidelidade_validade_dias" value="0" min="0">
+                                    <small style="color: #8E8E93;">0 = sem validade</small>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="fidelidade-resetar" name="fidelidade_resetar_troca">
+                                    <span>Resetar pontos ao trocar de barbeiro</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Tab: Textos -->
+                        <div class="tab-content" data-tab="textos" style="display: none;">
+                            <div class="form-group">
+                                <label for="titulo-site">Título do Site</label>
+                                <input type="text" id="titulo-site" name="titulo_site" placeholder="Barbearia Silva - Estilo e Tradição">
+                                <small style="color: #8E8E93;">Título na aba do navegador</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="slogan">Slogan</label>
+                                <input type="text" id="slogan" name="slogan" placeholder="Estilo e tradição desde 1995">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="texto-botao-agendar">Texto do Botão de Agendar</label>
+                                <input type="text" id="texto-botao-agendar" name="texto_botao_agendar" value="Agendar Horário">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="mensagem-rodape">Mensagem do Rodapé</label>
+                                <textarea id="mensagem-rodape" name="mensagem_rodape" rows="3" placeholder="© 2026 Barbearia Silva. Todos os direitos reservados."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="descricao-seo">Descrição SEO</label>
+                                <textarea id="descricao-seo" name="descricao_seo" rows="3" placeholder="Barbearia tradicional com serviços de corte masculino, barba e muito mais..."></textarea>
+                                <small style="color: #8E8E93;">Aparece nos resultados do Google</small>
+                            </div>
+                        </div>
+
+                        <!-- Tab: Banner -->
+                        <div class="tab-content" data-tab="banner" style="display: none;">
+                            <div class="form-group">
+                                <label for="banner-titulo">Título do Banner</label>
+                                <input type="text" id="banner-titulo" name="banner_titulo" placeholder="Bem-vindo à Barbearia Silva">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="banner-subtitulo">Subtítulo do Banner</label>
+                                <input type="text" id="banner-subtitulo" name="banner_subtitulo" placeholder="Estilo e tradição em cada corte">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="banner-altura">Altura do Banner</label>
+                                <select id="banner-altura" name="banner_altura">
+                                    <option value="pequeno">Pequeno (300px)</option>
+                                    <option value="medio" selected>Médio (500px)</option>
+                                    <option value="grande">Grande (700px)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Imagem de Fundo do Banner</label>
+                                <div class="upload-area" id="banner-upload-area" style="
+                                    border: 2px dashed #E5E5EA;
+                                    border-radius: 12px;
+                                    padding: 24px;
+                                    text-align: center;
+                                    cursor: pointer;
+                                    transition: all 0.3s ease;
+                                    background: #F9FAFB;
+                                ">
+                                    <input type="file" id="banner-image-input" accept="image/*" style="display: none;">
+                                    <div id="banner-upload-placeholder">
+                                        <p style="margin: 0; color: #8E8E93; font-size: 14px;">📸 Clique ou arraste uma imagem aqui</p>
+                                        <small style="color: #8E8E93;">Formatos: JPG, PNG, WebP (máx 2MB)</small>
+                                    </div>
+                                    <img id="banner-preview-img" src="" alt="Preview" style="
+                                        display: none;
+                                        max-width: 100%;
+                                        max-height: 200px;
+                                        border-radius: 8px;
+                                        margin-top: 12px;
+                                    ">
+                                </div>
+                                <button type="button" id="banner-remove-image" class="btn-secondary" style="margin-top: 12px; display: none;">Remover Imagem</button>
+                            </div>
+                        </div>
+
+                        <div class="form-actions" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #E5E5EA;">
+                            <button type="button" class="btn-secondary" id="reset-personalizacao-btn">Restaurar Padrões</button>
+                            <button type="submit" class="btn-primary">Salvar Personalização</button>
+                        </div>
+                    </form>
+
+                    <div id="personalizacao-status" class="alert" style="margin-top: 20px; display: none;"></div>
                 </div>
             </div>
+
         </div>
     </main>
 
@@ -1184,19 +1433,34 @@
     <!-- Bottom Navigation (Mobile) -->
     <nav class="bottom-nav-dash">
         <a href="#" class="nav-item-dash active" data-page="dashboard">
-            <img src="../dashboard/assets/icons/dashboard.png" width="23px" height="20px">
+           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
             <span>Dashboard</span>
         </a>
         <a href="#" class="nav-item-dash" data-page="barbeiros">
-            <img src="../dashboard/assets/icons/person 1.svg" width="20px">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+            </svg>
             <span>Barbeiros</span>
         </a>
         <a href="#" class="nav-item-dash" data-page="horarios">
-            <img src="../dashboard/assets/icons/calendar2 1.svg" width="20px"  height="20px">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
             <span>Horários</span>
         </a>
         <a href="#" class="nav-item-dash" data-page="servicos">
-            <img src="../dashboard/assets/icons/tesoura 1.svg" width="20px" height="20px">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+            </svg>
             <span>Serviços</span>
         </a>
         <a href="#" class="nav-item-dash" data-page="comandas">
@@ -1328,6 +1592,8 @@
 
     <!-- Auth Guard - DEVE ser o primeiro script a carregar -->
     <script src="/dashboard/js/auth-guard.js"></script>
+    <!-- Sistema de Fidelidade -->
+    <script src="/shared/js/fidelidade.js"></script>
     <script src="/dashboard/js/dashboard.js"></script>
     <script src="/dashboard/js/comandas.js"></script>
 </body>
