@@ -21,6 +21,7 @@ func SetupRouter() *gin.Engine {
 	horarioHandler := NewHorarioHandler()
 	authHandler := NewAuthHandler()
 	notificationHandler := NewNotificationHandler()
+	personalizacaoHandler := NewPersonalizacaoHandler()
 
 	// Serve static files from frontend directories
 	// Path is relative to backend/cmd/api (where go run is executed)
@@ -53,6 +54,9 @@ func SetupRouter() *gin.Engine {
 	router.Static("/login/js", "../../../frontend/shared/login/js")
 	router.Static("/login/assets", "../../../frontend/shared/login/assets")
 
+	// Shared JavaScript modules (fidelidade, etc)
+	router.Static("/shared/js", "../../../frontend/shared/js")
+
 	// Favicon route
 	router.GET("/favicon.ico", func(c *gin.Context) {
 		c.File("../../../frontend/client/home/assets/images/logoSemFundo.png")
@@ -83,39 +87,67 @@ func SetupRouter() *gin.Engine {
 		// Barbeiros (Barbers)
 		barbeiros := v1.Group("/barbeiros")
 		{
+			// Rotas públicas (leitura)
 			barbeiros.GET("", barbeiroHandler.List)
 			barbeiros.GET("/:id", barbeiroHandler.Get)
-			barbeiros.POST("", barbeiroHandler.Create)
-			barbeiros.PUT("/:id", barbeiroHandler.Update)
-			barbeiros.DELETE("/:id", barbeiroHandler.Delete)
-
-			// Horários de trabalho do barbeiro
 			barbeiros.GET("/:id/horarios", barbeiroHandler.GetHorarios)
-			barbeiros.POST("/:id/horarios", barbeiroHandler.SaveHorarios)
+
+			// Rotas protegidas (apenas admin pode criar/editar/deletar)
+			barbeirosAdmin := barbeiros.Group("")
+			barbeirosAdmin.Use(middleware.AuthRequired(), middleware.AdminRequired())
+			{
+				barbeirosAdmin.POST("", barbeiroHandler.Create)
+				barbeirosAdmin.PUT("/:id", barbeiroHandler.Update)
+				barbeirosAdmin.DELETE("/:id", barbeiroHandler.Delete)
+				barbeirosAdmin.POST("/:id/horarios", barbeiroHandler.SaveHorarios)
+			}
 		}
 
 		// Horários (Schedules)
 		horarios := v1.Group("/horarios")
 		{
-			horarios.GET("", horarioHandler.List)
+			// Rotas públicas
 			horarios.GET("/disponibilidade", horarioHandler.GetDisponibilidade)
-			horarios.POST("", horarioHandler.Create)
-			horarios.PATCH("/:id/status", horarioHandler.UpdateStatus)
-			horarios.DELETE("/:id", horarioHandler.Delete)
+			horarios.GET("/fidelidade", horarioHandler.GetFidelidade) // Novo endpoint de fidelidade
+			horarios.POST("", horarioHandler.Create) // Clientes podem criar agendamentos
+
+			// Rotas protegidas (requer autenticação)
+			horariosProtected := horarios.Group("")
+			horariosProtected.Use(middleware.AuthRequired())
+			{
+				horariosProtected.GET("", horarioHandler.List)
+				horariosProtected.GET("/proximos", horarioHandler.GetProximos) // Agendamentos próximos (PDV)
+			}
+
+			// Rotas admin (atualizar status e deletar)
+			horariosAdmin := horarios.Group("")
+			horariosAdmin.Use(middleware.AuthRequired(), middleware.AdminRequired())
+			{
+				horariosAdmin.PATCH("/:id/status", horarioHandler.UpdateStatus)
+				horariosAdmin.DELETE("/:id", horarioHandler.Delete)
+			}
 		}
 
 		// Serviços (Services)
 		servicos := v1.Group("/servicos")
 		{
+			// Rotas públicas (leitura)
 			servicos.GET("", servicoHandler.List)
 			servicos.GET("/:id", servicoHandler.Get)
-			servicos.POST("", servicoHandler.Create)
-			servicos.PUT("/:id", servicoHandler.Update)
-			servicos.DELETE("/:id", servicoHandler.Delete)
+
+			// Rotas protegidas (apenas admin)
+			servicosAdmin := servicos.Group("")
+			servicosAdmin.Use(middleware.AuthRequired(), middleware.AdminRequired())
+			{
+				servicosAdmin.POST("", servicoHandler.Create)
+				servicosAdmin.PUT("/:id", servicoHandler.Update)
+				servicosAdmin.DELETE("/:id", servicoHandler.Delete)
+			}
 		}
 
-		// Comandas (PDV - Ponto de Venda)
+		// Comandas (PDV - Ponto de Venda) - TODAS AS ROTAS PROTEGIDAS (apenas admin)
 		comandas := v1.Group("/comandas")
+		comandas.Use(middleware.AuthRequired(), middleware.AdminRequired())
 		{
 			comandas.GET("", ListarComandas)                                // Lista todas as comandas (com filtro opcional ?status=aberta)
 			comandas.GET("/:id", ObterComanda)                              // Obter comanda específica com itens
@@ -133,25 +165,51 @@ func SetupRouter() *gin.Engine {
 		{
 			auth.POST("/login", authHandler.Login)
 			auth.POST("/register", authHandler.Register)
-			auth.GET("/me", authHandler.Me)
+
+			// Rotas protegidas de autenticação
+			authProtected := auth.Group("")
+			authProtected.Use(middleware.AuthRequired())
+			{
+				authProtected.GET("/me", authHandler.Me)
+				authProtected.POST("/validate", authHandler.ValidateToken)
+			}
 		}
 
-		// Usuários (Users)
+		// Usuários (Users) - Rotas protegidas
 		usuarios := v1.Group("/usuarios")
+		usuarios.Use(middleware.AuthRequired())
 		{
 			usuarios.GET("", authHandler.ListUsers)
+			usuarios.GET("/agendados", authHandler.GetUsuariosAgendados) // Usuários com agendamentos próximos
 			usuarios.PUT("/:id", authHandler.UpdateProfile)
 		}
 
-		// Notificações (Notifications)
+		// Notificações (Notifications) - Rotas protegidas
 		notifications := v1.Group("/notifications")
+		notifications.Use(middleware.AuthRequired())
 		{
 			notifications.GET("", notificationHandler.GetNotifications)
 			notifications.PATCH("/:id/read", notificationHandler.MarkAsRead)
 		}
 
-		// Settings (Configurações)
+		// Personalização (Customization)
+		personalizacao := v1.Group("/personalizacao")
+		{
+			// Rota pública (leitura)
+			personalizacao.GET("", personalizacaoHandler.GetPersonalizacao)
+
+			// Rotas protegidas (apenas admin)
+			personalizacaoAdmin := personalizacao.Group("")
+			personalizacaoAdmin.Use(middleware.AuthRequired(), middleware.AdminRequired())
+			{
+				personalizacaoAdmin.PUT("", personalizacaoHandler.UpdatePersonalizacao)
+				personalizacaoAdmin.DELETE("/reset", personalizacaoHandler.ResetPersonalizacao)
+			}
+		}
+
+		// Settings (Configurações) - Todas protegidas (apenas admin)
 		settings := v1.Group("/settings")
+		settings.Use(middleware.AuthRequired(), middleware.AdminRequired())
 		{
 			settings.POST("/logo", UploadLogo)                          // Upload de logo
 			settings.GET("/geral", GetConfiguracoesGerais)              // Obter configurações gerais
