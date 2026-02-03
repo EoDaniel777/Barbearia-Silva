@@ -24,13 +24,13 @@ Sistema profissional de agendamento online com backend em Go, notificações em 
 
 ### 💻 Versão Desktop
 
-![Sistema Barbearia Silva - Desktop](docs/img01.png)
-*Interface moderna com tema escuro, sistema de agendamento completo e notificações em tempo real*
+![Sistema Barbearia Silva - Desktop](docs/desktop.png)
+*Interface moderna e personalizável, sistema completo de comandas/PDV e dashboard administrativo*
 
 ### 📱 Versão Mobile
 
-![Sistema Barbearia Silva - Mobile](docs/img02.png)
-*Layout responsivo com bottom navigation e experiência otimizada para dispositivos móveis*
+![Sistema Barbearia Silva - Mobile](docs/moblie.png)
+*Layout responsivo com bottom navigation, ícones modernos e experiência otimizada para dispositivos móveis*
 
 </div>
 
@@ -64,11 +64,28 @@ Criar uma plataforma integrada que simplifique a rotina das barbearias, permitin
 - **Histórico completo** de todas as comandas
 - Interface intuitiva com 3 modais especializados
 
-### 🎨 Upload de Logos Personalizado (NOVO!)
-- Upload de logo Dark (tema escuro)
-- Upload de logo White (tema claro)
-- Suporte a Base64 e Multipart/Form-Data
-- Atualização instantânea em todo o site
+### 🎨 Sistema de Personalização Completo (NOVO!)
+- **Upload de logos personalizado**
+  - Logo Dark (tema escuro) e Logo White (tema claro)
+  - Favicon customizável
+  - Suporte a Base64 e Multipart/Form-Data
+- **Personalização de cores**
+  - Cores primária, secundária e de destaque
+  - Cor do header e textos
+  - Aplicação em tempo real via CSS Variables
+- **Personalização de banner/hero**
+  - Upload de imagem de fundo
+  - Textos de título e subtítulo editáveis
+  - Controle de altura (pequeno/médio/grande)
+- **Personalização de textos**
+  - Título do site e meta description (SEO)
+  - Texto do botão "Agendar"
+  - Slogan e mensagem de rodapé
+- **Redes sociais**
+  - Links para Instagram, Facebook, TikTok e YouTube
+  - Exibição com ícones Font Awesome
+  - Opção de ocultar redes sociais
+- **Atualização instantânea** em todo o site sem recarregar
 
 ### 🔐 Autenticação Avançada
 - Login local com email e senha
@@ -81,7 +98,11 @@ Criar uma plataforma integrada que simplifique a rotina das barbearias, permitin
 - Layout adaptativo para todos os dispositivos
 - 7 breakpoints responsivos (380px até 1920px)
 - Menu de navegação desktop e mobile
+- **Bottom navigation mobile** com ícones modernos
 - Otimização para experiência móvel
+- **Grid de serviços adaptativo**
+  - Home: até 6 serviços em destaque
+  - Página de serviços: exibe todos os serviços cadastrados
 
 ### 💼 Catálogo de Serviços
 - **Corte**: R$ 35,00 (30 minutos)
@@ -526,6 +547,34 @@ Contribuições são bem-vindas! Para contribuir:
 ---
 
 ## 📝 Changelog
+
+### [4.1.0] - 2026-02-02 - Sistema de Personalização e Melhorias UX
+#### Adicionado
+- 🎨 **Sistema completo de personalização**
+  - Upload de logos (escuro, claro e favicon)
+  - Personalização de cores (primária, secundária, destaque, header)
+  - Personalização de banner (imagem, título, subtítulo, altura)
+  - Personalização de textos (título site, slogan, botão agendar, SEO)
+  - Integração de redes sociais com ícones Font Awesome
+  - API `/api/v1/personalizacao` para salvar/carregar configurações
+- 📱 **Melhorias na navegação mobile**
+  - Ícones no bottom navigation preservados ao personalizar texto
+  - Grid de serviços otimizado (6 na home, todos na página de serviços)
+- ⚡ **Carregamento automático de personalizações**
+  - Script `personalizacao-loader.js` aplica configs ao carregar página
+  - CSS Variables atualizadas dinamicamente
+  - Suporte a banner com imagem de fundo
+
+#### Corrigido
+- 🐛 **Banner persistente**: Imagem de banner agora remove corretamente ao salvar vazio
+- 🐛 **Ícone mobile**: Botão "Agendar Horário" agora preserva ícone ao personalizar texto
+- 🔄 **Preview de banner**: Ao carregar personalização, preview é limpo se não houver imagem
+
+#### Melhorado
+- Interface do painel de personalização com seções colapsáveis
+- Validação de upload de imagens (tamanho e formato)
+- Preview em tempo real de logos e banner
+- Documentação técnica completa em `/docs`
 
 ### [4.0.1] - 2026-01-25 - Correções Críticas
 #### Corrigido

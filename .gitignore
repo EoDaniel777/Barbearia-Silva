@@ -39,3 +39,7 @@ node_modules/
 # Arquivos temporários
 tmp/
 temp/
+
+# Documentação técnica interna (não publicar)
+docs/*.md
+!docs/README.md

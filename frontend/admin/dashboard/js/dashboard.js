@@ -9,6 +9,54 @@ let servicos = [];
 let horarios = [];
 
 // ===================================
+// 🔐 AUTHENTICATION HELPER
+// ===================================
+
+/**
+ * ✅ Função auxiliar para fazer fetch autenticado
+ */
+function authFetch(url, options = {}) {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+        console.error('[AUTH FETCH] Token não encontrado');
+        alert('Sessão expirada. Faça login novamente.');
+        localStorage.clear();
+        window.location.href = '/login';
+        return Promise.reject(new Error('Token não encontrado'));
+    }
+
+    // Adicionar token no header
+    const authHeaders = {
+        'Authorization': `Bearer ${token}`,
+        ...options.headers
+    };
+
+    return fetch(url, {
+        ...options,
+        headers: authHeaders
+    }).then(async response => {
+        // Verificar erro 401 (token inválido)
+        if (response.status === 401) {
+            console.error('[AUTH FETCH] Token inválido ou expirado');
+            alert('Sessão expirada. Faça login novamente.');
+            localStorage.clear();
+            window.location.href = '/login';
+            throw new Error('Token inválido');
+        }
+
+        // Verificar erro 403 (sem permissão)
+        if (response.status === 403) {
+            console.error('[AUTH FETCH] Acesso negado');
+            alert('Você não tem permissão para acessar este recurso.');
+            throw new Error('Acesso negado');
+        }
+
+        return response;
+    });
+}
+
+// ===================================
 // NAVIGATION
 // ===================================
 
@@ -149,7 +197,7 @@ function initMobileMenu() {
 async function loadDashboardData() {
     try {
         // Load bookings
-        const response = await fetch('/api/v1/horarios');
+        const response = await authFetch('/api/v1/horarios');
         const horarios = await response.json();
 
         // Calculate stats
@@ -226,7 +274,7 @@ function displayTopServices() {
 
 async function loadBarbeiros() {
     try {
-        const response = await fetch('/api/v1/barbeiros');
+        const response = await authFetch('/api/v1/barbeiros');
         barbeiros = await response.json();
         displayBarbeiros();
     } catch (error) {
@@ -297,7 +345,7 @@ document.getElementById('barber-form')?.addEventListener('submit', async (e) => 
 
     // Verificar limite de barbeiros (máximo 2 no plano atual)
     try {
-        const checkResponse = await fetch('/api/v1/barbeiros');
+        const checkResponse = await authFetch('/api/v1/barbeiros');
         if (checkResponse.ok) {
             const barbeiros = await checkResponse.json();
             const barbeirosAtivos = barbeiros.filter(b => b.ativo);
@@ -321,7 +369,7 @@ document.getElementById('barber-form')?.addEventListener('submit', async (e) => 
     };
 
     try {
-        const response = await fetch('/api/v1/barbeiros', {
+        const response = await authFetch('/api/v1/barbeiros', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
@@ -402,7 +450,7 @@ async function gerenciarHorarios(id) {
 
 async function loadBarbeiroHorarios(barbeiroId) {
     try {
-        const response = await fetch(`/api/v1/barbeiros/${barbeiroId}/horarios`);
+        const response = await authFetch(`/api/v1/barbeiros/${barbeiroId}/horarios`);
         if (response.ok) {
             const horarios = await response.json();
 
@@ -435,7 +483,7 @@ async function deleteBarbeiro(id) {
     if (!confirmed) return;
 
     try {
-        const response = await fetch(`/api/v1/barbeiros/${id}`, {
+        const response = await authFetch(`/api/v1/barbeiros/${id}`, {
             method: 'DELETE'
         });
 
@@ -457,7 +505,7 @@ async function deleteBarbeiro(id) {
 
 async function loadHorarios() {
     try {
-        const response = await fetch('/api/v1/horarios');
+        const response = await authFetch('/api/v1/horarios');
         horarios = await response.json();
         displayHorarios();
     } catch (error) {
@@ -556,7 +604,7 @@ function displayAllBookings(bookings) {
 
 async function updateBookingStatus(id, status) {
     try {
-        const response = await fetch(`/api/v1/horarios/${id}/status`, {
+        const response = await authFetch(`/api/v1/horarios/${id}/status`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status })
@@ -580,7 +628,7 @@ async function updateBookingStatus(id, status) {
 
 async function loadServicos() {
     try {
-        const response = await fetch('/api/v1/servicos');
+        const response = await authFetch('/api/v1/servicos');
         servicos = await response.json();
         displayServicos();
     } catch (error) {
@@ -702,7 +750,7 @@ document.getElementById('service-form')?.addEventListener('submit', async (e) =>
 
         if (editingServicoId) {
             // Modo de edição - PUT
-            response = await fetch(`/api/v1/servicos/${editingServicoId}`, {
+            response = await authFetch(`/api/v1/servicos/${editingServicoId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -710,7 +758,7 @@ document.getElementById('service-form')?.addEventListener('submit', async (e) =>
             message = 'Serviço/Produto atualizado com sucesso!';
         } else {
             // Modo de criação - POST
-            response = await fetch('/api/v1/servicos', {
+            response = await authFetch('/api/v1/servicos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -800,7 +848,7 @@ async function deleteServico(id) {
     if (!confirmed) return;
 
     try {
-        const response = await fetch(`/api/v1/servicos/${id}`, {
+        const response = await authFetch(`/api/v1/servicos/${id}`, {
             method: 'DELETE'
         });
 
@@ -829,7 +877,7 @@ async function deleteServico(id) {
 
 async function carregarInformacoesBarbearia() {
     try {
-        const response = await fetch('/api/v1/settings/geral');
+        const response = await authFetch('/api/v1/settings/geral');
         const data = await response.json();
 
         document.getElementById('info-nome').value = data.nome || '';
@@ -857,7 +905,7 @@ function initInfoBarbeariaForm() {
         };
 
         try {
-            const response = await fetch('/api/v1/settings/geral', {
+            const response = await authFetch('/api/v1/settings/geral', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1066,7 +1114,7 @@ async function handleLogoUpload(event, logoType) {
         }
 
         // Enviar para backend
-        const response = await fetch('/api/v1/settings/logo', {
+        const response = await authFetch('/api/v1/settings/logo', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1477,7 +1525,7 @@ async function loadNotifications() {
             return;
         }
 
-        const response = await fetch(`/api/v1/notifications?usuario_id=${user.id}`);
+        const response = await authFetch(`/api/v1/notifications?usuario_id=${user.id}`);
 
         if (!response.ok) {
             throw new Error('Erro ao carregar notificações');
@@ -1605,7 +1653,7 @@ function initEditBarbeiroModal() {
             saveBtn.disabled = true;
             saveBtn.textContent = 'Salvando...';
 
-            const response = await fetch(`/api/v1/barbeiros/${id}`, {
+            const response = await authFetch(`/api/v1/barbeiros/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -1709,7 +1757,7 @@ function initHorariosModal() {
             saveBtn.disabled = true;
             saveBtn.textContent = 'Salvando...';
 
-            const response = await fetch(`/api/v1/barbeiros/${currentBarbeiroId}/horarios`, {
+            const response = await authFetch(`/api/v1/barbeiros/${currentBarbeiroId}/horarios`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ horarios })
@@ -2028,7 +2076,7 @@ async function savePerfilAdmin() {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
 
         console.log('[PERFIL ADMIN] Enviando atualização de perfil para o servidor...');
-        const response = await fetch(`/api/v1/usuarios/${user.id}`, {
+        const response = await authFetch(`/api/v1/usuarios/${user.id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
@@ -2074,7 +2122,7 @@ let agendamentoComandaAtual = {
 async function abrirComandaAgendamento(agendamentoId, clienteNome, barbeiroId) {
     try {
         // Buscar dados completos do agendamento
-        const response = await fetch(`/api/v1/horarios`);
+        const response = await authFetch(`/api/v1/horarios`);
         const horarios = await response.json();
         const agendamento = horarios.find(h => h.id === agendamentoId);
 
@@ -2098,7 +2146,7 @@ async function abrirComandaAgendamento(agendamentoId, clienteNome, barbeiroId) {
         let servico = null;
         if (agendamento.servicoID) {
             try {
-                const servicoResponse = await fetch(`/api/v1/servicos/${agendamento.servicoID}`);
+                const servicoResponse = await authFetch(`/api/v1/servicos/${agendamento.servicoID}`);
                 if (servicoResponse.ok) {
                     servico = await servicoResponse.json();
                 } else {
@@ -2157,7 +2205,7 @@ function closeComandaAgendamentoModal() {
 
 async function carregarProdutosComanda() {
     try {
-        const response = await fetch('/api/v1/servicos');
+        const response = await authFetch('/api/v1/servicos');
         const servicos = await response.json();
 
         const select = document.getElementById('comanda-agend-produto');
@@ -2294,7 +2342,7 @@ async function finalizarComandaAgendamento() {
             barbeiroId: agendamentoComandaAtual.barbeiroId
         };
 
-        const createResponse = await fetch('/api/v1/comandas', {
+        const createResponse = await authFetch('/api/v1/comandas', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(comandaData)
@@ -2316,7 +2364,7 @@ async function finalizarComandaAgendamento() {
                 precoUnitario: agendamentoComandaAtual.servico.preco
             };
 
-            await fetch(`/api/v1/comandas/${comandaId}/itens`, {
+            await authFetch(`/api/v1/comandas/${comandaId}/itens`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(servicoItem)
@@ -2333,7 +2381,7 @@ async function finalizarComandaAgendamento() {
                 precoUnitario: item.preco
             };
 
-            await fetch(`/api/v1/comandas/${comandaId}/itens`, {
+            await authFetch(`/api/v1/comandas/${comandaId}/itens`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(produtoItem)
@@ -2346,7 +2394,7 @@ async function finalizarComandaAgendamento() {
             observacoesPgto: formaPagamento.observacoes || ''
         };
 
-        const fecharResponse = await fetch(`/api/v1/comandas/${comandaId}/fechar`, {
+        const fecharResponse = await authFetch(`/api/v1/comandas/${comandaId}/fechar`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(fecharData)
@@ -2357,7 +2405,7 @@ async function finalizarComandaAgendamento() {
         }
 
         // Atualizar status do agendamento para "concluído"
-        await fetch(`/api/v1/horarios/${agendamentoComandaAtual.id}/status`, {
+        await authFetch(`/api/v1/horarios/${agendamentoComandaAtual.id}/status`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status: 'concluido' })
@@ -2556,7 +2604,7 @@ function initEditServicoModal() {
             saveBtn.disabled = true;
             saveBtn.textContent = 'Salvando...';
 
-            const response = await fetch(`/api/v1/servicos/${id}`, {
+            const response = await authFetch(`/api/v1/servicos/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -2684,7 +2732,7 @@ async function loadPersonalizacao() {
     try {
         console.log('[PERSONALIZAÇÃO] Carregando configurações...');
 
-        const response = await fetch('/api/v1/personalizacao');
+        const response = await authFetch('/api/v1/personalizacao');
         if (!response.ok) {
             throw new Error('Erro ao carregar configurações');
         }
@@ -2755,6 +2803,22 @@ function populatePersonalizacaoForm(data) {
                 removeBtn.style.display = 'inline-block';
             }
         }
+    } else {
+        // Limpar preview se não houver imagem
+        bannerImageBase64 = '';
+        const previewImg = document.getElementById('banner-preview-img');
+        const placeholder = document.getElementById('banner-upload-placeholder');
+        const removeBtn = document.getElementById('banner-remove-image');
+
+        if (previewImg && placeholder) {
+            previewImg.src = '';
+            previewImg.style.display = 'none';
+            placeholder.style.display = 'flex';
+
+            if (removeBtn) {
+                removeBtn.style.display = 'none';
+            }
+        }
     }
 }
 
@@ -2807,14 +2871,12 @@ async function savePersonalizacao() {
             }
         });
 
-        // Adicionar imagem de banner se houver
-        if (bannerImageBase64 && bannerImageBase64.length > 0) {
-            formData.banner_imagem = bannerImageBase64;
-        }
+        // Adicionar imagem de banner (sempre enviar, mesmo que vazia para remover)
+        formData.banner_imagem = bannerImageBase64 || '';
 
         console.log('[PERSONALIZAÇÃO] Dados a enviar:', formData);
 
-        const response = await fetch('/api/v1/personalizacao', {
+        const response = await authFetch('/api/v1/personalizacao', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
@@ -2847,7 +2909,7 @@ async function resetPersonalizacao() {
     try {
         console.log('[PERSONALIZAÇÃO] Restaurando configurações padrão...');
 
-        const response = await fetch('/api/v1/personalizacao/reset', {
+        const response = await authFetch('/api/v1/personalizacao/reset', {
             method: 'DELETE'
         });
 

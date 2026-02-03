@@ -47,12 +47,12 @@
             console.log('[HOME LOADER] - Total de registros:', servicos.length);
             console.log('[HOME LOADER] - Dados completos:', servicos);
 
-            // Filtrar apenas serviços (não produtos) e limitar a 4
+            // Filtrar apenas serviços (não produtos) e limitar a 6
             const servicosParaExibir = servicos
                 .filter(s => s.tipo === 'servico' && s.ativo)
-                .slice(0, 4);
+                .slice(0, 6);
 
-            console.log('[HOME LOADER] 🔎 Após filtros (tipo=servico, ativo=true, limite=4):');
+            console.log('[HOME LOADER] 🔎 Após filtros (tipo=servico, ativo=true, limite=6):');
             console.log('[HOME LOADER] - Serviços filtrados:', servicosParaExibir.length);
             console.log('[HOME LOADER] - Serviços que serão exibidos:', servicosParaExibir);
 
