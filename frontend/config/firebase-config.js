@@ -1,6 +1,10 @@
-// Firebase Configuration
-// Configuração do projeto Barbearia Silva
-// https://console.firebase.google.com/
+// Firebase Configuration - HOMOLOGAÇÃO
+// Configuração do projeto Barbearia Silva (Ambiente de Homologação)
+// https://console.firebase.google.com/project/barbeariahom
+
+// ⚠️ NOTA: Essas credenciais são PÚBLICAS (frontend)
+// Elas podem estar no código porque são para o Firebase Web SDK
+// Para produção, será configurado via variáveis de ambiente no painel de hospedagem
 
 const firebaseConfig = {
     apiKey: "REMOVED_KEY",

@@ -43,5 +43,16 @@ ENV PORT=8080
 ENV GIN_MODE=release
 ENV DATABASE_PATH=./cmd/api/data/barbearia.db
 
+# Firebase (opcional - configure via environment variables)
+ENV FIREBASE_PROJECT_ID=barbeariahom
+# ENV FIREBASE_SERVICE_ACCOUNT_PATH=/app/config/firebase-service-account.json
+
+# Criar diretório de configuração
+RUN mkdir -p /app/config
+
+# NOTA: Para habilitar Firebase Auth em produção:
+# 1. Adicione o Service Account JSON via volume mount ou secret
+# 2. Configure FIREBASE_SERVICE_ACCOUNT_PATH apontando para o arquivo
+
 # Executar aplicação
 CMD ["./app"]

@@ -41,6 +41,14 @@ node_modules/
 tmp/
 temp/
 
+# Firebase Service Account
+# HOMOLOGAÇÃO: Arquivo commitado no repo privado (barbeariahom-*.json)
+# PRODUÇÃO: Adicionar manualmente via Render Dashboard (não commitar)
+# Arquivos de produção que não devem ser commitados:
+firebase-adminsdk-*prod*.json
+*production*.json
+serviceAccountKey.json
+
 # Documentação técnica interna (não publicar)
 docs/*.md
 !docs/README.md
