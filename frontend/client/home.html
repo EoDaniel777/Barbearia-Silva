@@ -11,12 +11,14 @@
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- Theme Manager -->
-    <script src="/js/theme-manager.js"></script>
+    <!-- Theme Manager (Shared) - Sem defer para carregar imediatamente -->
+    <script src="/shared/js/theme-manager.js?v=4"></script>
     <!-- Auth Client -->
-    <script src="/js/auth-client.js"></script>
+    <script defer src="/js/auth-client.js?v=2"></script>
     <!-- Home Loader -->
-    <script src="/js/home-loader.js"></script>
+    <script defer src="/js/home-loader.js?v=2"></script>
+    <!-- Personalização Loader (Shared) -->
+    <script defer src="/shared/js/personalizacao-loader.js?v=2"></script>
 </head>
 
 <body>
@@ -168,22 +170,6 @@
     </nav>
 
     <script>
-        /* ===================================
-           THEME MANAGER - Sistema Global de Tema
-           =================================== */
-        // Inicializar o Theme Manager quando a página carregar
-        if (typeof ThemeManager !== 'undefined') {
-            ThemeManager.init({
-                checkboxId: 'theme-toggle-checkbox',
-                headerLogoId: 'headerLogo',
-                heroLogoId: 'heroLogo',
-                footerLogoId: 'footerLogo'
-            });
-            console.log('[HOME] Theme Manager inicializado');
-        } else {
-            console.error('[HOME] Theme Manager não encontrado');
-        }
-
         // Active nav item
         const currentPage = window.location.pathname;
         document.querySelectorAll('.nav-item').forEach(item => {
@@ -196,8 +182,24 @@
         });
     </script>
 
-    <!-- Carregador de Personalização -->
-    <script src="/shared/js/personalizacao-loader.js?v=2"></script>
+    <!-- Inicialização do Theme Manager -->
+    <script>
+        console.log('[HOME] Inicializando ThemeManager...');
+        console.log('[HOME] ThemeManager:', window.ThemeManager);
+        console.log('[HOME] ThemeManager.init:', typeof window.ThemeManager?.init);
+
+        if (window.ThemeManager && typeof window.ThemeManager.init === 'function') {
+            window.ThemeManager.init({
+                checkboxId: 'theme-toggle-checkbox',
+                headerLogoId: 'headerLogo',
+                heroLogoId: 'heroLogo',
+                footerLogoId: 'footerLogo'
+            });
+            console.log('[HOME] ✅ Theme Manager inicializado');
+        } else {
+            console.error('[HOME] ❌ ThemeManager não disponível');
+        }
+    </script>
 </body>
 
 </html>

@@ -6,6 +6,7 @@
 (function() {
     'use strict';
 
+    console.log('[AUTH CLIENT] Inicializando...');
 
     /**
      * Exibe uma notificação toast simples
@@ -89,10 +90,12 @@
      * Renderiza o header com base no estado de autenticação
      */
     function renderHeader() {
+        console.log('[AUTH CLIENT] 🔍 Iniciando renderHeader()');
 
         const headerNav = document.querySelector('.header-nav');
         const headerActions = document.querySelector('.header-actions');
 
+        console.log('[AUTH CLIENT] Elementos do header:', {
             headerNav: !!headerNav,
             headerActions: !!headerActions
         });
@@ -105,13 +108,16 @@
         const authenticated = isAuthenticated();
         const user = getUser();
 
+        console.log('[AUTH CLIENT] Estado de autenticação:', {
             isAuthenticated: authenticated,
             user: user ? { id: user.id, nome: user.nome, tipo: user.tipo } : null
         });
 
         if (authenticated) {
+            console.log('[AUTH CLIENT] ✅ Usuário autenticado, renderizando botão de perfil');
             renderAuthenticatedHeader(headerNav, headerActions);
         } else {
+            console.log('[AUTH CLIENT] 🔓 Usuário não autenticado, renderizando botão de login');
             renderGuestHeader(headerNav, headerActions);
         }
     }
@@ -120,12 +126,15 @@
      * Renderiza header para usuário autenticado
      */
     function renderAuthenticatedHeader(headerNav, headerActions) {
+        console.log('[AUTH CLIENT] 🎨 Renderizando header autenticado...');
         const user = getUser();
 
+        console.log('[AUTH CLIENT] Dados do usuário:', user);
 
         // Remover botão de login do nav
         const loginBtn = headerNav.querySelector('.btn-login');
         if (loginBtn) {
+            console.log('[AUTH CLIENT] Removendo botão de login');
             loginBtn.remove();
         }
 
@@ -133,11 +142,13 @@
         // Primeiro, remover qualquer profile-dropdown existente
         const existingDropdown = headerActions.querySelector('.profile-dropdown');
         if (existingDropdown) {
+            console.log('[AUTH CLIENT] Removendo dropdown existente');
             existingDropdown.remove();
         }
 
         // Verificar se é admin
         const isAdmin = user && (user.tipo === 'admin' || user.role === 'admin' || user.admin === true);
+        console.log('[AUTH CLIENT] Tipo de usuário:', isAdmin ? 'ADMIN' : 'CLIENTE');
 
         const profileHtml = `
             <div class="profile-dropdown">
@@ -318,6 +329,7 @@
         renderHeader
     };
 
+    console.log('[AUTH CLIENT] API exposta globalmente');
 
     // Inicializar
     init();

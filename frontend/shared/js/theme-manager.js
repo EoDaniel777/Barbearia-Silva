@@ -9,7 +9,7 @@ class ThemeManager {
         this.THEME_KEY = 'barbearia-theme';
         this.currentTheme = this.loadTheme();
         this.elements = {
-            body: document.body,
+            body: null,
             checkbox: null,
             logos: {
                 header: null,
@@ -18,6 +18,7 @@ class ThemeManager {
             }
         };
 
+        console.log('[THEME MANAGER] Construtor executado. Tema atual:', this.currentTheme);
     }
 
     /**
@@ -35,6 +36,7 @@ class ThemeManager {
      */
     saveTheme(theme) {
         localStorage.setItem(this.THEME_KEY, theme);
+        console.log('[THEME MANAGER] Tema salvo:', theme);
 
         // Disparar evento customizado para outras abas/janelas
         window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme } }));
@@ -45,6 +47,10 @@ class ThemeManager {
      * @param {Object} config - Configuração com seletores dos elementos
      */
     init(config = {}) {
+        console.log('[THEME MANAGER] Inicializando com config:', config);
+
+        // Configurar body (agora que o DOM está pronto)
+        this.elements.body = document.body;
 
         // Configurar elementos
         this.elements.checkbox = document.getElementById(config.checkboxId || 'theme-toggle-checkbox');
@@ -52,6 +58,8 @@ class ThemeManager {
         this.elements.logos.hero = document.getElementById(config.heroLogoId || 'heroLogo');
         this.elements.logos.footer = document.getElementById(config.footerLogoId || 'footerLogo');
 
+        console.log('[THEME MANAGER] Elementos configurados:', {
+            body: !!this.elements.body,
             checkbox: !!this.elements.checkbox,
             headerLogo: !!this.elements.logos.header,
             heroLogo: !!this.elements.logos.hero,
@@ -59,6 +67,7 @@ class ThemeManager {
         });
 
         // Aplicar tema atual
+        console.log('[THEME MANAGER] Aplicando tema inicial:', this.currentTheme);
         this.applyTheme(this.currentTheme);
 
         // Configurar eventos
@@ -67,6 +76,7 @@ class ThemeManager {
         // Sincronizar com outras abas
         this.setupStorageSync();
 
+        console.log('[THEME MANAGER] ✓ Inicialização concluída');
     }
 
     /**
@@ -74,8 +84,10 @@ class ThemeManager {
      */
     setupEvents() {
         if (this.elements.checkbox) {
+            console.log('[THEME MANAGER] Checkbox encontrado, adicionando listener');
             this.elements.checkbox.addEventListener('change', (e) => {
                 const newTheme = e.target.checked ? 'light' : 'dark';
+                console.log('[THEME MANAGER] ✓ Checkbox alterado! Novo tema:', newTheme);
                 this.toggleTheme(newTheme);
             });
         } else {
@@ -90,6 +102,7 @@ class ThemeManager {
         // Escutar mudanças no localStorage de outras abas
         window.addEventListener('storage', (e) => {
             if (e.key === this.THEME_KEY && e.newValue) {
+                console.log('[THEME MANAGER] Tema alterado em outra aba:', e.newValue);
                 this.currentTheme = e.newValue;
                 this.applyTheme(this.currentTheme);
             }
@@ -97,6 +110,7 @@ class ThemeManager {
 
         // Escutar evento customizado (mesma aba)
         window.addEventListener('themeChanged', (e) => {
+            console.log('[THEME MANAGER] Evento themeChanged recebido:', e.detail.theme);
         });
     }
 
@@ -105,9 +119,11 @@ class ThemeManager {
      * @param {string} theme - 'light' ou 'dark'
      */
     toggleTheme(theme) {
+        console.log('[THEME MANAGER] ► toggleTheme chamado com:', theme);
         this.currentTheme = theme;
         this.applyTheme(theme);
         this.saveTheme(theme);
+        console.log('[THEME MANAGER] ✓ Tema alternado para:', theme);
     }
 
     /**
@@ -115,17 +131,28 @@ class ThemeManager {
      * @param {string} theme - 'light' ou 'dark'
      */
     applyTheme(theme) {
+        console.log('[THEME MANAGER] ► Aplicando tema:', theme);
 
         const { body, checkbox, logos } = this.elements;
 
+        if (!body) {
+            console.error('[THEME MANAGER] ❌ Body não disponível. Inicialize com init() primeiro.');
+            return;
+        }
+
         if (theme === 'light') {
             // Modo Claro
+            console.log('[THEME MANAGER] Aplicando modo CLARO');
+            console.log('[THEME MANAGER] Body antes:', body.className);
 
             if (!body.classList.contains('theme-white')) {
                 body.classList.add('theme-white');
+                console.log('[THEME MANAGER] ✓ Classe "theme-white" adicionada');
             } else {
+                console.log('[THEME MANAGER] Classe "theme-white" já existe');
             }
 
+            console.log('[THEME MANAGER] Body depois:', body.className);
 
             if (checkbox) {
                 checkbox.checked = true;
@@ -140,12 +167,17 @@ class ThemeManager {
 
         } else {
             // Modo Escuro
+            console.log('[THEME MANAGER] Aplicando modo ESCURO');
+            console.log('[THEME MANAGER] Body antes:', body.className);
 
             if (body.classList.contains('theme-white')) {
                 body.classList.remove('theme-white');
+                console.log('[THEME MANAGER] ✓ Classe "theme-white" removida');
             } else {
+                console.log('[THEME MANAGER] Classe "theme-white" não existe');
             }
 
+            console.log('[THEME MANAGER] Body depois:', body.className);
 
             if (checkbox) {
                 checkbox.checked = false;
@@ -159,6 +191,7 @@ class ThemeManager {
             });
         }
 
+        console.log('[THEME MANAGER] ✓ Tema aplicado com sucesso. Tema atual:', this.currentTheme);
     }
 
     /**
@@ -205,9 +238,14 @@ class ThemeManager {
 // Criar instância global
 const themeManager = new ThemeManager();
 
-// Expor globalmente
+// Expor globalmente com debug
 if (typeof window !== 'undefined') {
     window.ThemeManager = themeManager;
+    console.log('[THEME MANAGER] Expondo globalmente:', {
+        ThemeManager: typeof window.ThemeManager,
+        hasInit: typeof window.ThemeManager.init === 'function',
+        methods: Object.getOwnPropertyNames(Object.getPrototypeOf(window.ThemeManager))
+    });
 }
 
 // Exportar para módulos

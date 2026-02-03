@@ -5,7 +5,7 @@
 ![Status](https://img.shields.io/badge/Status-Production-green)
 ![Go](https://img.shields.io/badge/Go-1.25.4-00ADD8?logo=go)
 ![License](https://img.shields.io/badge/License-MIT-blue)
-![Version](https://img.shields.io/badge/Version-4.0.0-green)
+![Version](https://img.shields.io/badge/Version-4.2.0-green)
 ![Deploy](https://img.shields.io/badge/Deploy-Render-46E3B7)
 
 **Sistema Web Full-Stack para Gestão e Agendamento de Serviços em Barbearias**
@@ -239,33 +239,34 @@ System-Barbearia-AS/
 ├── frontend/                          # Frontend da aplicação
 │   │
 │   ├── admin/                        # 👨‍💼 ÁREA ADMINISTRATIVA
-│   │   └── dashboard/
-│   │       ├── index.html           # Dashboard administrativo
-│   │       ├── css/
-│   │       │   └── dashboard.css    # Estilos do dashboard
-│   │       └── js/
-│   │           └── dashboard.js     # Lógica do dashboard
+│   │   ├── dashboard.html           # Dashboard administrativo (renomeado)
+│   │   ├── css/
+│   │   │   └── dashboard.css        # Estilos do dashboard
+│   │   └── js/
+│   │       └── dashboard.js         # Lógica do dashboard
 │   │
 │   ├── client/                       # 👤 ÁREA DO CLIENTE
-│   │   ├── home/
-│   │   │   ├── index.html           # Página inicial
-│   │   │   ├── css/
-│   │   │   │   ├── mobile-modern.css    # Estilos mobile
-│   │   │   │   ├── elite-design.css     # Design principal
-│   │   │   │   └── responsivo.css       # Media queries
-│   │   │   └── assets/
-│   │   │       ├── icons/           # Ícones (home, calendar, person)
-│   │   │       └── images/          # Imagens dos serviços
-│   │   ├── agendar/
-│   │   │   └── index.html           # Página de agendamento
-│   │   ├── barbeiros/
-│   │   │   └── index.html           # Perfil dos barbeiros
-│   │   └── servicos/
-│   │       └── index.html           # Catálogo de serviços
+│   │   ├── home.html                # Página inicial (renomeado)
+│   │   ├── servicos.html            # Catálogo de serviços (renomeado)
+│   │   ├── barbeiros.html           # Perfil dos barbeiros (renomeado)
+│   │   ├── agendar.html             # Página de agendamento (renomeado)
+│   │   ├── css/
+│   │   │   └── mobile-modern.css    # Estilos responsivos
+│   │   └── js/
+│   │       ├── auth-client.js       # Autenticação do cliente
+│   │       └── home-loader.js       # Carregamento dinâmico da home
+│   │
+│   ├── auth/                         # 🔐 AUTENTICAÇÃO
+│   │   ├── login.html               # Página de login (renomeado)
+│   │   └── css/
+│   │       └── auth.css             # Estilos de autenticação
 │   │
 │   └── shared/                       # 🔄 COMPONENTES COMPARTILHADOS
-│       └── login/
-│           └── index.html            # Página de login
+│       ├── js/
+│       │   ├── theme-manager.js     # Gerenciador de temas (único)
+│       │   └── personalizacao-loader.js  # Carrega personalizações
+│       └── config/
+│           └── firebase-config.js   # Configuração Firebase
 │
 ├── assets/                            # Assets globais
 │   ├── icons/                        # Ícones do sistema
@@ -547,6 +548,44 @@ Contribuições são bem-vindas! Para contribuir:
 ---
 
 ## 📝 Changelog
+
+### [4.2.0] - 2026-02-03 - Reestruturação Frontend e Correções Críticas
+#### Reestruturado
+- 📁 **Frontend completamente reorganizado**
+  - Separação clara: `admin/` (painel administrativo), `client/` (área pública), `auth/` (login), `shared/` (componentes compartilhados)
+  - Todos os `index.html` renomeados para nomes descritivos: `home.html`, `login.html`, `dashboard.html`, `servicos.html`, `barbeiros.html`, `agendar.html`
+  - Arquivos duplicados removidos: `firebase-auth.js` (231 linhas), `theme-manager.js` duplicado (194 linhas)
+  - Estrutura de pastas simplificada e intuitiva
+
+#### Corrigido
+- 🐛 **ThemeManager: "init is not a function"**
+  - Scripts com `defer` causavam race condition
+  - Script duplicado `personalizacao-loader.js` causava conflitos
+  - Erros de sintaxe em `servicos.html` e `barbeiros.html` (chaves extras)
+- 🐛 **ThemeManager: "Cannot read properties of null"**
+  - `document.body` era acessado antes do DOM estar pronto
+  - Ciclo de vida do objeto corrigido: body agora inicializa no método `init()`
+  - Validação de segurança adicionada no método `applyTheme()`
+- 🔧 **Backend rotas atualizadas**
+  - Todas as rotas de servir arquivos estáticos ajustadas para nova estrutura
+  - Caminhos de páginas HTML atualizados em `pages.go` e `router.go`
+  - Caminho do Firebase Service Account corrigido
+
+#### Melhorado
+- ⚡ **Performance de carregamento**
+  - Theme Manager carrega sincronicamente (sem defer) para disponibilidade imediata
+  - Cache busting atualizado para `?v=4`
+  - Remoção de scripts duplicados reduziu overhead
+- 📝 **Organização do código**
+  - Indentação corrigida em múltiplos arquivos JavaScript
+  - Logs de debug adicionados para facilitar troubleshooting
+  - Estrutura de pastas mais clara facilita manutenção
+
+#### Removido
+- 🗑️ **Arquivos redundantes eliminados**
+  - `frontend/config/firebase-auth.js` (231 linhas - agora gerenciado pelo backend)
+  - `frontend/client/home/js/theme-manager.js` (194 linhas - duplicado)
+  - `frontend/auth/js/` (pasta vazia)
 
 ### [4.1.0] - 2026-02-02 - Sistema de Personalização e Melhorias UX
 #### Adicionado

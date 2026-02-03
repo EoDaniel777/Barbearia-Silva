@@ -35,10 +35,13 @@ func InitFirebase() error {
 	// Tentativa 2: Arquivo na raiz do projeto (homologação)
 	if serviceAccountPath == "" {
 		// Lista de possíveis locais do arquivo
+		// Paths relativos de backend/cmd/api/ (onde go run é executado)
 		possiblePaths := []string{
+			"../../../barbeariahom-firebase-adminsdk-fbsvc-5776f8b071.json", // Raiz do projeto
 			"./barbeariahom-firebase-adminsdk-fbsvc-5776f8b071.json",
 			"../barbeariahom-firebase-adminsdk-fbsvc-5776f8b071.json",
 			"../../barbeariahom-firebase-adminsdk-fbsvc-5776f8b071.json",
+			"../../../firebase-service-account.json",
 			"./firebase-service-account.json",
 			"../firebase-service-account.json",
 			"./config/firebase-service-account.json",

@@ -11,9 +11,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <!-- Theme Manager -->
-    <script src="/js/theme-manager.js"></script>
+    <script src="/shared/js/theme-manager.js?v=4"></script>
     <!-- Auth Client -->
-    <script src="/js/auth-client.js"></script>
+    <script defer src="/js/auth-client.js?v=2"></script>
 </head>
 <body>
     <!-- Modern Header -->
@@ -115,15 +115,17 @@
 
     <script>
         // Theme Manager - Sistema Global de Tema (sem checkbox, só aplica)
-        if (typeof ThemeManager !== 'undefined') {
-            ThemeManager.init({
-                headerLogoId: 'headerLogo',
-                footerLogoId: 'footerLogo'
-            });
-            console.log('[BARBEIROS] Theme Manager inicializado');
-        } else {
-            console.error('[BARBEIROS] Theme Manager não encontrado');
-        }
+        window.addEventListener('load', function() {
+            if (typeof ThemeManager !== 'undefined') {
+                ThemeManager.init({
+                    headerLogoId: 'headerLogo',
+                    footerLogoId: 'footerLogo'
+                });
+                console.log('[BARBEIROS] Theme Manager inicializado');
+            } else {
+                console.error('[PAGE] Theme Manager não encontrado');
+            }
+        });
 
         // Active nav item
         const currentPage = window.location.pathname;

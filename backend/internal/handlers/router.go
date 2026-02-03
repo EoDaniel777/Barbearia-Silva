@@ -29,12 +29,12 @@ func SetupRouter() *gin.Engine {
 	// ===================================
 	// CLIENT AREA (Clientes/Usuários)
 	// ===================================
-	// Home/Customer frontend
-	router.Static("/css", "../../../frontend/client/home/css")
-	router.Static("/js", "../../../frontend/client/home/js")
-	router.Static("/assets", "../../../frontend/client/home/assets")
-	router.Static("/icons", "../../../frontend/client/home/assets/icons")
-	router.Static("/img", "../../../frontend/client/home/assets/images")
+	// Client frontend (consolidado)
+	router.Static("/css", "../../../frontend/client/css")
+	router.Static("/js", "../../../frontend/client/js")
+	router.Static("/assets", "../../../frontend/client/assets")
+	router.Static("/icons", "../../../frontend/client/assets/icons")
+	router.Static("/img", "../../../frontend/client/assets/images")
 
 	// ===================================
 	// ADMIN AREA (Administrativo)
@@ -47,19 +47,23 @@ func SetupRouter() *gin.Engine {
 	router.Static("/dashboard/img", "../../../frontend/admin/dashboard/assets/images")
 
 	// ===================================
+	// AUTH AREA (Autenticação)
+	// ===================================
+	// Login/Auth pages
+	router.Static("/auth/css", "../../../frontend/auth/css")
+	router.Static("/auth/js", "../../../frontend/auth/js")
+	router.Static("/auth/assets", "../../../frontend/auth/assets")
+
+	// ===================================
 	// SHARED AREA (Compartilhado)
 	// ===================================
-	// Login (shared between client and admin)
-	router.Static("/login/css", "../../../frontend/shared/login/css")
-	router.Static("/login/js", "../../../frontend/shared/login/js")
-	router.Static("/login/assets", "../../../frontend/shared/login/assets")
-
-	// Shared JavaScript modules (fidelidade, etc)
+	// Shared JavaScript modules (fidelidade, theme-manager, personalizacao-loader)
 	router.Static("/shared/js", "../../../frontend/shared/js")
+	router.Static("/shared/config", "../../../frontend/shared/config")
 
 	// Favicon route
 	router.GET("/favicon.ico", func(c *gin.Context) {
-		c.File("../../../frontend/client/home/assets/images/logoSemFundo.png")
+		c.File("../../../frontend/client/assets/images/logoSemFundo.png")
 	})
 
 	// Page routes
