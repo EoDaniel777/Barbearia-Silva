@@ -9,7 +9,6 @@
 (function() {
     'use strict';
 
-    console.log('[AUTH GUARD] Inicializando verificação de autenticação...');
 
     /**
      * Exibe uma notificação toast simples
@@ -90,7 +89,6 @@
                 return false;
             }
 
-            console.log('[AUTH GUARD] ✓ Token válido:', data.email);
             return data;
         } catch (error) {
             console.error('[AUTH GUARD] Erro ao validar token:', error);
@@ -151,7 +149,6 @@
             return false;
         }
 
-        console.log('[AUTH GUARD] ✓ Acesso autorizado');
         return true;
     }
 
@@ -172,5 +169,4 @@
         checkAuth
     };
 
-    console.log('[AUTH GUARD] Proteção de rota ativada');
 })();

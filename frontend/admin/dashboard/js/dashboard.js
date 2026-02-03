@@ -70,11 +70,9 @@ function initSidebarAvatarClick() {
     }
 
     sidebarAvatar.addEventListener('click', () => {
-        console.log('[SIDEBAR AVATAR] Avatar clicado, abrindo modal de perfil');
         openPerfilAdminModal();
     });
 
-    console.log('[SIDEBAR AVATAR] Evento de clique configurado');
 }
 
 function init() {
@@ -1169,19 +1167,15 @@ async function fileToBase64(file) {
         throw new Error('O arquivo deve ser uma imagem');
     }
 
-    console.log('[fileToBase64] Processando arquivo:', file.name, 'Tamanho:', file.size);
 
     try {
         // Método moderno: usar arrayBuffer() - mais confiável
-        console.log('[fileToBase64] Usando File.arrayBuffer()...');
 
         // Ler arquivo como ArrayBuffer
         const arrayBuffer = await file.arrayBuffer();
-        console.log('[fileToBase64] ArrayBuffer lido:', arrayBuffer.byteLength, 'bytes');
 
         // Converter ArrayBuffer para base64
         const base64 = await arrayBufferToBase64(arrayBuffer, file.type);
-        console.log('[fileToBase64] ✓ Conversão bem-sucedida. Base64:', base64.length, 'caracteres');
 
         return base64;
     } catch (error) {
@@ -1426,7 +1420,6 @@ function initThemeToggle() {
             localStorage.setItem('theme', 'dark');
         }
 
-        console.log(`[THEME] Tema alterado para: ${isChecked ? 'light' : 'dark'}`);
     });
 }
 
@@ -1465,13 +1458,10 @@ function loadUserInfo() {
 
         // Update sidebar profile photo
         if (user.foto && sidebarProfileImg && sidebarProfileIcon) {
-            console.log('[LOAD USER INFO] Atualizando foto do sidebar. Tamanho:', user.foto.length);
             sidebarProfileImg.src = user.foto;
             sidebarProfileImg.style.display = 'block';
             sidebarProfileIcon.style.display = 'none';
-            console.log('[LOAD USER INFO] Foto do sidebar atualizada com sucesso');
         } else if (sidebarProfileImg && sidebarProfileIcon) {
-            console.log('[LOAD USER INFO] Usuário não tem foto. Mostrando ícone padrão');
             sidebarProfileImg.style.display = 'none';
             sidebarProfileIcon.style.display = 'block';
         }
@@ -1883,8 +1873,6 @@ function initPerfilPhotoUpload() {
     const previewImg = document.getElementById('perfil-preview-img');
     const placeholder = document.getElementById('perfil-photo-placeholder');
 
-    console.log('[PERFIL ADMIN] Inicializando upload de foto');
-    console.log('[PERFIL ADMIN] Elementos encontrados:', {
         uploadArea: !!uploadArea,
         fileInput: !!fileInput,
         previewImg: !!previewImg,
@@ -1897,20 +1885,17 @@ function initPerfilPhotoUpload() {
     }
 
     uploadArea.addEventListener('click', () => {
-        console.log('[PERFIL ADMIN] Área de upload clicada, abrindo seletor de arquivo');
         fileInput.click();
     });
 
     fileInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
-        console.log('[PERFIL ADMIN] Arquivo selecionado:', file);
 
         if (!file) {
             console.warn('[PERFIL ADMIN] Nenhum arquivo selecionado');
             return;
         }
 
-        console.log('[PERFIL ADMIN] Detalhes do arquivo:', {
             nome: file.name,
             tipo: file.type,
             tamanho: file.size,
@@ -1930,20 +1915,16 @@ function initPerfilPhotoUpload() {
             return;
         }
 
-        console.log('[PERFIL ADMIN] Iniciando leitura do arquivo...');
 
         try {
             const base64 = await fileToBase64(file);
 
-            console.log('[PERFIL ADMIN] Arquivo convertido para base64');
-            console.log('[PERFIL ADMIN] Tamanho do base64:', base64.length, 'caracteres');
 
             currentPerfilPhoto = base64;
             previewImg.src = base64;
             previewImg.style.display = 'block';
             placeholder.style.display = 'none';
 
-            console.log('[PERFIL ADMIN] Preview atualizado com sucesso');
             showToast('Imagem carregada com sucesso', 'success');
         } catch (error) {
             console.error('[PERFIL ADMIN] Erro ao processar imagem:', error);
@@ -2075,7 +2056,6 @@ async function savePerfilAdmin() {
     try {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-        console.log('[PERFIL ADMIN] Enviando atualização de perfil para o servidor...');
         const response = await authFetch(`/api/v1/usuarios/${user.id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -2088,12 +2068,10 @@ async function savePerfilAdmin() {
         }
 
         const data = await response.json();
-        console.log('[PERFIL ADMIN] Perfil atualizado no servidor:', data);
 
         // Atualizar localStorage com dados do servidor
         localStorage.setItem('user', JSON.stringify(data.user));
 
-        console.log('[PERFIL ADMIN] Perfil atualizado. Chamando loadUserInfo()');
         showToast('Perfil atualizado com sucesso!', 'success');
         loadUserInfo(); // Atualizar info no menu
         document.getElementById('perfilAdminModal').classList.remove('active');
@@ -2698,7 +2676,6 @@ function initPersonalizacaoTabs() {
  * Inicializa o sistema de personalização
  */
 async function initPersonalizacao() {
-    console.log('[PERSONALIZAÇÃO] Inicializando...');
 
     // Carregar configurações atuais
     await loadPersonalizacao();
@@ -2722,7 +2699,6 @@ async function initPersonalizacao() {
         });
     }
 
-    console.log('[PERSONALIZAÇÃO] ✓ Inicializado');
 }
 
 /**
@@ -2730,7 +2706,6 @@ async function initPersonalizacao() {
  */
 async function loadPersonalizacao() {
     try {
-        console.log('[PERSONALIZAÇÃO] Carregando configurações...');
 
         const response = await authFetch('/api/v1/personalizacao');
         if (!response.ok) {
@@ -2738,12 +2713,10 @@ async function loadPersonalizacao() {
         }
 
         const data = await response.json();
-        console.log('[PERSONALIZAÇÃO] Configurações carregadas:', data);
 
         // Preencher campos do formulário
         populatePersonalizacaoForm(data);
 
-        console.log('[PERSONALIZAÇÃO] ✓ Formulário preenchido');
     } catch (error) {
         console.error('[PERSONALIZAÇÃO] Erro ao carregar:', error);
         showPersonalizacaoStatus('Erro ao carregar configurações', 'error');
@@ -2847,7 +2820,6 @@ function setCheckboxValue(id, value) {
  */
 async function savePersonalizacao() {
     try {
-        console.log('[PERSONALIZAÇÃO] Salvando configurações...');
 
         const formData = {};
 
@@ -2874,7 +2846,6 @@ async function savePersonalizacao() {
         // Adicionar imagem de banner (sempre enviar, mesmo que vazia para remover)
         formData.banner_imagem = bannerImageBase64 || '';
 
-        console.log('[PERSONALIZAÇÃO] Dados a enviar:', formData);
 
         const response = await authFetch('/api/v1/personalizacao', {
             method: 'PUT',
@@ -2887,7 +2858,6 @@ async function savePersonalizacao() {
         }
 
         const result = await response.json();
-        console.log('[PERSONALIZAÇÃO] ✓ Salvo com sucesso:', result);
 
         showPersonalizacaoStatus('✓ Configurações salvas com sucesso!', 'success');
         showToast('Personalização atualizada!', 'success');
@@ -2907,7 +2877,6 @@ async function savePersonalizacao() {
  */
 async function resetPersonalizacao() {
     try {
-        console.log('[PERSONALIZAÇÃO] Restaurando configurações padrão...');
 
         const response = await authFetch('/api/v1/personalizacao/reset', {
             method: 'DELETE'
@@ -2918,7 +2887,6 @@ async function resetPersonalizacao() {
         }
 
         const result = await response.json();
-        console.log('[PERSONALIZAÇÃO] ✓ Restaurado:', result);
 
         showPersonalizacaoStatus('✓ Configurações restauradas para o padrão!', 'success');
         showToast('Configurações restauradas!', 'success');
@@ -2966,11 +2934,9 @@ function initBannerImageUpload() {
     const removeBtn = document.getElementById('banner-remove-image');
 
     if (!uploadArea || !fileInput || !previewImg || !placeholder) {
-        console.log('[BANNER IMAGE] Elementos não encontrados');
         return;
     }
 
-    console.log('[BANNER IMAGE] Inicializando upload de imagem');
 
     // Click para selecionar arquivo
     uploadArea.addEventListener('click', () => {
@@ -3018,18 +2984,15 @@ function initBannerImageUpload() {
             placeholder.style.display = 'block';
             removeBtn.style.display = 'none';
             fileInput.value = '';
-            console.log('[BANNER IMAGE] Imagem removida');
         });
     }
 
-    console.log('[BANNER IMAGE] ✓ Upload inicializado');
 }
 
 /**
  * Processa a imagem de banner selecionada
  */
 function processarImagemBanner(file) {
-    console.log('[BANNER IMAGE] Processando imagem:', file.name, file.size);
 
     // Validar tamanho (máx 2MB)
     if (file.size > 2 * 1024 * 1024) {
@@ -3056,7 +3019,6 @@ function processarImagemBanner(file) {
             }
         }
 
-        console.log('[BANNER IMAGE] ✓ Imagem processada, tamanho:', bannerImageBase64.length);
         showToast('Imagem carregada! Clique em Salvar para aplicar', 'success');
     };
 

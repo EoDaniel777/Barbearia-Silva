@@ -11,6 +11,7 @@
 /backend/cmd/api/api
 /backend/cmd/api/main
 /backend/cmd/api/server
+/backend/cmd/api/barbearia-api
 
 # Banco de dados local (desenvolvimento)
 *.db

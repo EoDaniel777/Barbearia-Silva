@@ -54,7 +54,6 @@ async function carregarDadosAuxiliares() {
         servicosCache = await resServicos.json();
         usuariosCache = await resUsuarios.json();
 
-        console.log('✓ Dados auxiliares carregados:', {
             barbeiros: barbeirosCache.length,
             servicos: servicosCache.length,
             usuarios: usuariosCache.length
@@ -209,7 +208,6 @@ async function carregarHistoricoComandas() {
             </table>
         `;
 
-        console.log('✓ Histórico carregado:', historico.length, 'comandas');
     } catch (error) {
         console.error('Erro ao carregar histórico:', error);
     }
@@ -246,7 +244,6 @@ async function abrirNovaComanda() {
         const emAtendimento = data.emAtendimento || [];
         const outros = data.outros || [];
 
-        console.log('✓ Usuários carregados:', {
             emAtendimento: emAtendimento.length,
             outros: outros.length
         });

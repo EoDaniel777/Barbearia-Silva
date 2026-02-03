@@ -17,13 +17,11 @@
         footerLogo: null
     };
 
-    console.log('[THEME MANAGER] Inicializado. Tema atual:', currentTheme);
 
     /**
      * Inicializa o gerenciador de tema
      */
     function init(config = {}) {
-        console.log('[THEME MANAGER] Inicializando com config:', config);
 
         // Configurar elementos (incluindo body que agora já existe)
         elements.body = document.body;
@@ -32,7 +30,6 @@
         elements.heroLogo = document.getElementById(config.heroLogoId || 'heroLogo');
         elements.footerLogo = document.getElementById(config.footerLogoId || 'footerLogo');
 
-        console.log('[THEME MANAGER] Elementos configurados:', {
             checkbox: !!elements.checkbox,
             headerLogo: !!elements.headerLogo,
             heroLogo: !!elements.heroLogo,
@@ -48,7 +45,6 @@
         // Sincronizar com outras abas
         setupStorageSync();
 
-        console.log('[THEME MANAGER] ✓ Inicialização concluída');
     }
 
     /**
@@ -56,10 +52,8 @@
      */
     function setupEvents() {
         if (elements.checkbox) {
-            console.log('[THEME MANAGER] Checkbox encontrado, adicionando listener');
             elements.checkbox.addEventListener('change', function(e) {
                 const newTheme = e.target.checked ? 'light' : 'dark';
-                console.log('[THEME MANAGER] ✓ Checkbox alterado! Novo tema:', newTheme);
                 toggleTheme(newTheme);
             });
         } else {
@@ -74,7 +68,6 @@
         // Escutar mudanças no localStorage de outras abas
         window.addEventListener('storage', function(e) {
             if (e.key === THEME_KEY && e.newValue) {
-                console.log('[THEME MANAGER] Tema alterado em outra aba:', e.newValue);
                 currentTheme = e.newValue;
                 applyTheme(currentTheme);
             }
@@ -85,11 +78,9 @@
      * Alterna o tema
      */
     function toggleTheme(theme) {
-        console.log('[THEME MANAGER] ► toggleTheme chamado com:', theme);
         currentTheme = theme;
         applyTheme(theme);
         saveTheme(theme);
-        console.log('[THEME MANAGER] ✓ Tema alternado para:', theme);
     }
 
     /**
@@ -97,7 +88,6 @@
      */
     function saveTheme(theme) {
         localStorage.setItem(THEME_KEY, theme);
-        console.log('[THEME MANAGER] Tema salvo:', theme);
     }
 
     /**
@@ -113,15 +103,12 @@
      * Aplica o tema na página
      */
     function applyTheme(theme) {
-        console.log('[THEME MANAGER] ► Aplicando tema:', theme);
 
         if (theme === 'light') {
             // Modo Claro
-            console.log('[THEME MANAGER] Aplicando modo CLARO');
 
             if (!elements.body.classList.contains('theme-white')) {
                 elements.body.classList.add('theme-white');
-                console.log('[THEME MANAGER] ✓ Classe "theme-white" adicionada');
             }
 
             if (elements.checkbox) {
@@ -138,11 +125,9 @@
 
         } else {
             // Modo Escuro
-            console.log('[THEME MANAGER] Aplicando modo ESCURO');
 
             if (elements.body.classList.contains('theme-white')) {
                 elements.body.classList.remove('theme-white');
-                console.log('[THEME MANAGER] ✓ Classe "theme-white" removida');
             }
 
             if (elements.checkbox) {
@@ -158,7 +143,6 @@
             });
         }
 
-        console.log('[THEME MANAGER] ✓ Tema aplicado. Body classes:', elements.body.className);
     }
 
     /**
@@ -206,6 +190,5 @@
         isDarkMode: isDarkMode
     };
 
-    console.log('[THEME MANAGER] API exposta globalmente');
 
 })();

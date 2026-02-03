@@ -6,7 +6,6 @@
 (function() {
     'use strict';
 
-    console.log('[FIDELIDADE] Sistema de fidelidade inicializado');
 
     /**
      * Verifica se o cliente tem direito a corte grátis
@@ -18,7 +17,6 @@
      */
     async function verificarFidelidade(clienteNome, clienteTelefone, barbeiroId) {
         try {
-            console.log('[FIDELIDADE] Verificando fidelidade:', {
                 cliente: clienteNome,
                 telefone: clienteTelefone,
                 barbeiroId
@@ -38,7 +36,6 @@
             }
 
             const resultado = await response.json();
-            console.log('[FIDELIDADE] Resultado:', resultado);
 
             return {
                 temDireito: resultado.temDireito,
@@ -65,7 +62,6 @@
         const agora = Date.now();
 
         if (ultimoToast && (agora - parseInt(ultimoToast)) < 60000) {
-            console.log('[FIDELIDADE] Toast já exibido recentemente, pulando...');
             return;
         }
 
@@ -128,7 +124,6 @@
             document.head.appendChild(style);
         }
 
-        console.log('[FIDELIDADE] ✅ Toast de fidelidade exibido!');
     }
 
     /**
@@ -146,7 +141,6 @@
             horario.barbeiro_id
         );
 
-        console.log('[FIDELIDADE] Resultado da verificação:', resultado);
 
         if (resultado.temDireito) {
             exibirToastFidelidade(resultado.total);
@@ -193,5 +187,4 @@
         verificarAposConclusao
     };
 
-    console.log('[FIDELIDADE] API exposta globalmente');
 })();

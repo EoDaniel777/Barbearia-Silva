@@ -7,7 +7,6 @@
 (function() {
     'use strict';
 
-    console.log('[PERSONALIZAÇÃO LOADER] Inicializando...');
 
     let personalizacaoConfig = null;
 
@@ -16,7 +15,6 @@
      */
     async function loadPersonalizacao() {
         try {
-            console.log('[PERSONALIZAÇÃO LOADER] Buscando configurações...');
 
             const response = await fetch('/api/v1/personalizacao');
             if (!response.ok) {
@@ -24,7 +22,6 @@
             }
 
             personalizacaoConfig = await response.json();
-            console.log('[PERSONALIZAÇÃO LOADER] Configurações carregadas:', personalizacaoConfig);
 
             // Aplicar todas as personalizações
             aplicarCores();
@@ -33,7 +30,6 @@
             aplicarBanner();
             aplicarRedesSociais();
 
-            console.log('[PERSONALIZAÇÃO LOADER] ✓ Personalizações aplicadas');
 
         } catch (error) {
             console.error('[PERSONALIZAÇÃO LOADER] Erro ao carregar:', error);
@@ -56,26 +52,22 @@
             root.style.setProperty('--cor-primaria', personalizacaoConfig.cor_primaria);
             root.style.setProperty('--primary', personalizacaoConfig.cor_primaria);
             root.style.setProperty('--primary-color', personalizacaoConfig.cor_primaria);
-            console.log('[PERSONALIZAÇÃO LOADER] Cor primária aplicada:', personalizacaoConfig.cor_primaria);
         }
 
         if (personalizacaoConfig.cor_secundaria) {
             root.style.setProperty('--cor-secundaria', personalizacaoConfig.cor_secundaria);
             root.style.setProperty('--secondary', personalizacaoConfig.cor_secundaria);
             root.style.setProperty('--primary-dark', personalizacaoConfig.cor_secundaria);
-            console.log('[PERSONALIZAÇÃO LOADER] Cor secundária aplicada:', personalizacaoConfig.cor_secundaria);
         }
 
         if (personalizacaoConfig.cor_destaque) {
             root.style.setProperty('--cor-destaque', personalizacaoConfig.cor_destaque);
             root.style.setProperty('--accent', personalizacaoConfig.cor_destaque);
-            console.log('[PERSONALIZAÇÃO LOADER] Cor destaque aplicada:', personalizacaoConfig.cor_destaque);
         }
 
         if (personalizacaoConfig.cor_header) {
             root.style.setProperty('--cor-header', personalizacaoConfig.cor_header);
             root.style.setProperty('--bg-dark', personalizacaoConfig.cor_header);
-            console.log('[PERSONALIZAÇÃO LOADER] Cor header aplicada:', personalizacaoConfig.cor_header);
         }
 
         if (personalizacaoConfig.cor_texto) {
@@ -88,8 +80,6 @@
             root.style.setProperty('--text-light', personalizacaoConfig.cor_texto_claro);
         }
 
-        console.log('[PERSONALIZAÇÃO LOADER] ✓ Cores aplicadas com sucesso');
-        console.log('[PERSONALIZAÇÃO LOADER] Variáveis CSS atualizadas:', {
             '--cor-primaria': getComputedStyle(root).getPropertyValue('--cor-primaria'),
             '--cor-secundaria': getComputedStyle(root).getPropertyValue('--cor-secundaria'),
             '--cor-destaque': getComputedStyle(root).getPropertyValue('--cor-destaque'),
@@ -107,21 +97,18 @@
         const headerLogo = document.getElementById('headerLogo');
         if (headerLogo && personalizacaoConfig.logo_escuro) {
             headerLogo.src = personalizacaoConfig.logo_escuro;
-            console.log('[PERSONALIZAÇÃO LOADER] Logo do header atualizada');
         }
 
         // Logo da hero section
         const heroLogo = document.getElementById('heroLogo');
         if (heroLogo && personalizacaoConfig.logo_escuro) {
             heroLogo.src = personalizacaoConfig.logo_escuro;
-            console.log('[PERSONALIZAÇÃO LOADER] Logo da hero section atualizada');
         }
 
         // Logo do footer
         const footerLogo = document.getElementById('footerLogo');
         if (footerLogo && personalizacaoConfig.logo_escuro) {
             footerLogo.src = personalizacaoConfig.logo_escuro;
-            console.log('[PERSONALIZAÇÃO LOADER] Logo do footer atualizada');
         }
 
         // Atualizar favicon se disponível
@@ -133,10 +120,8 @@
                 document.head.appendChild(favicon);
             }
             favicon.href = personalizacaoConfig.favicon;
-            console.log('[PERSONALIZAÇÃO LOADER] Favicon atualizado');
         }
 
-        console.log('[PERSONALIZAÇÃO LOADER] ✓ Logos aplicadas');
     }
 
     /**
@@ -189,7 +174,6 @@
             });
         }
 
-        console.log('[PERSONALIZAÇÃO LOADER] ✓ Textos aplicados');
     }
 
     /**
@@ -230,18 +214,14 @@
 
             // Aplicar imagem de fundo do banner
             if (personalizacaoConfig.banner_imagem && personalizacaoConfig.banner_imagem.length > 10) {
-                console.log('[PERSONALIZAÇÃO LOADER] Aplicando imagem de banner, tamanho:', personalizacaoConfig.banner_imagem.length);
                 hero.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${personalizacaoConfig.banner_imagem})`;
                 hero.style.backgroundSize = 'cover';
                 hero.style.backgroundPosition = 'center';
                 hero.style.backgroundRepeat = 'no-repeat';
-                console.log('[PERSONALIZAÇÃO LOADER] ✓ Imagem de fundo aplicada ao banner');
             } else {
-                console.log('[PERSONALIZAÇÃO LOADER] Sem imagem de banner ou imagem vazia');
             }
         }
 
-        console.log('[PERSONALIZAÇÃO LOADER] ✓ Banner personalizado');
     }
 
     /**
@@ -263,7 +243,6 @@
         const socialContainer = document.querySelector('.social-media');
 
         if (!socialContainer) {
-            console.log('[PERSONALIZAÇÃO LOADER] Container .social-media não encontrado');
             return;
         }
 
@@ -398,7 +377,6 @@
             socialContainer.appendChild(link);
         });
 
-        console.log('[PERSONALIZAÇÃO LOADER] ✓ Redes sociais aplicadas');
     }
 
 
@@ -415,5 +393,4 @@
         loadPersonalizacao();
     }
 
-    console.log('[PERSONALIZAÇÃO LOADER] API exposta globalmente');
 })();
