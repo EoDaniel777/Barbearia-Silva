@@ -29,17 +29,36 @@ async function loadComandas() {
 // Carregar barbeiros, serviços e usuários
 async function carregarDadosAuxiliares() {
     try {
-        // Barbeiros
-        const resBarbeiros = await fetch('/api/v1/barbeiros');
+        const token = localStorage.getItem('token');
+        const headers = {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        };
+
+        // ✅ Chamadas paralelas com autenticação
+        const [resBarbeiros, resServicos, resUsuarios] = await Promise.all([
+            fetch('/api/v1/barbeiros', { headers }),
+            fetch('/api/v1/servicos', { headers }),
+            fetch('/api/v1/usuarios', { headers })
+        ]);
+
+        // Verificar erros de autenticação
+        if (resBarbeiros.status === 401 || resServicos.status === 401 || resUsuarios.status === 401) {
+            alert('Sessão expirada. Faça login novamente.');
+            localStorage.clear();
+            window.location.href = '/login';
+            return;
+        }
+
         barbeirosCache = await resBarbeiros.json();
-
-        // Serviços e produtos
-        const resServicos = await fetch('/api/v1/servicos');
         servicosCache = await resServicos.json();
-
-        // Usuários
-        const resUsuarios = await fetch('/api/v1/usuarios');
         usuariosCache = await resUsuarios.json();
+
+        console.log('✓ Dados auxiliares carregados:', {
+            barbeiros: barbeirosCache.length,
+            servicos: servicosCache.length,
+            usuarios: usuariosCache.length
+        });
     } catch (error) {
         console.error('Erro ao carregar dados auxiliares:', error);
     }
@@ -48,7 +67,20 @@ async function carregarDadosAuxiliares() {
 // Carregar comandas abertas
 async function carregarComandasAbertas() {
     try {
-        const response = await fetch('/api/v1/comandas?status=aberta');
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/v1/comandas?status=aberta', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.status === 401) {
+            alert('Sessão expirada. Faça login novamente.');
+            localStorage.clear();
+            window.location.href = '/login';
+            return;
+        }
+
         const comandas = await response.json();
 
         const container = document.getElementById('comandas-abertas-list');
@@ -97,7 +129,20 @@ async function carregarComandasAbertas() {
 // Carregar resumo do dia
 async function carregarResumoDia() {
     try {
-        const response = await fetch('/api/v1/comandas/relatorio/dia');
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/v1/comandas/relatorio/dia', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.status === 401) {
+            alert('Sessão expirada. Faça login novamente.');
+            localStorage.clear();
+            window.location.href = '/login';
+            return;
+        }
+
         const resumo = await response.json();
 
         document.getElementById('resumo-abertas').textContent = resumo.comandasAbertas || 0;
@@ -111,19 +156,32 @@ async function carregarResumoDia() {
 // Carregar histórico de comandas
 async function carregarHistoricoComandas() {
     try {
-        const response = await fetch('/api/v1/comandas');
-        const comandas = await response.json();
+        const token = localStorage.getItem('token');
+
+        // ✅ Backend filtra múltiplos status (fechada,cancelada)
+        const response = await fetch('/api/v1/comandas?status=fechada,cancelada', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.status === 401) {
+            alert('Sessão expirada. Faça login novamente.');
+            localStorage.clear();
+            window.location.href = '/login';
+            return;
+        }
+
+        const historico = await response.json();
 
         const container = document.getElementById('comandas-historico-list');
-
-        // Filtrar apenas fechadas e canceladas para o histórico
-        const historico = comandas.filter(cmd => cmd.status === 'fechada' || cmd.status === 'cancelada');
 
         if (historico.length === 0) {
             container.innerHTML = '<p class="empty-message">Nenhuma comanda no histórico</p>';
             return;
         }
 
+        // Limitar a 20 primeiros
         container.innerHTML = `
             <table>
                 <thead>
@@ -150,6 +208,8 @@ async function carregarHistoricoComandas() {
                 </tbody>
             </table>
         `;
+
+        console.log('✓ Histórico carregado:', historico.length, 'comandas');
     } catch (error) {
         console.error('Erro ao carregar histórico:', error);
     }
@@ -166,85 +226,68 @@ async function abrirNovaComanda() {
         }
     });
 
-    // Buscar agendamentos para o horário atual (próxima 1 hora)
-    const agora = new Date();
-    const horaAtual = agora.getHours();
-    const minutoAtual = agora.getMinutes();
-
-    let horariosAtuais = [];
+    // ✅ OTIMIZAÇÃO: Buscar usuários agendados do backend (já filtrados e organizados)
     try {
-        const response = await fetch('/api/v1/horarios');
-        const todosHorarios = await response.json();
-
-        // Filtrar agendamentos confirmados para hoje
-        horariosAtuais = todosHorarios.filter(h => {
-            if (h.status !== 'confirmado') return false;
-
-            const dataHorario = new Date(h.dataHora);
-            const hoje = new Date();
-
-            // Verificar se é hoje
-            if (dataHorario.toDateString() !== hoje.toDateString()) return false;
-
-            // Verificar se está dentro da próxima hora
-            const horaAgendamento = dataHorario.getHours();
-            const minutoAgendamento = dataHorario.getMinutes();
-
-            const diferencaMinutos = (horaAgendamento * 60 + minutoAgendamento) - (horaAtual * 60 + minutoAtual);
-
-            // Agendamentos de -15min até +60min
-            return diferencaMinutos >= -15 && diferencaMinutos <= 60;
-        });
-    } catch (error) {
-        console.error('Erro ao buscar agendamentos:', error);
-    }
-
-    // Preencher select de usuários
-    const selectUsuario = document.getElementById('comanda-usuario-novo');
-    selectUsuario.innerHTML = '';
-
-    // Adicionar usuários com agendamento primeiro
-    if (horariosAtuais.length > 0) {
-        selectUsuario.innerHTML += '<optgroup label="💈 Em Atendimento / Agendados">';
-        horariosAtuais.forEach(h => {
-            const usuario = usuariosCache.find(u => u.telefone === h.telefone);
-            if (usuario) {
-                const horaAgendamento = new Date(h.dataHora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                selectUsuario.innerHTML += `<option value="agendado-${h.id}" data-usuario-id="${usuario.id}">⭐ ${usuario.nome} (${horaAgendamento})</option>`;
-            } else {
-                // Se não encontrou usuário cadastrado, mas tem agendamento
-                const horaAgendamento = new Date(h.dataHora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                selectUsuario.innerHTML += `<option value="walk-in-${h.id}" data-nome="${h.nomeCliente}">⭐ ${h.nomeCliente} (${horaAgendamento})</option>`;
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/v1/usuarios/agendados', {
+            headers: {
+                'Authorization': `Bearer ${token}`
             }
         });
-        selectUsuario.innerHTML += '</optgroup>';
-    }
 
-    // Adicionar todos os outros usuários
-    if (usuariosCache.length > 0) {
-        selectUsuario.innerHTML += '<optgroup label="👥 Todos os usuários">';
-        usuariosCache.forEach(usuario => {
-            // Não duplicar se já está na lista de agendados
-            const jaListado = horariosAtuais.some(h => {
-                const u = usuariosCache.find(u => u.telefone === h.telefone);
-                return u && u.id === usuario.id;
+        if (response.status === 401) {
+            alert('Sessão expirada. Faça login novamente.');
+            localStorage.clear();
+            window.location.href = '/login';
+            return;
+        }
+
+        const data = await response.json();
+        const emAtendimento = data.emAtendimento || [];
+        const outros = data.outros || [];
+
+        console.log('✓ Usuários carregados:', {
+            emAtendimento: emAtendimento.length,
+            outros: outros.length
+        });
+
+        // Preencher select de usuários
+        const selectUsuario = document.getElementById('comanda-usuario-novo');
+        selectUsuario.innerHTML = '';
+
+        // Adicionar usuários com agendamento primeiro
+        if (emAtendimento.length > 0) {
+            selectUsuario.innerHTML += '<optgroup label="💈 Em Atendimento / Agendados">';
+            emAtendimento.forEach(agendado => {
+                const nome = agendado.nome;
+                const hora = agendado.hora_agendada;
+                const value = agendado.usuario_id ? agendado.usuario_id : `walk-in-${agendado.agendamento_id}`;
+
+                selectUsuario.innerHTML += `<option value="${value}" data-agendamento-id="${agendado.agendamento_id}">⭐ ${nome} (${hora})</option>`;
             });
+            selectUsuario.innerHTML += '</optgroup>';
+        }
 
-            if (!jaListado) {
+        // Adicionar todos os outros usuários
+        if (outros.length > 0) {
+            selectUsuario.innerHTML += '<optgroup label="👥 Todos os usuários">';
+            outros.forEach(usuario => {
                 selectUsuario.innerHTML += `<option value="${usuario.id}">${usuario.nome} - ${usuario.email}</option>`;
-            }
-        });
-        selectUsuario.innerHTML += '</optgroup>';
-    }
+            });
+            selectUsuario.innerHTML += '</optgroup>';
+        }
 
-    // Se não houver nenhum usuário, mostrar mensagem
-    if (horariosAtuais.length === 0 && usuariosCache.length === 0) {
-        selectUsuario.innerHTML = '<option value="">Nenhum usuário disponível</option>';
-    }
+        // Se não houver nenhum usuário, mostrar mensagem
+        if (emAtendimento.length === 0 && outros.length === 0) {
+            selectUsuario.innerHTML = '<option value="">Nenhum usuário disponível</option>';
+        }
 
-    // Auto-selecionar o primeiro agendamento se houver
-    if (horariosAtuais.length > 0) {
-        selectUsuario.selectedIndex = 1; // Primeiro usuário (pula o optgroup)
+        // Auto-selecionar o primeiro agendamento se houver
+        if (emAtendimento.length > 0) {
+            selectUsuario.selectedIndex = 1; // Primeiro usuário (pula o optgroup)
+        }
+    } catch (error) {
+        console.error('Erro ao buscar usuários agendados:', error);
     }
 
     // Limpar formulário
@@ -310,14 +353,24 @@ function initNovaComandaModal() {
         }
 
         // Se tem agendamento, buscar o serviço
+        const token = localStorage.getItem('token');
+        const authHeaders = {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        };
+
         if (agendamentoId) {
             try {
-                const resHorarios = await fetch('/api/v1/horarios');
+                const resHorarios = await fetch('/api/v1/horarios', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
                 const horarios = await resHorarios.json();
                 const agendamento = horarios.find(h => h.id === agendamentoId);
 
                 if (agendamento && agendamento.servicoID) {
-                    const resServico = await fetch(`/api/v1/servicos/${agendamento.servicoID}`);
+                    const resServico = await fetch(`/api/v1/servicos/${agendamento.servicoID}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
                     servicoAgendado = await resServico.json();
                 }
             } catch (error) {
@@ -331,12 +384,19 @@ function initNovaComandaModal() {
 
             const response = await fetch('/api/v1/comandas', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: authHeaders,
                 body: JSON.stringify({
                     clienteNome: clienteNome,
                     barbeiroId: parseInt(barbeiroId)
                 })
             });
+
+            if (response.status === 401) {
+                alert('Sessão expirada. Faça login novamente.');
+                localStorage.clear();
+                window.location.href = '/login';
+                return;
+            }
 
             if (response.ok) {
                 const result = await response.json();
@@ -346,7 +406,7 @@ function initNovaComandaModal() {
                 if (servicoAgendado) {
                     await fetch(`/api/v1/comandas/${comandaId}/itens`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: authHeaders,
                         body: JSON.stringify({
                             tipo: 'servico',
                             itemId: servicoAgendado.id,
@@ -382,7 +442,12 @@ function initNovaComandaModal() {
 // Gerenciar comanda (adicionar/remover itens)
 async function gerenciarComanda(id) {
     try {
-        const response = await fetch(`/api/v1/comandas/${id}`);
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/v1/comandas/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
         if (!response.ok) {
             showToast('Comanda não encontrada', 'error');
             return;
@@ -518,9 +583,13 @@ async function adicionarItemComanda() {
     const preco = parseFloat(option.dataset.preco);
 
     try {
+        const token = localStorage.getItem('token');
         const response = await fetch(`/api/v1/comandas/${comandaAtual.id}/itens`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
                 tipo: tipo,
                 itemId: parseInt(itemId),
@@ -557,8 +626,12 @@ async function removerItemComanda(itemId) {
     if (!confirmed) return;
 
     try {
+        const token = localStorage.getItem('token');
         const response = await fetch(`/api/v1/comandas/${comandaAtual.id}/itens/${itemId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
         });
 
         if (response.ok) {
@@ -610,9 +683,13 @@ async function confirmarFecharComanda() {
     }
 
     try {
+        const token = localStorage.getItem('token');
         const response = await fetch(`/api/v1/comandas/${comandaAtual.id}/fechar`, {
             method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
                 formaPagamento: formaPagamento,
                 observacoesPgto: observacoes
@@ -642,8 +719,12 @@ async function cancelarComanda() {
     if (!confirmed) return;
 
     try {
+        const token = localStorage.getItem('token');
         const response = await fetch(`/api/v1/comandas/${comandaAtual.id}/cancelar`, {
-            method: 'PATCH'
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
         });
 
         if (response.ok) {

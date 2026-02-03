@@ -177,7 +177,14 @@
             const botoes = document.querySelectorAll('.btn-agendar, .hero-btn, [href="/agendar"]');
             botoes.forEach(btn => {
                 if (btn.textContent.includes('Agendar')) {
-                    btn.textContent = personalizacaoConfig.texto_botao_agendar;
+                    // Se o botão tem um <span>, atualizar apenas o span (preserva ícone)
+                    const span = btn.querySelector('span');
+                    if (span) {
+                        span.textContent = personalizacaoConfig.texto_botao_agendar;
+                    } else {
+                        // Se não tem span, atualizar o textContent normalmente
+                        btn.textContent = personalizacaoConfig.texto_botao_agendar;
+                    }
                 }
             });
         }

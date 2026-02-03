@@ -10,10 +10,11 @@
 
     /**
      * Verifica se o cliente tem direito a corte grátis
+     * VERSÃO OTIMIZADA - Usa endpoint dedicado no backend
      * @param {string} clienteNome - Nome do cliente
      * @param {string} clienteTelefone - Telefone do cliente
      * @param {number} barbeiroId - ID do barbeiro
-     * @returns {Promise<{temDireito: boolean, total: number}>}
+     * @returns {Promise<{temDireito: boolean, total: number, proximoGratis: number}>}
      */
     async function verificarFidelidade(clienteNome, clienteTelefone, barbeiroId) {
         try {
@@ -23,36 +24,26 @@
                 barbeiroId
             });
 
-            // Buscar todos os horários do cliente
-            const response = await fetch('/api/v1/horarios');
+            // Construir query params
+            const params = new URLSearchParams();
+            if (clienteNome) params.append('cliente_nome', clienteNome);
+            if (clienteTelefone) params.append('telefone', clienteTelefone);
+            params.append('barbeiro_id', barbeiroId);
+
+            // ✅ OTIMIZAÇÃO: Endpoint dedicado que retorna apenas o resultado calculado
+            const response = await fetch(`/api/v1/horarios/fidelidade?${params.toString()}`);
+
             if (!response.ok) {
-                throw new Error('Erro ao buscar horários');
+                throw new Error(`Erro ao verificar fidelidade: ${response.status}`);
             }
 
-            const horarios = await response.json();
-            console.log('[FIDELIDADE] Total de horários:', horarios.length);
-
-            // Filtrar horários concluídos do cliente com o barbeiro específico
-            const cortesRealizados = horarios.filter(h => {
-                const mesmoCliente = h.cliente_nome && h.cliente_nome.toLowerCase() === clienteNome.toLowerCase();
-                const mesmoTelefone = h.telefone && h.telefone === clienteTelefone;
-                const mesmoBarbeiro = h.barbeiro_id === barbeiroId;
-                const concluido = h.status === 'concluido';
-
-                return (mesmoCliente || mesmoTelefone) && mesmoBarbeiro && concluido;
-            });
-
-            const totalCortes = cortesRealizados.length;
-            console.log('[FIDELIDADE] Cortes realizados:', totalCortes);
-            console.log('[FIDELIDADE] Detalhes:', cortesRealizados);
-
-            // Verificar se completou múltiplo de 10 (10, 20, 30...)
-            const temDireito = totalCortes > 0 && totalCortes % 10 === 0;
+            const resultado = await response.json();
+            console.log('[FIDELIDADE] Resultado:', resultado);
 
             return {
-                temDireito,
-                total: totalCortes,
-                proximoGratis: 10 - (totalCortes % 10)
+                temDireito: resultado.temDireito,
+                total: resultado.total,
+                proximoGratis: resultado.proximoGratis
             };
         } catch (error) {
             console.error('[FIDELIDADE] Erro ao verificar fidelidade:', error);

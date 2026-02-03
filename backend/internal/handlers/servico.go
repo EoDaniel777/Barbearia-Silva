@@ -15,20 +15,58 @@ func NewServicoHandler() *ServicoHandler {
 	return &ServicoHandler{}
 }
 
-// List all services
+// List all services com filtros opcionais
+// Query params: ?tipo=servico|produto&limit=4&ativo=true|false
 func (h *ServicoHandler) List(c *gin.Context) {
 	// Adicionar headers para prevenir cache do navegador
 	c.Header("Cache-Control", "no-cache, no-store, must-revalidate")
 	c.Header("Pragma", "no-cache")
 	c.Header("Expires", "0")
 
-	rows, err := database.DB.Query(`
+	// Query params
+	tipoFiltro := c.Query("tipo")        // "servico" ou "produto"
+	limitStr := c.Query("limit")         // Limite de resultados
+	ativoFiltro := c.DefaultQuery("ativo", "true") // Padrão: apenas ativos
+
+	log.Printf("[ServicoHandler] List - Filtros: tipo=%s, limit=%s, ativo=%s",
+		tipoFiltro, limitStr, ativoFiltro)
+
+	// Construir query dinamicamente
+	query := `
 		SELECT id, nome, tipo, descricao, preco, duracao, foto, ativo, criado_em, atualizado_em
 		FROM servicos
-		WHERE ativo = 1
-		ORDER BY nome ASC
-	`)
+		WHERE 1=1
+	`
+	args := []interface{}{}
+
+	// Filtro de ativo
+	if ativoFiltro == "true" {
+		query += " AND ativo = 1"
+	} else if ativoFiltro == "false" {
+		query += " AND ativo = 0"
+	}
+	// Se não especificar, retorna todos (ativos e inativos)
+
+	// Filtro de tipo
+	if tipoFiltro != "" {
+		query += " AND tipo = ?"
+		args = append(args, tipoFiltro)
+	}
+
+	// Ordenação
+	query += " ORDER BY nome ASC"
+
+	// Limite de resultados
+	if limitStr != "" {
+		query += " LIMIT ?"
+		args = append(args, limitStr)
+	}
+
+	log.Printf("[ServicoHandler] Query: %s | Args: %v", query, args)
+
+	rows, err := database.DB.Query(query, args...)
 	if err != nil {
+		log.Printf("[ServicoHandler] Erro ao buscar: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao buscar serviços"})
 		return
 	}
@@ -41,6 +79,7 @@ func (h *ServicoHandler) List(c *gin.Context) {
 
 		err := rows.Scan(&s.ID, &s.Nome, &tipo, &descricao, &s.Preco, &s.Duracao, &foto, &s.Ativo, &s.CreatedAt, &s.UpdatedAt)
 		if err != nil {
+			log.Printf("[ServicoHandler] Erro no scan: %v", err)
 			continue
 		}
 
@@ -60,6 +99,7 @@ func (h *ServicoHandler) List(c *gin.Context) {
 		servicos = append(servicos, s)
 	}
 
+	log.Printf("[ServicoHandler] ✓ Retornando %d serviços", len(servicos))
 	c.JSON(http.StatusOK, servicos)
 }
 

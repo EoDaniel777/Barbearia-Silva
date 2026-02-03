@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -12,8 +13,9 @@ import (
 )
 
 // ListarComandas retorna todas as comandas
+// Suporta múltiplos status: ?status=fechada,cancelada
 func ListarComandas(c *gin.Context) {
-	status := c.Query("status") // filtrar por status (aberta, fechada, cancelada)
+	statusParam := c.Query("status") // filtrar por status (aberta, fechada, cancelada) - aceita múltiplos separados por vírgula
 
 	query := `
 		SELECT
@@ -27,9 +29,25 @@ func ListarComandas(c *gin.Context) {
 
 	args := []interface{}{}
 
-	if status != "" {
-		query += " WHERE c.status = ?"
-		args = append(args, status)
+	if statusParam != "" {
+		// Suporte a múltiplos status separados por vírgula
+		statusList := strings.Split(statusParam, ",")
+
+		if len(statusList) == 1 {
+			// Apenas 1 status
+			query += " WHERE c.status = ?"
+			args = append(args, strings.TrimSpace(statusList[0]))
+		} else {
+			// Múltiplos status
+			placeholders := make([]string, len(statusList))
+			for i, s := range statusList {
+				placeholders[i] = "?"
+				args = append(args, strings.TrimSpace(s))
+			}
+			query += " WHERE c.status IN (" + strings.Join(placeholders, ",") + ")"
+		}
+
+		log.Printf("[ListarComandas] Filtrando por status: %v", statusList)
 	}
 
 	query += " ORDER BY c.data_abertura DESC"

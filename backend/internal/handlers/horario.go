@@ -343,3 +343,167 @@ func parseHora(horaStr string) (int, int) {
 	fmt.Sscanf(horaStr, "%d:%d", &hora, &minuto)
 	return hora, minuto
 }
+
+// GetFidelidade retorna informações de fidelidade do cliente com um barbeiro específico
+func (h *HorarioHandler) GetFidelidade(c *gin.Context) {
+	clienteNome := c.Query("cliente_nome")
+	clienteTelefone := c.Query("telefone")
+	barbeiroID := c.Query("barbeiro_id")
+
+	if clienteNome == "" && clienteTelefone == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "É necessário fornecer cliente_nome ou telefone",
+		})
+		return
+	}
+
+	if barbeiroID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "É necessário fornecer barbeiro_id",
+		})
+		return
+	}
+
+	log.Printf("[GetFidelidade] Consultando fidelidade - Cliente: %s, Telefone: %s, Barbeiro: %s",
+		clienteNome, clienteTelefone, barbeiroID)
+
+	// Query otimizada com COUNT(*) em vez de buscar todos os registros
+	var totalCortes int
+	var query string
+	var args []interface{}
+
+	// Se tem nome E telefone, usa ambos (OR)
+	if clienteNome != "" && clienteTelefone != "" {
+		query = `
+			SELECT COUNT(*)
+			FROM horarios
+			WHERE (LOWER(cliente_nome) = LOWER(?) OR telefone = ?)
+			AND barbeiro_id = ?
+			AND status = 'concluido'
+		`
+		args = []interface{}{clienteNome, clienteTelefone, barbeiroID}
+	} else if clienteNome != "" {
+		// Apenas nome
+		query = `
+			SELECT COUNT(*)
+			FROM horarios
+			WHERE LOWER(cliente_nome) = LOWER(?)
+			AND barbeiro_id = ?
+			AND status = 'concluido'
+		`
+		args = []interface{}{clienteNome, barbeiroID}
+	} else {
+		// Apenas telefone
+		query = `
+			SELECT COUNT(*)
+			FROM horarios
+			WHERE telefone = ?
+			AND barbeiro_id = ?
+			AND status = 'concluido'
+		`
+		args = []interface{}{clienteTelefone, barbeiroID}
+	}
+
+	err := database.DB.QueryRow(query, args...).Scan(&totalCortes)
+	if err != nil {
+		log.Printf("[GetFidelidade] Erro ao consultar: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Erro ao consultar fidelidade",
+		})
+		return
+	}
+
+	// Calcular se tem direito a corte grátis (múltiplo de 10)
+	temDireito := totalCortes > 0 && totalCortes%10 == 0
+	proximoGratis := 10 - (totalCortes % 10)
+
+	// Se já tem direito, próximo é 10 (não 0)
+	if temDireito {
+		proximoGratis = 10
+	}
+
+	log.Printf("[GetFidelidade] ✓ Total cortes: %d | Tem direito: %v | Faltam: %d",
+		totalCortes, temDireito, proximoGratis)
+
+	c.JSON(http.StatusOK, gin.H{
+		"temDireito":    temDireito,
+		"total":         totalCortes,
+		"proximoGratis": proximoGratis,
+		"barbeiro_id":   barbeiroID,
+	})
+}
+
+// GetProximos retorna agendamentos dos próximos X minutos
+// Útil para exibir clientes agendados no PDV
+func (h *HorarioHandler) GetProximos(c *gin.Context) {
+	// Minutos para buscar (padrão: 75 = -15min até +60min)
+	minutos := c.DefaultQuery("minutos", "75")
+	status := c.DefaultQuery("status", "confirmado")
+	barbeiroID := c.Query("barbeiro_id")
+
+	log.Printf("[GetProximos] Buscando agendamentos próximos: %s minutos, status=%s, barbeiro=%s",
+		minutos, status, barbeiroID)
+
+	// Calcular intervalo de tempo
+	// De 15 minutos atrás até X minutos à frente
+	agora := time.Now()
+	inicio := agora.Add(-15 * time.Minute)
+	fim := agora.Add(75 * time.Minute) // 75min = próxima 1h15min
+
+	log.Printf("[GetProximos] Intervalo: %s até %s", inicio.Format("15:04"), fim.Format("15:04"))
+
+	// Query SQL otimizada
+	var query string
+	var args []interface{}
+
+	if barbeiroID != "" {
+		query = `
+			SELECT id, barbeiro_id, cliente_nome, telefone, servico_id, data_hora, status, criado_em
+			FROM horarios
+			WHERE status = ?
+			AND barbeiro_id = ?
+			AND data_hora BETWEEN ? AND ?
+			ORDER BY data_hora ASC
+		`
+		args = []interface{}{status, barbeiroID, inicio.Format("2006-01-02T15:04:05Z07:00"), fim.Format("2006-01-02T15:04:05Z07:00")}
+	} else {
+		query = `
+			SELECT id, barbeiro_id, cliente_nome, telefone, servico_id, data_hora, status, criado_em
+			FROM horarios
+			WHERE status = ?
+			AND data_hora BETWEEN ? AND ?
+			ORDER BY data_hora ASC
+		`
+		args = []interface{}{status, inicio.Format("2006-01-02T15:04:05Z07:00"), fim.Format("2006-01-02T15:04:05Z07:00")}
+	}
+
+	rows, err := database.DB.Query(query, args...)
+	if err != nil {
+		log.Printf("[GetProximos] Erro ao buscar: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao buscar agendamentos próximos"})
+		return
+	}
+	defer rows.Close()
+
+	horarios := []models.Horario{}
+	for rows.Next() {
+		var h models.Horario
+		err := rows.Scan(&h.ID, &h.BarbeiroID, &h.ClienteNome, &h.Telefone, &h.ServicoID, &h.DataHora, &h.Status, &h.CreatedAt)
+		if err != nil {
+			log.Printf("[GetProximos] Erro ao fazer scan: %v", err)
+			continue
+		}
+		horarios = append(horarios, h)
+	}
+
+	log.Printf("[GetProximos] ✓ Encontrados %d agendamentos próximos", len(horarios))
+
+	c.JSON(http.StatusOK, gin.H{
+		"agendamentos": horarios,
+		"total":        len(horarios),
+		"intervalo": gin.H{
+			"inicio": inicio.Format("15:04"),
+			"fim":    fim.Format("15:04"),
+		},
+	})
+}

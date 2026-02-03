@@ -59,48 +59,63 @@
     }
 
     /**
-     * Verifica se o usuário está autenticado
+     * ✅ VALIDAÇÃO NO BACKEND - Verifica se o usuário está autenticado
      */
-    function isAuthenticated() {
-        const user = localStorage.getItem('user');
+    async function isAuthenticated() {
         const token = localStorage.getItem('token');
 
-        if (!user || !token) {
-            console.warn('[AUTH GUARD] Usuário não autenticado');
+        if (!token) {
+            console.warn('[AUTH GUARD] Token não encontrado');
             return false;
         }
 
         try {
-            const userData = JSON.parse(user);
-            if (!userData || !userData.id) {
-                console.warn('[AUTH GUARD] Dados de usuário inválidos');
+            // ✅ Validar token no backend
+            const response = await fetch('/api/v1/auth/validate', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                console.warn('[AUTH GUARD] Token inválido ou expirado');
                 return false;
             }
 
-            console.log('[AUTH GUARD] Usuário autenticado:', userData.nome);
-            return true;
+            const data = await response.json();
+
+            if (!data.valid) {
+                console.warn('[AUTH GUARD] Token não validado');
+                return false;
+            }
+
+            console.log('[AUTH GUARD] ✓ Token válido:', data.email);
+            return data;
         } catch (error) {
-            console.error('[AUTH GUARD] Erro ao validar dados do usuário:', error);
+            console.error('[AUTH GUARD] Erro ao validar token:', error);
             return false;
         }
     }
 
     /**
-     * Verifica se o usuário tem permissão de admin
+     * ✅ VALIDAÇÃO NO BACKEND - Verifica se o usuário tem permissão de admin
      */
-    function isAdmin() {
-        try {
-            const user = localStorage.getItem('user');
-            if (!user) return false;
+    async function isAdmin() {
+        const validatedUser = await isAuthenticated();
 
-            const userData = JSON.parse(user);
-
-            // Verificar se é admin (pode ajustar conforme a estrutura do seu user)
-            return userData.role === 'admin' || userData.tipo === 'admin' || userData.admin === true;
-        } catch (error) {
-            console.error('[AUTH GUARD] Erro ao verificar permissões de admin:', error);
+        if (!validatedUser) {
             return false;
         }
+
+        // Backend já retorna o tipo do usuário
+        const isAdminUser = validatedUser.tipo === 'admin';
+
+        if (!isAdminUser) {
+            console.warn('[AUTH GUARD] Usuário não é admin:', validatedUser.tipo);
+        }
+
+        return isAdminUser;
     }
 
     /**
@@ -122,21 +137,16 @@
     }
 
     /**
-     * Executa a verificação de autenticação
+     * ✅ ASYNC - Executa a verificação de autenticação
      */
-    function checkAuth() {
-        if (!isAuthenticated()) {
-            console.error('[AUTH GUARD] Acesso negado - usuário não autenticado');
-            redirectToLogin();
-            return false;
-        }
+    async function checkAuth() {
+        const isAdminUser = await isAdmin();
 
-        // Verificar se é admin - Dashboard é apenas para administradores
-        if (!isAdmin()) {
+        if (!isAdminUser) {
             console.error('[AUTH GUARD] Acesso negado - usuário não é administrador');
             showToast('Acesso restrito a administradores. Redirecionando...', 'error');
             setTimeout(() => {
-                window.location.href = '/';
+                redirectToLogin();
             }, 1500);
             return false;
         }
@@ -145,12 +155,15 @@
         return true;
     }
 
-    // EXECUTAR VERIFICAÇÃO IMEDIATAMENTE
+    // ✅ EXECUTAR VERIFICAÇÃO IMEDIATAMENTE (ASYNC)
     // Bloquear carregamento da página se não estiver autenticado
-    if (!checkAuth()) {
-        // Parar execução de outros scripts
-        throw new Error('AUTH_GUARD: Acesso não autorizado');
-    }
+    (async function() {
+        const authorized = await checkAuth();
+        if (!authorized) {
+            // Parar execução de outros scripts
+            throw new Error('AUTH_GUARD: Acesso não autorizado');
+        }
+    })();
 
     // Expor API global (caso precise usar em outros scripts)
     window.AuthGuard = {
