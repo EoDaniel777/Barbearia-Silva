@@ -7,7 +7,10 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "minify": "bash scripts/minify-js.sh",
+    "minify:install": "npm install -g terser",
+    "build:prod": "npm run minify"
   },
   "repository": {
     "type": "git",
@@ -23,5 +26,8 @@
   "homepage": "https://github.com/B-Evil/System-Barbearia-AS#readme",
   "dependencies": {
     "firebase": "^12.8.0"
+  },
+  "devDependencies": {
+    "terser": "^5.36.0"
   }
 }

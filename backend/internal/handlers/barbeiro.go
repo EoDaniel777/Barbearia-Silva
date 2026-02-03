@@ -3,6 +3,7 @@ package handlers
 import (
 	"backend/internal/database"
 	"backend/internal/models"
+	"backend/internal/validation"
 	"log"
 	"net/http"
 
@@ -131,6 +132,33 @@ func (h *BarbeiroHandler) Create(c *gin.Context) {
 		return
 	}
 
+	// ✅ VALIDAÇÃO NO BACKEND
+	if errs := validation.ValidateBarbeiro(input.Nome, input.Email, input.Sexo); errs.HasErrors() {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":  "Dados inválidos",
+			"errors": errs,
+		})
+		return
+	}
+
+	// Verificar se email já existe
+	var exists int
+	err := database.DB.QueryRow("SELECT COUNT(*) FROM barbeiros WHERE email = ?", input.Email).Scan(&exists)
+	if err == nil && exists > 0 {
+		c.JSON(http.StatusConflict, gin.H{"error": "Email já cadastrado"})
+		return
+	}
+
+	// Verificar limite de barbeiros ativos (máximo 2)
+	var activeBarbeiros int
+	err = database.DB.QueryRow("SELECT COUNT(*) FROM barbeiros WHERE ativo = 1").Scan(&activeBarbeiros)
+	if err == nil && activeBarbeiros >= 2 {
+		c.JSON(http.StatusForbidden, gin.H{
+			"error": "Limite de barbeiros ativos atingido (máximo: 2)",
+		})
+		return
+	}
+
 	// Insert into database
 	result, err := database.DB.Exec(`
 		INSERT INTO barbeiros (nome, email, telefone, sexo, foto, especialidade, descricao, ativo)
@@ -174,6 +202,24 @@ func (h *BarbeiroHandler) Update(c *gin.Context) {
 
 	log.Printf("[BarbeiroHandler] Dados recebidos: Nome=%s, Email=%s, Foto=%d chars",
 		input.Nome, input.Email, len(input.Foto))
+
+	// ✅ VALIDAÇÃO NO BACKEND
+	if errs := validation.ValidateBarbeiro(input.Nome, input.Email, input.Sexo); errs.HasErrors() {
+		log.Printf("[BarbeiroHandler] Erros de validação: %v", errs)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":  "Dados inválidos",
+			"errors": errs,
+		})
+		return
+	}
+
+	// Verificar se email já existe (exceto o próprio barbeiro)
+	var exists int
+	err := database.DB.QueryRow("SELECT COUNT(*) FROM barbeiros WHERE email = ? AND id != ?", input.Email, id).Scan(&exists)
+	if err == nil && exists > 0 {
+		c.JSON(http.StatusConflict, gin.H{"error": "Email já cadastrado para outro barbeiro"})
+		return
+	}
 
 	// Update in database
 	result, err := database.DB.Exec(`

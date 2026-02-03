@@ -1081,6 +1081,8 @@ function initLogoUploads() {
     }
 }
 
+// ✅ OTIMIZADO: Upload usando FormData (Multipart) ao invés de Base64
+// Reduz payload em ~30% e elimina conversões desnecessárias
 async function handleLogoUpload(event, logoType) {
     const file = event.target.files[0];
     if (!file) return;
@@ -1100,47 +1102,40 @@ async function handleLogoUpload(event, logoType) {
     try {
         showLogoStatus(`Enviando logo ${logoType}...`, 'info');
 
-        // Converter para base64
-        const base64 = await fileToBase64(file);
-
-        // Preparar dados para envio
-        const payload = {};
-        if (logoType === 'dark') {
-            payload.logoDark = base64;
-        } else {
-            payload.logoWhite = base64;
-        }
+        // Criar FormData (multipart/form-data)
+        const formData = new FormData();
+        const fieldName = logoType === 'dark' ? 'logoDark' : 'logoWhite';
+        formData.append(fieldName, file);
 
         // Enviar para backend
-        const response = await authFetch('/api/v1/settings/logo', {
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/v1/settings/logo', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                'Authorization': `Bearer ${token}`
+                // NÃO incluir Content-Type - o browser define automaticamente
             },
-            body: JSON.stringify(payload)
+            body: formData
         });
 
         const data = await response.json();
 
         if (response.ok) {
+            // Criar URL temporária para preview
+            const imageUrl = URL.createObjectURL(file);
+
             // Atualizar preview
             const previewId = `logo-${logoType}-preview`;
             const preview = document.getElementById(previewId);
             if (preview) {
-                // Não adicionar query string em base64
-                preview.src = base64;
-                // Forçar reload da imagem
-                preview.style.display = 'none';
-                setTimeout(() => preview.style.display = 'block', 10);
+                preview.src = imageUrl;
             }
 
             // Atualizar logos em toda a página
-            updateLogosOnPage(logoType, base64);
+            updateLogosOnPage(logoType, imageUrl);
 
             showLogoStatus(`Logo ${logoType} atualizada com sucesso!`, 'success');
 
-            // Limpar status após 3 segundos
             setTimeout(() => {
                 hideLogoStatus();
             }, 3000);
@@ -1153,73 +1148,8 @@ async function handleLogoUpload(event, logoType) {
     }
 }
 
-/**
- * Converte arquivo para base64 usando método moderno e seguro
- * Usa File.arrayBuffer() - API moderna sem problemas de permissão
- */
-async function fileToBase64(file) {
-    // Validar o arquivo antes de tentar ler
-    if (!file) {
-        throw new Error('Nenhum arquivo fornecido');
-    }
-
-    if (!file.type || !file.type.startsWith('image/')) {
-        throw new Error('O arquivo deve ser uma imagem');
-    }
-
-
-    try {
-        // Método moderno: usar arrayBuffer() - mais confiável
-
-        // Ler arquivo como ArrayBuffer
-        const arrayBuffer = await file.arrayBuffer();
-
-        // Converter ArrayBuffer para base64
-        const base64 = await arrayBufferToBase64(arrayBuffer, file.type);
-
-        return base64;
-    } catch (error) {
-        console.error('[fileToBase64] Erro:', error);
-
-        // Mensagem específica para erro de permissão
-        if (error.name === 'NotReadableError' || error.message.includes('permission')) {
-            throw new Error('Não foi possível ler o arquivo. Tente selecionar uma imagem de outra pasta (Downloads, Documentos, etc.) ou tire uma nova foto.');
-        }
-
-        throw new Error('Não foi possível processar a imagem: ' + error.message);
-    }
-}
-
-/**
- * Converte ArrayBuffer para base64 com prefixo data URL
- */
-function arrayBufferToBase64(buffer, mimeType) {
-    return new Promise((resolve, reject) => {
-        try {
-            // Converter ArrayBuffer para Array de bytes
-            const bytes = new Uint8Array(buffer);
-
-            // Criar string binária
-            let binary = '';
-            const chunkSize = 0x8000; // 32KB chunks para performance
-
-            for (let i = 0; i < bytes.length; i += chunkSize) {
-                const chunk = bytes.subarray(i, i + chunkSize);
-                binary += String.fromCharCode.apply(null, chunk);
-            }
-
-            // Converter para base64
-            const base64 = btoa(binary);
-
-            // Adicionar prefixo data URL
-            const dataUrl = `data:${mimeType};base64,${base64}`;
-
-            resolve(dataUrl);
-        } catch (error) {
-            reject(new Error('Erro ao converter para base64: ' + error.message));
-        }
-    });
-}
+// ✅ REMOVIDO: Funções fileToBase64() e arrayBufferToBase64() (~70 linhas)
+// Agora usamos FormData (multipart) diretamente - mais simples e eficiente
 
 function updateLogosOnPage(logoType, base64) {
     // Atualizar todas as logos na página
