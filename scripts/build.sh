@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+# Salva o diretório do projeto
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+echo "==> Project directory: ${PROJECT_DIR}"
+
 # Download e instala Go 1.25.4 diretamente
 GO_VERSION="1.25.4"
 GO_TAR="go${GO_VERSION}.linux-amd64.tar.gz"
@@ -19,7 +23,7 @@ GO_BIN="${GO_INSTALL_DIR}/bin/go"
 ${GO_BIN} version
 
 echo "==> Building application..."
-cd "$OLDPWD/backend"
+cd "${PROJECT_DIR}/backend"
 ${GO_BIN} build -tags netgo -ldflags '-s -w' -o cmd/api/app cmd/api/main.go
 
 echo "==> Build completed successfully!"
