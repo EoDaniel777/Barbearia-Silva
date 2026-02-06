@@ -1596,5 +1596,87 @@
     <script src="/shared/js/fidelidade.js"></script>
     <script src="/dashboard/js/dashboard.js"></script>
     <script src="/dashboard/js/comandas.js"></script>
+
+    <!-- Proteção contra extensões de color picker (ColorPick Eyedropper, etc) -->
+    <script>
+        (function() {
+            'use strict';
+
+            // Remove elementos injetados por extensões de color picker
+            function removeColorPickerExtensions() {
+                // Encontra apenas inputs do tipo color na seção de personalização
+                const colorInputs = document.querySelectorAll('#personalizacao-form input[type="color"]');
+
+                colorInputs.forEach(input => {
+                    // Remove qualquer elemento APÓS o input que NÃO seja small ou label
+                    let sibling = input.nextElementSibling;
+                    while (sibling) {
+                        const next = sibling.nextElementSibling;
+
+                        // Preserva apenas <small> e <label>
+                        const isAllowed = sibling.tagName === 'SMALL' || sibling.tagName === 'LABEL';
+
+                        if (!isAllowed) {
+                            // Verifica se é um elemento injetado pela extensão (geralmente tem estilos inline específicos)
+                            const hasExtensionStyles = sibling.style.position === 'absolute' ||
+                                                      sibling.style.position === 'relative' ||
+                                                      sibling.getAttribute('data-colorpick');
+
+                            if (hasExtensionStyles) {
+                                sibling.remove();
+                            }
+                        } else {
+                            break; // Para ao encontrar small ou label
+                        }
+
+                        sibling = next;
+                    }
+
+                    // Remove APENAS divs injetadas pela extensão dentro do form-group
+                    const formGroup = input.closest('.form-group');
+                    if (formGroup) {
+                        // Procura por divs com estilos específicos de extensões
+                        const allDivs = formGroup.querySelectorAll('div');
+                        allDivs.forEach(div => {
+                            // Remove apenas divs que parecem ser da extensão
+                            const isExtensionDiv = div.style.position === 'absolute' ||
+                                                  div.style.position === 'relative' ||
+                                                  div.getAttribute('data-colorpick') ||
+                                                  div.className.includes('colorpick') ||
+                                                  div.className.includes('eyedropper');
+
+                            if (isExtensionDiv && !div.classList.contains('form-group') && !div.classList.contains('form-row')) {
+                                div.remove();
+                            }
+                        });
+                    }
+                });
+            }
+
+            // Executa imediatamente
+            removeColorPickerExtensions();
+
+            // Executa após carregamento completo
+            window.addEventListener('load', removeColorPickerExtensions);
+
+            // Monitora mudanças APENAS na seção de personalização
+            const personalizacaoForm = document.getElementById('personalizacao-form');
+            if (personalizacaoForm) {
+                const observer = new MutationObserver(removeColorPickerExtensions);
+                observer.observe(personalizacaoForm, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+
+            // Executa periodicamente apenas na página de configurações
+            setInterval(() => {
+                const configurarPage = document.getElementById('configurar-page');
+                if (configurarPage && configurarPage.classList.contains('active')) {
+                    removeColorPickerExtensions();
+                }
+            }, 2000);
+        })();
+    </script>
 </body>
 </html>

@@ -217,14 +217,24 @@ async function carregarHistoricoComandas() {
 
 // Abrir modal de nova comanda
 async function abrirNovaComanda() {
+    console.log('🔵 Abrindo nova comanda...');
+    console.log('📦 Barbeiros em cache:', barbeirosCache.length);
+
     // Preencher select de barbeiros
     const selectBarbeiro = document.getElementById('comanda-barbeiro');
+    if (!selectBarbeiro) {
+        console.error('❌ Select de barbeiro não encontrado!');
+        return;
+    }
+
     selectBarbeiro.innerHTML = '<option value="">Selecione o barbeiro</option>';
     barbeirosCache.forEach(barb => {
         if (barb.ativo) {
             selectBarbeiro.innerHTML += `<option value="${barb.id}">${barb.nome}</option>`;
         }
     });
+
+    console.log('✅ Select de barbeiros preenchido com', selectBarbeiro.options.length - 1, 'opções');
 
     // ✅ OTIMIZAÇÃO: Buscar usuários agendados do backend (já filtrados e organizados)
     try {
@@ -253,7 +263,13 @@ async function abrirNovaComanda() {
 
         // Preencher select de usuários
         const selectUsuario = document.getElementById('comanda-usuario-novo');
+        if (!selectUsuario) {
+            console.error('❌ Select de usuário não encontrado!');
+            return;
+        }
+
         selectUsuario.innerHTML = '';
+        console.log('📋 Preparando select de usuários...');
 
         // Adicionar usuários com agendamento primeiro
         if (emAtendimento.length > 0) {
@@ -484,13 +500,24 @@ function atualizarSelectItens() {
     const tipo = document.getElementById('item-tipo').value;
     const select = document.getElementById('item-servico-produto');
 
+    if (!select) {
+        console.error('❌ Select de item-servico-produto não encontrado!');
+        return;
+    }
+
+    console.log('🔍 Atualizando select de itens. Tipo:', tipo);
+    console.log('📦 Serviços em cache:', servicosCache.length);
+
     select.innerHTML = '<option value="">Selecione</option>';
 
-    servicosCache
-        .filter(s => s.tipo === tipo && s.ativo)
-        .forEach(item => {
-            select.innerHTML += `<option value="${item.id}" data-preco="${item.preco}" data-nome="${item.nome}">${item.nome} - R$ ${item.preco.toFixed(2)}</option>`;
-        });
+    const itensFiltrados = servicosCache.filter(s => s.tipo === tipo && s.ativo);
+    console.log(`✅ Itens filtrados (${tipo}):`, itensFiltrados.length);
+
+    itensFiltrados.forEach(item => {
+        select.innerHTML += `<option value="${item.id}" data-preco="${item.preco}" data-nome="${item.nome}">${item.nome} - R$ ${item.preco.toFixed(2)}</option>`;
+    });
+
+    console.log('✅ Select preenchido com', select.options.length - 1, 'opções');
 }
 
 // Carregar usuários no select do modal de comanda

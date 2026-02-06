@@ -59,14 +59,14 @@ func AuthRequired() gin.HandlerFunc {
 
 		tokenString := parts[1]
 
-		// 🔥 ESTRATÉGIA HÍBRIDA: Tentar Firebase Auth primeiro
+		// 🔥 ESTRATÉGIA HÍBRIDA: Tentar Firebase Auth primeiro (silencioso)
 		if firebase.IsFirebaseEnabled() {
 			ctx := context.Background()
 			firebaseToken, err := firebase.VerifyIDToken(ctx, tokenString)
 
 			if err == nil && firebaseToken != nil {
 				// ✅ Token Firebase válido
-				log.Printf("[AUTH] Token Firebase válido para UID: %s", firebaseToken.UID)
+				log.Printf("[AUTH] ✅ Token Firebase válido para UID: %s", firebaseToken.UID)
 
 				// Buscar ou criar usuário local no banco
 				var userID int
@@ -147,7 +147,7 @@ func AuthRequired() gin.HandlerFunc {
 
 		// ✅ Token JWT válido
 		if claims, ok := token.Claims.(*Claims); ok {
-			log.Printf("[AUTH] Token JWT válido para user_id: %d", claims.UserID)
+			log.Printf("[AUTH] ✅ Token JWT válido para user_id: %d", claims.UserID)
 
 			c.Set("user_id", claims.UserID)
 			c.Set("user_email", claims.Email)

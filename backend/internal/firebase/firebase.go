@@ -113,13 +113,14 @@ func InitFirebase() error {
 // VerifyIDToken verifica um token Firebase
 func VerifyIDToken(ctx context.Context, idToken string) (*auth.Token, error) {
 	if Auth == nil {
-		log.Println("[FIREBASE] Auth client não inicializado")
-		return nil, nil // Retornar nil sem erro para permitir fallback para JWT
+		// Auth client não inicializado - silencioso, fallback para JWT
+		return nil, nil
 	}
 
 	token, err := Auth.VerifyIDToken(ctx, idToken)
 	if err != nil {
-		log.Printf("[FIREBASE] Erro ao verificar token: %v", err)
+		// Não logar erros comuns de tokens JWT (esperado em autenticação híbrida)
+		// Apenas retornar erro para permitir fallback silencioso para JWT
 		return nil, err
 	}
 

@@ -1889,13 +1889,20 @@ tr:last-child td {
     user-select: none;
 }
 
+/* ===================================
+   COLOR PICKER - Protegido de Extensões
+   =================================== */
+
 input[type="color"] {
     width: 100%;
+    max-width: 100%;
     height: 50px;
     border: 2px solid #E5E5EA;
     border-radius: 12px;
     cursor: pointer;
     padding: 4px;
+    display: block !important;
+    position: relative;
 }
 
 input[type="color"]::-webkit-color-swatch-wrapper {
@@ -1909,4 +1916,37 @@ input[type="color"]::-webkit-color-swatch {
 
 input[type="color"]:hover {
     border-color: var(--primary);
+}
+
+/* BLOQUEIA ColorPick Eyedropper APENAS na seção de personalização */
+#personalizacao-form input[type="color"] + div[style*="position"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    position: absolute !important;
+    left: -9999px !important;
+}
+
+/* Remove elementos da extensão próximos ao color input */
+#personalizacao-form .form-group div[data-colorpick],
+#personalizacao-form .form-group div[class*="colorpick"],
+#personalizacao-form .form-group div[class*="eyedropper"] {
+    display: none !important;
+}
+
+/* Força container do form-group de cores a ter overflow controlado */
+#personalizacao-form .form-group {
+    position: relative;
+    overflow: visible;
+    isolation: isolate;
+}
+
+/* Remove divs/spans injetados pela extensão após color inputs */
+#personalizacao-form input[type="color"] ~ div[style*="absolute"],
+#personalizacao-form input[type="color"] ~ div[style*="relative"]:not(.form-row):not(.form-group),
+#personalizacao-form input[type="color"] ~ span:not(small)[style*="position"] {
+    display: none !important;
+    visibility: hidden !important;
 }
