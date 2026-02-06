@@ -698,25 +698,49 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="cor-primaria">Cor Primária</label>
-                                    <input type="color" id="cor-primaria" name="cor_primaria" value="#0D7CA4">
+                                    <div class="color-picker-wrapper">
+                                        <input type="color" id="cor-primaria" name="cor_primaria" value="#0D7CA4" class="hidden-color-input">
+                                        <button type="button" class="color-picker-btn" data-target="cor-primaria">
+                                            <span class="color-preview" style="background: #0D7CA4;"></span>
+                                            <span class="color-value">#0D7CA4</span>
+                                        </button>
+                                    </div>
                                     <small style="color: #8E8E93;">Cor principal do sistema</small>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="cor-secundaria">Cor Secundária</label>
-                                    <input type="color" id="cor-secundaria" name="cor_secundaria" value="#0a6282">
+                                    <div class="color-picker-wrapper">
+                                        <input type="color" id="cor-secundaria" name="cor_secundaria" value="#0a6282" class="hidden-color-input">
+                                        <button type="button" class="color-picker-btn" data-target="cor-secundaria">
+                                            <span class="color-preview" style="background: #0a6282;"></span>
+                                            <span class="color-value">#0a6282</span>
+                                        </button>
+                                    </div>
                                     <small style="color: #8E8E93;">Cor secundária e hover</small>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="cor-destaque">Cor de Destaque</label>
-                                    <input type="color" id="cor-destaque" name="cor_destaque" value="#FF6B6B">
+                                    <div class="color-picker-wrapper">
+                                        <input type="color" id="cor-destaque" name="cor_destaque" value="#FF6B6B" class="hidden-color-input">
+                                        <button type="button" class="color-picker-btn" data-target="cor-destaque">
+                                            <span class="color-preview" style="background: #FF6B6B;"></span>
+                                            <span class="color-value">#FF6B6B</span>
+                                        </button>
+                                    </div>
                                     <small style="color: #8E8E93;">Para alertas e CTAs</small>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="cor-header">Cor do Cabeçalho</label>
-                                    <input type="color" id="cor-header" name="cor_header" value="#1C1C1E">
+                                    <div class="color-picker-wrapper">
+                                        <input type="color" id="cor-header" name="cor_header" value="#1C1C1E" class="hidden-color-input">
+                                        <button type="button" class="color-picker-btn" data-target="cor-header">
+                                            <span class="color-preview" style="background: #1C1C1E;"></span>
+                                            <span class="color-value">#1C1C1E</span>
+                                        </button>
+                                    </div>
                                     <small style="color: #8E8E93;">Cor de fundo do header</small>
                                 </div>
                             </div>
@@ -1597,85 +1621,95 @@
     <script src="/dashboard/js/dashboard.js"></script>
     <script src="/dashboard/js/comandas.js"></script>
 
-    <!-- Proteção contra extensões de color picker (ColorPick Eyedropper, etc) -->
+    <!-- Color Picker Customizado - Sem Extensões -->
     <script>
         (function() {
             'use strict';
 
-            // Remove elementos injetados por extensões de color picker
-            function removeColorPickerExtensions() {
-                // Encontra apenas inputs do tipo color na seção de personalização
-                const colorInputs = document.querySelectorAll('#personalizacao-form input[type="color"]');
+            // Inicializa color pickers customizados
+            function initCustomColorPickers() {
+                const colorButtons = document.querySelectorAll('.color-picker-btn');
 
-                colorInputs.forEach(input => {
-                    // Remove qualquer elemento APÓS o input que NÃO seja small ou label
-                    let sibling = input.nextElementSibling;
-                    while (sibling) {
-                        const next = sibling.nextElementSibling;
+                colorButtons.forEach(button => {
+                    const targetId = button.getAttribute('data-target');
+                    const colorInput = document.getElementById(targetId);
 
-                        // Preserva apenas <small> e <label>
-                        const isAllowed = sibling.tagName === 'SMALL' || sibling.tagName === 'LABEL';
+                    if (!colorInput) return;
 
-                        if (!isAllowed) {
-                            // Verifica se é um elemento injetado pela extensão (geralmente tem estilos inline específicos)
-                            const hasExtensionStyles = sibling.style.position === 'absolute' ||
-                                                      sibling.style.position === 'relative' ||
-                                                      sibling.getAttribute('data-colorpick');
+                    // Ao clicar no botão, abre o color picker nativo
+                    button.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        colorInput.click();
+                    });
 
-                            if (hasExtensionStyles) {
-                                sibling.remove();
-                            }
-                        } else {
-                            break; // Para ao encontrar small ou label
-                        }
+                    // Quando a cor muda, atualiza o preview e o valor
+                    colorInput.addEventListener('input', (e) => {
+                        const newColor = e.target.value;
+                        const preview = button.querySelector('.color-preview');
+                        const valueSpan = button.querySelector('.color-value');
 
-                        sibling = next;
-                    }
+                        if (preview) preview.style.background = newColor;
+                        if (valueSpan) valueSpan.textContent = newColor.toUpperCase();
+                    });
 
-                    // Remove APENAS divs injetadas pela extensão dentro do form-group
-                    const formGroup = input.closest('.form-group');
-                    if (formGroup) {
-                        // Procura por divs com estilos específicos de extensões
-                        const allDivs = formGroup.querySelectorAll('div');
-                        allDivs.forEach(div => {
-                            // Remove apenas divs que parecem ser da extensão
-                            const isExtensionDiv = div.style.position === 'absolute' ||
-                                                  div.style.position === 'relative' ||
-                                                  div.getAttribute('data-colorpick') ||
-                                                  div.className.includes('colorpick') ||
-                                                  div.className.includes('eyedropper');
+                    // Sincroniza ao carregar
+                    colorInput.addEventListener('change', (e) => {
+                        const newColor = e.target.value;
+                        const preview = button.querySelector('.color-preview');
+                        const valueSpan = button.querySelector('.color-value');
 
-                            if (isExtensionDiv && !div.classList.contains('form-group') && !div.classList.contains('form-row')) {
-                                div.remove();
-                            }
-                        });
-                    }
+                        if (preview) preview.style.background = newColor;
+                        if (valueSpan) valueSpan.textContent = newColor.toUpperCase();
+                    });
                 });
+
+                console.log('✅ Color pickers customizados inicializados:', colorButtons.length);
             }
 
-            // Executa imediatamente
-            removeColorPickerExtensions();
+            // Executa após carregamento
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initCustomColorPickers);
+            } else {
+                initCustomColorPickers();
+            }
 
-            // Executa após carregamento completo
-            window.addEventListener('load', removeColorPickerExtensions);
-
-            // Monitora mudanças APENAS na seção de personalização
+            // Monitora mudanças para reinicializar se necessário
             const personalizacaoForm = document.getElementById('personalizacao-form');
             if (personalizacaoForm) {
-                const observer = new MutationObserver(removeColorPickerExtensions);
+                const observer = new MutationObserver((mutations) => {
+                    // Verifica se novos botões foram adicionados
+                    for (const mutation of mutations) {
+                        if (mutation.addedNodes.length > 0) {
+                            initCustomColorPickers();
+                            break;
+                        }
+                    }
+                });
+
                 observer.observe(personalizacaoForm, {
                     childList: true,
                     subtree: true
                 });
             }
 
-            // Executa periodicamente apenas na página de configurações
-            setInterval(() => {
-                const configurarPage = document.getElementById('configurar-page');
-                if (configurarPage && configurarPage.classList.contains('active')) {
-                    removeColorPickerExtensions();
-                }
-            }, 2000);
+            // Remove QUALQUER elemento injetado por extensões
+            function cleanExtensionElements() {
+                const wrappers = document.querySelectorAll('.color-picker-wrapper');
+                wrappers.forEach(wrapper => {
+                    // Remove tudo que não seja o input ou o botão
+                    const children = Array.from(wrapper.children);
+                    children.forEach(child => {
+                        if (!child.classList.contains('hidden-color-input') &&
+                            !child.classList.contains('color-picker-btn')) {
+                            child.remove();
+                        }
+                    });
+                });
+            }
+
+            // Limpa periodicamente
+            setInterval(cleanExtensionElements, 1000);
         })();
     </script>
 </body>
