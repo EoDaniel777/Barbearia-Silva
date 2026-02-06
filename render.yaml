@@ -3,7 +3,7 @@ services:
   - type: web
     name: barbearia-silva-api
     env: go
-    buildCommand: chmod +x scripts/build.sh && ./scripts/build.sh
+    buildCommand: chmod +x build.sh && ./build.sh
     startCommand: cd backend/cmd/api && ./app
     envVars:
       # Servidor
