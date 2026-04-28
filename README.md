@@ -125,7 +125,7 @@ Criar uma plataforma integrada que simplifique a rotina das barbearias, permitin
 
 ### 📞 Informações de Contato
 - Telefone: 61 00000-0000
-- Instagram: @Silva_barbearia
+- Instagram: @alison_silvababer
 - Endereço: Morro Azul - Quadra 11 Conjunto A
 - CNPJ: 00.000.000/0001-00
 
@@ -425,10 +425,10 @@ Go Next Agendamentos/
     <td align="center">
       <a href="https://github.com/EoDaniel777">
         <img src="https://github.com/EoDaniel777.png" width="120px;" style="border-radius: 50%;" alt="Daniel Alisom"/><br>
-        <img src="https://img.shields.io/badge/Daniel%20Alisom-Backend%20Developer-00ADD8?style=for-the-badge&logo=go&logoColor=white" alt="Daniel Alisom"/>
+        <img src="https://img.shields.io/badge/Daniel%20Alisom-Owner%20%26%20Backend%20Developer-00ADD8?style=for-the-badge&logo=go&logoColor=white" alt="Daniel Alisom"/>
       </a><br>
       <sub><strong>Daniel Alisom</strong></sub><br>
-      <p>🔧 Backend em Go<br>🗄️ Arquitetura de Banco<br>🔐 APIs & Autenticação</p>
+      <p>🚀 Proprietário do Go Next<br>🔧 Backend em Go<br>🔐 APIs & Autenticação</p>
     </td>
     <td align="center">
       <a href="https://github.com/B-Evil">
@@ -449,12 +449,12 @@ Go Next Agendamentos/
   </tr>
   <tr>
     <td align="center" colspan="3">
-      <a href="https://instagram.com/bradock_baber">
-        <img src="https://img.shields.io/badge/Alison%20Silva-Product%20Owner-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Alison Silva"/>
+      <a href="https://www.instagram.com/alison_silvababer/">
+        <img src="https://img.shields.io/badge/Alison%20Silva-Client%20%26%20Barber-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Alison Silva"/>
       </a><br>
       <sub><strong>Alison Silva</strong></sub><br>
-      <p>💈 Barbeiro Profissional | 📊 Proprietário da Go Next Agendamentos | 🎯 Visão do Produto</p>
-      <sub>📍 Morro Azul - Quadra 11 Conjunto A | 📱 @bradock_baber</sub>
+      <p>💈 Barbeiro Profissional | 📊 Proprietário da Barbearia Silva | 🎯 Visão do Produto (Cliente)</p>
+      <sub>📍 Morro Azul - Quadra 11 Conjunto A | 📱 @alison_silvababer</sub>
     </td>
   </tr>
 </table>
@@ -531,7 +531,7 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 ## 📞 Contato
 
 - **Telefone**: 61 00000-0000
-- **Instagram**: [@Silva_barbearia](https://instagram.com/Silva_barbearia)
+- **Instagram**: [@alison_silvababer](https://www.instagram.com/alison_silvababer/)
 - **Endereço**: Morro Azul - Quadra 11 Conjunto A
 - **CNPJ**: 00.000.000/0001-00
 
