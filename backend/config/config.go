@@ -45,7 +45,7 @@ func LoadConfig() *Config {
 			Port:     getEnv("DB_PORT", "5432"),
 			User:     getEnv("DB_USER", "postgres"),
 			Password: getEnv("DB_PASSWORD", ""),
-			Name:     getEnv("DB_NAME", "barbearia_db"),
+			Name:     getEnv("DB_NAME", "goNext_db"),
 		},
 		JWT: JWTConfig{
 			Secret:     getEnv("JWT_SECRET", "your-secret-key"),

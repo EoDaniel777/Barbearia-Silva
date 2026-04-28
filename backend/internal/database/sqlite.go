@@ -22,7 +22,7 @@ func InitSQLite() error {
 	}
 
 	// Conectar ao banco de dados
-	dbPath := filepath.Join(dataDir, "barbearia.db")
+	dbPath := filepath.Join(dataDir, "goNext.db")
 	var err error
 	DB, err = sql.Open("sqlite", dbPath)
 	if err != nil {
@@ -327,6 +327,14 @@ func runMigrations() error {
 		ALTER TABLE usuarios ADD COLUMN foto TEXT
 	`)
 	if err != nil && err.Error() != "duplicate column name: foto" {
+		// Coluna já existe, ignorar
+	}
+
+	// Adicionar coluna email à tabela horarios para confirmação por email
+	_, err = DB.Exec(`
+		ALTER TABLE horarios ADD COLUMN email TEXT DEFAULT ''
+	`)
+	if err != nil && err.Error() != "duplicate column name: email" {
 		// Coluna já existe, ignorar
 	}
 

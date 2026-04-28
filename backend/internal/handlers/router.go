@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"os"
+	"path/filepath"
 	"backend/internal/middleware"
 
 	"github.com/gin-gonic/gin"
@@ -24,46 +26,51 @@ func SetupRouter() *gin.Engine {
 	personalizacaoHandler := NewPersonalizacaoHandler()
 
 	// Serve static files from frontend directories
-	// Path is relative to backend/cmd/api (where go run is executed)
+	// Path is relative to backend/ (where go run is executed)
+	
+	basePath := "../frontend"
+	if _, err := os.Stat(basePath); os.IsNotExist(err) {
+		basePath = "frontend"
+	}
 
 	// ===================================
 	// CLIENT AREA (Clientes/Usuários)
 	// ===================================
 	// Client frontend (consolidado)
-	router.Static("/css", "../../../frontend/client/css")
-	router.Static("/js", "../../../frontend/client/js")
-	router.Static("/assets", "../../../frontend/client/assets")
-	router.Static("/icons", "../../../frontend/client/assets/icons")
-	router.Static("/img", "../../../frontend/client/assets/images")
+	router.Static("/css", filepath.Join(basePath, "client/css"))
+	router.Static("/js", filepath.Join(basePath, "client/js"))
+	router.Static("/assets", filepath.Join(basePath, "client/assets"))
+	router.Static("/icons", filepath.Join(basePath, "client/assets/icons"))
+	router.Static("/img", filepath.Join(basePath, "client/assets/images"))
 
 	// ===================================
 	// ADMIN AREA (Administrativo)
 	// ===================================
 	// Dashboard frontend
-	router.Static("/dashboard/css", "../../../frontend/admin/dashboard/css")
-	router.Static("/dashboard/js", "../../../frontend/admin/dashboard/js")
-	router.Static("/dashboard/assets", "../../../frontend/admin/dashboard/assets")
-	router.Static("/dashboard/icons", "../../../frontend/admin/dashboard/assets/icons")
-	router.Static("/dashboard/img", "../../../frontend/admin/dashboard/assets/images")
+	router.Static("/dashboard/css", filepath.Join(basePath, "admin/dashboard/css"))
+	router.Static("/dashboard/js", filepath.Join(basePath, "admin/dashboard/js"))
+	router.Static("/dashboard/assets", filepath.Join(basePath, "admin/dashboard/assets"))
+	router.Static("/dashboard/icons", filepath.Join(basePath, "admin/dashboard/assets/icons"))
+	router.Static("/dashboard/img", filepath.Join(basePath, "admin/dashboard/assets/images"))
 
 	// ===================================
 	// AUTH AREA (Autenticação)
 	// ===================================
 	// Login/Auth pages
-	router.Static("/auth/css", "../../../frontend/auth/css")
-	router.Static("/auth/js", "../../../frontend/auth/js")
-	router.Static("/auth/assets", "../../../frontend/auth/assets")
+	router.Static("/auth/css", filepath.Join(basePath, "auth/css"))
+	router.Static("/auth/js", filepath.Join(basePath, "auth/js"))
+	router.Static("/auth/assets", filepath.Join(basePath, "auth/assets"))
 
 	// ===================================
 	// SHARED AREA (Compartilhado)
 	// ===================================
 	// Shared JavaScript modules (fidelidade, theme-manager, personalizacao-loader)
-	router.Static("/shared/js", "../../../frontend/shared/js")
-	router.Static("/shared/config", "../../../frontend/shared/config")
+	router.Static("/shared/js", filepath.Join(basePath, "shared/js"))
+	router.Static("/shared/config", filepath.Join(basePath, "shared/config"))
 
 	// Favicon route
 	router.GET("/favicon.ico", func(c *gin.Context) {
-		c.File("../../../frontend/client/assets/images/logoSemFundo.png")
+		c.File(filepath.Join(basePath, "client/assets/images/logoSemFundo.png"))
 	})
 
 	// Page routes

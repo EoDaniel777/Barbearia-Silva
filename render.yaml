@@ -1,7 +1,7 @@
 services:
   # Backend API (Go)
   - type: web
-    name: barbearia-silva-api
+    name: goNext-api
     env: go
     buildCommand: chmod +x build.sh && ./build.sh
     startCommand: cd backend/cmd/api && ./app
@@ -12,19 +12,15 @@ services:
       - key: GIN_MODE
         value: release
       - key: DATABASE_PATH
-        value: ./cmd/api/data/barbearia.db
+        value: ./cmd/api/data/goNext.db
 
       # JWT Authentication
       - key: JWT_SECRET_KEY
         sync: false  # Configure via Render Dashboard (Secret)
 
       # Firebase (Opcional - Configure via Dashboard)
-      # Para habilitar Firebase Auth:
-      # 1. No Render Dashboard, adicione:
-      #    - FIREBASE_SERVICE_ACCOUNT_PATH=./config/firebase-service-account.json
-      # 2. Upload do arquivo via Dashboard ou startup script
       - key: FIREBASE_PROJECT_ID
-        value: barbeariahom
+        value: goNext
     healthCheckPath: /health
 
   # Static Site (Frontend) - Opcional, caso queira servir separadamente

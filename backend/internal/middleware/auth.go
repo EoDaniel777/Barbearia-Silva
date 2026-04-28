@@ -19,7 +19,7 @@ var jwtSecret = getJWTSecret()
 func getJWTSecret() []byte {
 	secret := os.Getenv("JWT_SECRET_KEY")
 	if secret == "" {
-		secret = "barbearia-silva-secret-key-2026-change-in-production"
+		secret = "goNext-secret-key-2026-change-in-production"
 		log.Println("[AUTH] Usando JWT_SECRET_KEY padrão. Configure JWT_SECRET_KEY em produção!")
 	}
 	return []byte(secret)

@@ -462,7 +462,7 @@ func generateJWT(userID int, email string, tipo string) (string, error) {
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)), // 7 dias
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
-			Issuer:    "barbearia-silva",
+			Issuer:    "goNext",
 			Subject:   email,
 		},
 	}

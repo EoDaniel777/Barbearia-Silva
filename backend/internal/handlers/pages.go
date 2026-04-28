@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"os"
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
@@ -18,26 +19,41 @@ func NewPagesHandler() *PagesHandler {
 
 // Home serves the customer-facing homepage
 func (h *PagesHandler) Home(c *gin.Context) {
-	// Path relative to backend/cmd/api (where go run is executed)
-	htmlPath := filepath.Join("..", "..", "..", "frontend", "client", "home.html")
+	// Path relative to backend/ (where go run is executed)
+	htmlPath := filepath.Join("..", "frontend", "client", "home.html")
+	
+	// Fallback para quando executado da raiz do projeto
+	if _, err := os.Stat(htmlPath); os.IsNotExist(err) {
+		htmlPath = filepath.Join("frontend", "client", "home.html")
+	}
+	
 	c.File(htmlPath)
 }
 
 // Servicos serves the services page (CLIENT)
 func (h *PagesHandler) Servicos(c *gin.Context) {
-	htmlPath := filepath.Join("..", "..", "..", "frontend", "client", "servicos.html")
+	htmlPath := filepath.Join("..", "frontend", "client", "servicos.html")
+	if _, err := os.Stat(htmlPath); os.IsNotExist(err) {
+		htmlPath = filepath.Join("frontend", "client", "servicos.html")
+	}
 	c.File(htmlPath)
 }
 
 // Agendar serves the booking page (CLIENT)
 func (h *PagesHandler) Agendar(c *gin.Context) {
-	htmlPath := filepath.Join("..", "..", "..", "frontend", "client", "agendar.html")
+	htmlPath := filepath.Join("..", "frontend", "client", "agendar.html")
+	if _, err := os.Stat(htmlPath); os.IsNotExist(err) {
+		htmlPath = filepath.Join("frontend", "client", "agendar.html")
+	}
 	c.File(htmlPath)
 }
 
 // Barbeiros serves the barbers page (CLIENT)
 func (h *PagesHandler) Barbeiros(c *gin.Context) {
-	htmlPath := filepath.Join("..", "..", "..", "frontend", "client", "barbeiros.html")
+	htmlPath := filepath.Join("..", "frontend", "client", "barbeiros.html")
+	if _, err := os.Stat(htmlPath); os.IsNotExist(err) {
+		htmlPath = filepath.Join("frontend", "client", "barbeiros.html")
+	}
 	c.File(htmlPath)
 }
 
@@ -47,8 +63,10 @@ func (h *PagesHandler) Barbeiros(c *gin.Context) {
 
 // Dashboard serves the admin dashboard
 func (h *PagesHandler) Dashboard(c *gin.Context) {
-	// Path relative to backend/cmd/api (where go run is executed)
-	htmlPath := filepath.Join("..", "..", "..", "frontend", "admin", "dashboard.html")
+	htmlPath := filepath.Join("..", "frontend", "admin", "dashboard.html")
+	if _, err := os.Stat(htmlPath); os.IsNotExist(err) {
+		htmlPath = filepath.Join("frontend", "admin", "dashboard.html")
+	}
 	c.File(htmlPath)
 }
 
@@ -58,6 +76,9 @@ func (h *PagesHandler) Dashboard(c *gin.Context) {
 
 // Login serves the login page (AUTH)
 func (h *PagesHandler) Login(c *gin.Context) {
-	htmlPath := filepath.Join("..", "..", "..", "frontend", "auth", "login.html")
+	htmlPath := filepath.Join("..", "frontend", "auth", "login.html")
+	if _, err := os.Stat(htmlPath); os.IsNotExist(err) {
+		htmlPath = filepath.Join("frontend", "auth", "login.html")
+	}
 	c.File(htmlPath)
 }

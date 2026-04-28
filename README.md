@@ -1,4 +1,4 @@
-# 💈 System-Barbearia-AS
+# 💈 Go Next Agendamentos
 
 <div align="center">
 
@@ -8,7 +8,7 @@
 ![Version](https://img.shields.io/badge/Version-4.2.0-green)
 ![Deploy](https://img.shields.io/badge/Deploy-Render-46E3B7)
 
-**Sistema Web Full-Stack para Gestão e Agendamento de Serviços em Barbearias**
+**Sistema Web Full-Stack para Gestão e Agendamento de Serviços em barbearias, salões e clínicas**
 
 Sistema profissional de agendamento online com backend em Go, notificações em tempo real e gerenciamento completo
 
@@ -24,12 +24,12 @@ Sistema profissional de agendamento online com backend em Go, notificações em 
 
 ### 💻 Versão Desktop
 
-![Sistema Barbearia Silva - Desktop](docs/desktop.png)
+![Sistema Go Next Agendamentos - Desktop](docs/desktop.png)
 *Interface moderna e personalizável, sistema completo de comandas/PDV e dashboard administrativo*
 
 ### 📱 Versão Mobile
 
-![Sistema Barbearia Silva - Mobile](docs/moblie.png)
+![Sistema Go Next Agendamentos - Mobile](docs/moblie.png)
 *Layout responsivo com bottom navigation, ícones modernos e experiência otimizada para dispositivos móveis*
 
 </div>
@@ -38,7 +38,7 @@ Sistema profissional de agendamento online com backend em Go, notificações em 
 
 ## 📋 Sobre
 
-O **System-Barbearia-AS** é uma aplicação web completa desenvolvida para otimizar a gestão de barbearias, oferecendo uma experiência moderna e profissional tanto para clientes quanto para administradores. O sistema combina backend robusto em Go, frontend responsivo e funcionalidades avançadas de notificação.
+O **Go Next Agendamentos** é uma aplicação web completa desenvolvida para otimizar a gestão de barbearias, oferecendo uma experiência moderna e profissional tanto para clientes quanto para administradores. O sistema combina backend robusto em Go, frontend responsivo e funcionalidades avançadas de notificação.
 
 ### 🎯 Objetivo
 
@@ -166,8 +166,8 @@ Criar uma plataforma integrada que simplifique a rotina das barbearias, permitin
 
 1. **Clone o repositório**
 ```bash
-git clone https://github.com/seu-usuario/System-Barbearia-AS.git
-cd System-Barbearia-AS
+git clone https://github.com/seu-usuario/Go Next Agendamentos.git
+cd Go Next Agendamentos
 ```
 
 2. **Instale as dependências do backend**
@@ -208,7 +208,7 @@ O sistema funciona em Windows e Linux sem necessidade de compiladores C (CGO-fre
 ## 📁 Estrutura do Projeto
 
 ```
-System-Barbearia-AS/
+Go Next Agendamentos/
 │
 ├── README.md                          # Documentação unificada do projeto
 │
@@ -451,7 +451,7 @@ System-Barbearia-AS/
         <img src="https://img.shields.io/badge/Alison%20Silva-Product%20Owner-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Alison Silva"/>
       </a><br>
       <sub><strong>Alison Silva</strong></sub><br>
-      <p>💈 Barbeiro Profissional | 📊 Proprietário da Barbearia Silva | 🎯 Visão do Produto</p>
+      <p>💈 Barbeiro Profissional | 📊 Proprietário da Go Next Agendamentos | 🎯 Visão do Produto</p>
       <sub>📍 Morro Azul - Quadra 11 Conjunto A | 📱 @bradock_baber</sub>
     </td>
   </tr>
@@ -731,7 +731,7 @@ Contribuições são bem-vindas! Para contribuir:
 
 <div align="center">
 
-**Desenvolvido com ❤️ para Barbearia Silva**
+**Desenvolvido com ❤️ para Go Next Agendamentos**
 
 [⬆ Voltar ao topo](#-system-barbearia-as)
 
