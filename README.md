@@ -2,6 +2,8 @@
 
 <div align="center">
 
+<img src="docs/logo.png" alt="Go Next Logo" width="250">
+
 ![Status](https://img.shields.io/badge/Status-Production-green)
 ![Go](https://img.shields.io/badge/Go-1.25.4-00ADD8?logo=go)
 ![License](https://img.shields.io/badge/License-MIT-blue)
