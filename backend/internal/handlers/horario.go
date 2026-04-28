@@ -71,9 +71,9 @@ func (h *HorarioHandler) Create(c *gin.Context) {
 
 	// Save to database
 	result, err := database.DB.Exec(`
-		INSERT INTO horarios (barbeiro_id, cliente_nome, telefone, servico_id, data_hora, status)
-		VALUES (?, ?, ?, ?, ?, ?)
-	`, input.BarbeiroID, input.ClienteNome, input.Telefone, input.ServicoID, input.DataHora, input.Status)
+		INSERT INTO horarios (barbeiro_id, cliente_nome, telefone, email, servico_id, data_hora, status)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
+	`, input.BarbeiroID, input.ClienteNome, input.Telefone, input.Email, input.ServicoID, input.DataHora, input.Status)
 
 	if err != nil {
 		log.Printf("[HorarioHandler] Erro ao inserir no banco: %v", err)
@@ -95,8 +95,6 @@ func (h *HorarioHandler) Create(c *gin.Context) {
 	notificationHandler := NewNotificationHandler()
 	if err := notificationHandler.NotifyAdmin(int(horarioID), input.ClienteNome); err != nil {
 		log.Printf("[HorarioHandler] Aviso: Falha ao enviar notificação: %v", err)
-		// Log error but don't fail the request
-		// The booking was created successfully even if notification fails
 	}
 
 	c.JSON(http.StatusCreated, gin.H{

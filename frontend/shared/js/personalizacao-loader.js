@@ -69,6 +69,7 @@
         if (personalizacaoConfig.cor_destaque) {
             root.style.setProperty('--cor-destaque', personalizacaoConfig.cor_destaque);
             root.style.setProperty('--accent', personalizacaoConfig.cor_destaque);
+            root.style.setProperty('--gold-accent', personalizacaoConfig.cor_destaque);
             console.log('[PERSONALIZAÇÃO LOADER] Cor destaque aplicada:', personalizacaoConfig.cor_destaque);
         }
 

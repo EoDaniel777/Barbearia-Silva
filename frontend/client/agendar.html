@@ -182,7 +182,9 @@
         </nav>
 
         <div class="header-actions">
-            <!-- Tema controlado apenas pela home -->
+            <label class="theme-toggle-label">
+                <input class="theme-checkbox" type="checkbox" id="theme-toggle-checkbox" />
+            </label>
         </div>
     </header>
 
@@ -298,14 +300,15 @@
 
         // Theme Manager - Sistema Global de Tema (sem checkbox, só aplica)
         window.addEventListener('load', function() {
-            if (typeof ThemeManager !== 'undefined') {
-            ThemeManager.init({
-                headerLogoId: 'headerLogo',
-                footerLogoId: 'footerLogo'
-            });
-            console.log('[AGENDAR] Theme Manager inicializado');
-        } else {
-            console.error('[PAGE] Theme Manager não encontrado');
+            if (window.ThemeManager && typeof window.ThemeManager.init === 'function') {
+                window.ThemeManager.init({
+                    checkboxId: 'theme-toggle-checkbox',
+                    headerLogoId: 'headerLogo',
+                    footerLogoId: 'footerLogo'
+                });
+                console.log('[AGENDAR] Theme Manager inicializado');
+            } else {
+                console.error('[PAGE] Theme Manager não encontrado');
             }
         });
 
@@ -435,6 +438,11 @@
             loadTimeSlots();
             validateForm();
         });
+        dateInput.addEventListener('input', () => {
+            selectedTimeInput.value = '';
+            loadTimeSlots();
+            validateForm();
+        });
 
         // Add event listeners to all form inputs
         document.querySelectorAll('#bookingForm input:not(#selectedTime), #bookingForm select').forEach(input => {
@@ -446,9 +454,14 @@
         document.getElementById('bookingForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
+            // Pegar email do usuário logado via Firebase Auth (localStorage)
+            const authUser = window.AuthClient?.getUser();
+            const userEmail = authUser?.email || '';
+
             const formData = {
                 nomeCliente: document.getElementById('clientName').value,
                 telefone: document.getElementById('clientPhone').value,
+                email: userEmail,
                 servicoID: parseInt(serviceSelect.value),
                 barbeiroID: parseInt(barberSelect.value),
                 dataHora: `${dateInput.value}T${selectedTimeInput.value}:00`,
@@ -472,7 +485,51 @@
                 if (response.ok) {
                     alert.className = 'alert success';
                     alert.style.display = 'block';
-                    alert.textContent = '✓ Agendamento realizado com sucesso! Em breve enviaremos uma confirmação.';
+                    alert.textContent = userEmail
+                        ? `✓ Agendamento realizado! Uma confirmação foi enviada para ${userEmail}.`
+                        : '✓ Agendamento realizado com sucesso!';
+
+                    // Enviar email de confirmação via FormSubmit (se usuário tiver email)
+                    if (userEmail) {
+                        const barberName = barberSelect.options[barberSelect.selectedIndex]?.text || 'Barbeiro';
+                        const serviceName = serviceSelect.options[serviceSelect.selectedIndex]?.text || 'Serviço';
+                        const dataFormatada = dateInput.value.split('-').reverse().join('/') + ' às ' + selectedTimeInput.value;
+
+                        console.log('[EMAIL] Enviando confirmação para:', userEmail);
+                        fetch('https://formsubmit.co/ajax/gonextsolutions.contato@gmail.com', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                _subject: '✂️ Confirmação de Agendamento - Barbearia Silva',
+                                _cc: userEmail,
+                                _replyto: userEmail,
+                                _template: 'table',
+                                nome: formData.nomeCliente,
+                                email: userEmail,
+                                telefone: formData.telefone,
+                                barbeiro: barberName,
+                                servico: serviceName,
+                                data_hora: dataFormatada
+                            })
+                        })
+                        .then(async res => {
+                            const body = await res.json().catch(() => ({}));
+                            console.log('[EMAIL] FormSubmit status HTTP:', res.status);
+                            console.log('[EMAIL] FormSubmit resposta:', body);
+                            if (body.success === 'true') {
+                                console.log('[EMAIL] ✓ Email enviado com sucesso via FormSubmit');
+                            } else if (body.success === 'false' && body.message && body.message.includes('Activation')) {
+                                console.warn('[EMAIL] ⚠ FormSubmit: formulário não ativado. Acesse a caixa de entrada de gonextsolutions.contato@gmail.com e clique no link "Activate Form" que o FormSubmit enviou para ativar o serviço. Após ativar, os emails serão enviados normalmente.');
+                            } else {
+                                console.warn('[EMAIL] ⚠ FormSubmit respondeu com erro:', res.status, body);
+                            }
+                        })
+                        .catch(err => console.error('[EMAIL] ✗ Erro de rede ao enviar confirmação:', err));
+                    }
+
                     document.getElementById('bookingForm').reset();
                     selectedTimeInput.value = '';
                     dateInput.value = today;

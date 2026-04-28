@@ -9,7 +9,7 @@
     --black-pure: #000000;
     --black-rich: #0A0A0A;
     --black-soft: #1A1A1A;
-    --gold-accent: #D4AF37;
+    --gold-accent: var(--cor-destaque, #D4AF37);
     --gold-light: #F4E4C1;
     --gold-dark: #B8941F;
     --white-pure: #FFFFFF;

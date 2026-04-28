@@ -2749,14 +2749,34 @@ async function loadPersonalizacao() {
 }
 
 /**
+ * Define valor em um campo de cor E sincroniza o preview visual do botão customizado
+ */
+function setColorValue(id, value) {
+    if (!value) return;
+    const input = document.getElementById(id);
+    if (!input) return;
+    input.value = value;
+
+    // Atualiza preview e texto do botão visível
+    const wrapper = input.closest('.color-picker-wrapper');
+    if (!wrapper) return;
+    const btn = wrapper.querySelector('.color-picker-btn');
+    if (!btn) return;
+    const preview = btn.querySelector('.color-preview');
+    const valueSpan = btn.querySelector('.color-value');
+    if (preview) preview.style.background = value;
+    if (valueSpan) valueSpan.textContent = value.toUpperCase();
+}
+
+/**
  * Preenche o formulário com os dados de personalização
  */
 function populatePersonalizacaoForm(data) {
-    // Cores
-    setFieldValue('cor-primaria', data.cor_primaria);
-    setFieldValue('cor-secundaria', data.cor_secundaria);
-    setFieldValue('cor-destaque', data.cor_destaque);
-    setFieldValue('cor-header', data.cor_header);
+    // Cores — usa setColorValue para manter input E preview do botão sincronizados
+    setColorValue('cor-primaria', data.cor_primaria);
+    setColorValue('cor-secundaria', data.cor_secundaria);
+    setColorValue('cor-destaque', data.cor_destaque);
+    setColorValue('cor-header', data.cor_header);
 
     // Redes Sociais
     setFieldValue('instagram', data.instagram);

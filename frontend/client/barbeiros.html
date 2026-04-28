@@ -32,7 +32,9 @@
         </nav>
 
         <div class="header-actions">
-            <!-- Tema controlado apenas pela home -->
+            <label class="theme-toggle-label">
+                <input class="theme-checkbox" type="checkbox" id="theme-toggle-checkbox" />
+            </label>
         </div>
     </header>
 
@@ -116,8 +118,9 @@
     <script>
         // Theme Manager - Sistema Global de Tema (sem checkbox, só aplica)
         window.addEventListener('load', function() {
-            if (typeof ThemeManager !== 'undefined') {
-                ThemeManager.init({
+            if (window.ThemeManager && typeof window.ThemeManager.init === 'function') {
+                window.ThemeManager.init({
+                    checkboxId: 'theme-toggle-checkbox',
                     headerLogoId: 'headerLogo',
                     footerLogoId: 'footerLogo'
                 });

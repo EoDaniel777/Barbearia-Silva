@@ -1631,6 +1631,10 @@
                 const colorButtons = document.querySelectorAll('.color-picker-btn');
 
                 colorButtons.forEach(button => {
+                    // Guard: evita adicionar listeners duplicados
+                    if (button._colorPickerInitialized) return;
+                    button._colorPickerInitialized = true;
+
                     const targetId = button.getAttribute('data-target');
                     const colorInput = document.getElementById(targetId);
 
@@ -1653,7 +1657,7 @@
                         if (valueSpan) valueSpan.textContent = newColor.toUpperCase();
                     });
 
-                    // Sincroniza ao carregar
+                    // Sincroniza ao confirmar seleção
                     colorInput.addEventListener('change', (e) => {
                         const newColor = e.target.value;
                         const preview = button.querySelector('.color-preview');
@@ -1674,30 +1678,15 @@
                 initCustomColorPickers();
             }
 
-            // Monitora mudanças para reinicializar se necessário
-            const personalizacaoForm = document.getElementById('personalizacao-form');
-            if (personalizacaoForm) {
-                const observer = new MutationObserver((mutations) => {
-                    // Verifica se novos botões foram adicionados
-                    for (const mutation of mutations) {
-                        if (mutation.addedNodes.length > 0) {
-                            initCustomColorPickers();
-                            break;
-                        }
-                    }
-                });
-
-                observer.observe(personalizacaoForm, {
-                    childList: true,
-                    subtree: true
-                });
-            }
+            // REMOVIDO: MutationObserver que causava loop infinito
+            // Problema: valueSpan.textContent = ... é uma mutação childList que acionava
+            // initCustomColorPickers() novamente, acumulando listeners exponencialmente
+            // e travando o navegador ao usar o color picker.
 
             // Remove QUALQUER elemento injetado por extensões
             function cleanExtensionElements() {
                 const wrappers = document.querySelectorAll('.color-picker-wrapper');
                 wrappers.forEach(wrapper => {
-                    // Remove tudo que não seja o input ou o botão
                     const children = Array.from(wrapper.children);
                     children.forEach(child => {
                         if (!child.classList.contains('hidden-color-input') &&
@@ -1708,7 +1697,7 @@
                 });
             }
 
-            // Limpa periodicamente
+            // Limpa periodicamente elementos de extensões
             setInterval(cleanExtensionElements, 1000);
         })();
     </script>

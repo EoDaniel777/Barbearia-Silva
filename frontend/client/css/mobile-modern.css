@@ -11,6 +11,7 @@
     --cor-primaria: #0D7CA4;
     --cor-secundaria: #0a6282;
     --cor-destaque: #D4AF37;
+    --gold-accent: var(--cor-destaque);
     --cor-header: #090a0c;
     --cor-texto: #1C1C1E;
     --cor-texto-claro: #FFFFFF;
@@ -475,6 +476,12 @@ body.theme-white .fidelity-banner {
     position: relative;
     z-index: 1;
     animation: bounce 2s ease-in-out infinite;
+    color: var(--accent, #D4AF37);
+}
+
+.fidelity-icon i {
+    display: block;
+    line-height: 1;
 }
 
 @keyframes bounce {
@@ -499,7 +506,7 @@ body.theme-white .fidelity-text {
 .fidelity-btn {
     display: inline-block;
     padding: 14px 36px;
-    background: var(--primary-color);
+    background: var(--accent);
     color: #FFFFFF;
     text-decoration: none;
     border-radius: 30px;
@@ -508,17 +515,18 @@ body.theme-white .fidelity-text {
     transition: var(--transition);
     position: relative;
     z-index: 1;
-    box-shadow: 0 4px 15px rgba(13, 124, 164, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .fidelity-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(13, 124, 164, 0.4);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    filter: brightness(1.1);
 }
 
 .fidelity-btn:active {
     transform: scale(0.95);
-    background: var(--primary-dark);
+    filter: brightness(0.9);
 }
 
 /* === ABOUT SECTION === */
@@ -815,6 +823,22 @@ body.theme-white .profile-btn {
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
+}
+
+.profile-btn-initial {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--primary-color, #1a73e8);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+    user-select: none;
 }
 
 .profile-btn svg {
