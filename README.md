@@ -125,7 +125,7 @@ Criar uma plataforma integrada que simplifique a rotina das barbearias, permitin
 
 ### 📞 Informações de Contato
 - Telefone: 61 00000-0000
-- Instagram: @alison_silvababer
+- Instagram: @bradock_barber
 - Endereço: Morro Azul - Quadra 11 Conjunto A
 - CNPJ: 00.000.000/0001-00
 
@@ -449,12 +449,12 @@ Go Next Agendamentos/
   </tr>
   <tr>
     <td align="center" colspan="3">
-      <a href="https://www.instagram.com/alison_silvababer/">
+      <a href="https://www.instagram.com/bradock_barber/">
         <img src="https://img.shields.io/badge/Alison%20Silva-Client%20%26%20Barber-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Alison Silva"/>
       </a><br>
       <sub><strong>Alison Silva</strong></sub><br>
       <p>💈 Barbeiro Profissional | 📊 Proprietário da Barbearia Silva | 🎯 Visão do Produto (Cliente)</p>
-      <sub>📍 Morro Azul - Quadra 11 Conjunto A | 📱 @alison_silvababer</sub>
+      <sub>📍 Morro Azul - Quadra 11 Conjunto A | 📱 @bradock_barber</sub>
     </td>
   </tr>
 </table>
@@ -531,7 +531,7 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 ## 📞 Contato
 
 - **Telefone**: 61 00000-0000
-- **Instagram**: [@alison_silvababer](https://www.instagram.com/alison_silvababer/)
+- **Instagram**: [@bradock_barber](https://www.instagram.com/bradock_barber/)
 - **Endereço**: Morro Azul - Quadra 11 Conjunto A
 - **CNPJ**: 00.000.000/0001-00
 
