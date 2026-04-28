@@ -375,21 +375,28 @@
         // ===================================
         // FIREBASE CONFIGURATION
         // ===================================
-        const firebaseConfig = {
-            apiKey: "REMOVED_KEY",
-            authDomain: "barbeariahom.firebaseapp.com",
-            projectId: "barbeariahom",
-            storageBucket: "barbeariahom.firebasestorage.app",
-            messagingSenderId: "799723640449",
-            appId: "1:799723640449:web:1b99cf357e7fca8c009f80",
-            measurementId: "G-EN75CG86CW"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-
-        console.log('[FIREBASE] Firebase inicializado');
+        let auth;
+        let firebaseConfig;
+        
+        async function initFirebase() {
+            try {
+                const response = await fetch('/api/v1/config/firebase');
+                firebaseConfig = await response.json();
+                
+                if (firebaseConfig && firebaseConfig.apiKey) {
+                    firebase.initializeApp(firebaseConfig);
+                    auth = firebase.auth();
+                    console.log('[FIREBASE] Firebase inicializado com sucesso via API');
+                } else {
+                    console.warn('[FIREBASE] Configuração não encontrada na API. Login Google pode não funcionar.');
+                }
+            } catch (error) {
+                console.error('[FIREBASE] Erro ao buscar configuração:', error);
+            }
+        }
+        
+        // Iniciar busca da configuração
+        initFirebase();
 
         // ===================================
         // THEME MANAGEMENT

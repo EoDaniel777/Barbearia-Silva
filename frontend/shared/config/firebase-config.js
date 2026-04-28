@@ -1,22 +1,36 @@
-// Firebase Configuration - HOMOLOGAÇÃO
-// Configuração do projeto Barbearia Silva (Ambiente de Homologação)
-// https://console.firebase.google.com/project/barbeariahom
+// Firebase Configuration
+// As credenciais são carregadas dinamicamente do backend
 
-// ⚠️ NOTA: Essas credenciais são PÚBLICAS (frontend)
-// Elas podem estar no código porque são para o Firebase Web SDK
-// Para produção, será configurado via variáveis de ambiente no painel de hospedagem
+let firebaseConfig = null;
 
-const firebaseConfig = {
-    apiKey: "REMOVED_KEY",
-    authDomain: "barbeariahom.firebaseapp.com",
-    projectId: "barbeariahom",
-    storageBucket: "barbeariahom.firebasestorage.app",
-    messagingSenderId: "799723640449",
-    appId: "1:799723640449:web:1b99cf357e7fca8c009f80",
-    measurementId: "G-EN75CG86CW"
-};
-
-// Exportar configuração
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = firebaseConfig;
+// Função para buscar e inicializar o Firebase
+async function initFirebaseConfig() {
+    try {
+        const response = await fetch('/api/v1/config/firebase');
+        if (!response.ok) {
+            throw new Error('Falha ao carregar configurações do Firebase');
+        }
+        
+        firebaseConfig = await response.json();
+        
+        // Verifica se temos as configurações mínimas (ex: apiKey)
+        if (firebaseConfig && firebaseConfig.apiKey) {
+            // Se estiver em ambiente Node (módulos)
+            if (typeof module !== 'undefined' && module.exports) {
+                module.exports = firebaseConfig;
+            }
+            
+            // Retorna a config para inicialização
+            return firebaseConfig;
+        } else {
+            console.warn('[FIREBASE] Configuração incompleta ou ausente no backend.');
+            return null;
+        }
+    } catch (error) {
+        console.error('[FIREBASE CONFIG]', error);
+        return null;
+    }
 }
+
+// Para retrocompatibilidade ou acesso global direto (se necessário)
+window.getFirebaseConfig = initFirebaseConfig;

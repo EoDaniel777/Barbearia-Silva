@@ -95,6 +95,19 @@ func SetupRouter() *gin.Engine {
 			})
 		})
 
+		// Firebase Web Config (Public)
+		v1.GET("/config/firebase", func(c *gin.Context) {
+			c.JSON(200, gin.H{
+				"apiKey":            os.Getenv("FIREBASE_API_KEY"),
+				"authDomain":        os.Getenv("FIREBASE_AUTH_DOMAIN"),
+				"projectId":         os.Getenv("FIREBASE_PROJECT_ID"),
+				"storageBucket":     os.Getenv("FIREBASE_STORAGE_BUCKET"),
+				"messagingSenderId": os.Getenv("FIREBASE_MESSAGING_SENDER_ID"),
+				"appId":             os.Getenv("FIREBASE_APP_ID"),
+				"measurementId":     os.Getenv("FIREBASE_MEASUREMENT_ID"),
+			})
+		})
+
 		// Barbeiros (Barbers)
 		barbeiros := v1.Group("/barbeiros")
 		{
